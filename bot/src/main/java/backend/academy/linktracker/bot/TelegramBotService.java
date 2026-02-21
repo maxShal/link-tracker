@@ -24,6 +24,7 @@ public class TelegramBotService {
 
     public void start() {
         log.atInfo().addKeyValue("Info", "start").log("Bot start");
+
         var resp = bot.execute(
                 new SetMyCommands(new BotCommand("/start", "Начало работы"), new BotCommand("/help", "Список команд")));
 
@@ -43,7 +44,7 @@ public class TelegramBotService {
                         for (Update update : updates) {
                             handle(update);
                         }
-                        return UpdatesListener.CONFIRMED_UPDATES_ALL;
+                        return CONFIRMED_UPDATES_ALL;
                     }
                 },
                 e -> {
