@@ -1,20 +1,20 @@
 package backend.academy.linktracker.bot;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import static org.mockito.Mockito.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TelegramBotServiceTest {
 
-    //Объявление полей + создание mock.
+    // Объявление полей + создание mock.
     TelegramBot bot;
     TelegramBotService telegramBotService;
 
@@ -32,23 +32,23 @@ class TelegramBotServiceTest {
         chat = mock(Chat.class);
     }
 
-    //Ответ на первое сообщение
+    // Ответ на первое сообщение
     @Test
     void welcomeCommand() {
 
-        //Задаём параметры update сообщения
+        // Задаём параметры update сообщения
         when(update.message()).thenReturn(message);
         when(message.chat()).thenReturn(chat);
         when(message.text()).thenReturn("first message");
         when(message.chat().id()).thenReturn(1L);
 
-        //Вызываем метод бота
+        // Вызываем метод бота
         telegramBotService.handle(update);
 
-        //Извлекаем первый аргумент
+        // Извлекаем первый аргумент
         ArgumentCaptor<SendMessage> captor = ArgumentCaptor.forClass(SendMessage.class);
 
-        //Запоминаем вызов метода
+        // Запоминаем вызов метода
         verify(bot).execute(captor.capture());
         SendMessage sendMessage = captor.getValue();
         String actualText = sendMessage.getText();
@@ -77,7 +77,6 @@ class TelegramBotServiceTest {
                                             /start - начало работы\s
                                             /help - список команд\
                                             """, actualText);
-
     }
 
     @Test
@@ -98,7 +97,6 @@ class TelegramBotServiceTest {
         SendMessage sendMessage = captor.getValue();
         String actualText = sendMessage.getText();
         assertEquals("Ответ на /start", actualText);
-
     }
 
     @Test
@@ -122,6 +120,5 @@ class TelegramBotServiceTest {
                                                 Неизвестная команда.\s
                                                 Воспользуйтесь /help\
                                                 """, actualText);
-
     }
 }

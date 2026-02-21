@@ -8,12 +8,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class TelegramBotStart implements ApplicationRunner
-{
+public class TelegramBotStart implements ApplicationRunner {
     private final TelegramBotService telegramBotService;
+
     @Override
-    public void run(@NotNull ApplicationArguments args) throws Exception
-    {
+    public void run(@NotNull ApplicationArguments args) throws Exception {
         telegramBotService.start();
     }
 }
