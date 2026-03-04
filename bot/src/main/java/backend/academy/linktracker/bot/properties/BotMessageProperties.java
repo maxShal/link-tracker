@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties("app.messages")
-public class BotMessageProperties
-{
+public class BotMessageProperties {
     private String help;
     private String start;
     private String unknown;

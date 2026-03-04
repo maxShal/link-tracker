@@ -15,8 +15,7 @@ public class HandleService {
         long chatId = update.message().chat().id();
         String text = update.message().text();
 
-        if(firstTimeService.newChat(chatId, text))
-        {
+        if (firstTimeService.newChat(chatId, text)) {
             return;
         }
         commandRoute.route(chatId, text);

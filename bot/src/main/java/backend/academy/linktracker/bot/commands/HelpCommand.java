@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class HelpCommand implements CommandHandler{
+public class HelpCommand implements CommandHandler {
 
     private final TelegramBot bot;
 

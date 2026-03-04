@@ -1,13 +1,12 @@
 package backend.academy.linktracker.bot.repository;
 
-import org.springframework.stereotype.Component;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Component;
 
 @Component
-public class BotRepository implements IBotRepository
-{
-    private final Set<Long> chats =  ConcurrentHashMap.newKeySet();
+public class BotRepository implements IBotRepository {
+    private final Set<Long> chats = ConcurrentHashMap.newKeySet();
 
     @Override
     public boolean isOld(Long id) {

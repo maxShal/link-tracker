@@ -15,12 +15,11 @@ public class TelegramBotStart implements ApplicationRunner {
     private final TelegramBotService telegramBotService;
 
     @Override
-    public void run(@NotNull ApplicationArguments args){
-        try{
+    public void run(@NotNull ApplicationArguments args) {
+        try {
             telegramBotService.start();
-        }
-        catch (Exception e){
-            throw new BotStartException("Бот не запустился",e);
+        } catch (Exception e) {
+            throw new BotStartException("Бот не запустился", e);
         }
     }
 }

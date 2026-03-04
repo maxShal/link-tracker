@@ -1,5 +1,10 @@
 package backend.academy.linktracker.bot.commands;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
@@ -10,16 +15,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class HandleServiceTest {
 
     @Mock
-    FirstTimeService  firstTimeService;
+    FirstTimeService firstTimeService;
+
     @Mock
     CommandRoute commandRoute;
 
@@ -51,11 +52,11 @@ class HandleServiceTest {
 
         when(message.text()).thenReturn("/start");
 
-        when(firstTimeService.newChat(123L,"/start")).thenReturn(true);
+        when(firstTimeService.newChat(123L, "/start")).thenReturn(true);
 
         handleService.handle(update);
 
-        verify(firstTimeService).newChat(123L,"/start");
+        verify(firstTimeService).newChat(123L, "/start");
         verifyNoInteractions(commandRoute);
     }
 }

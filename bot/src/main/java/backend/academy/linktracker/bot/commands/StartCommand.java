@@ -12,6 +12,7 @@ public class StartCommand implements CommandHandler {
 
     private final TelegramBot bot;
     private final BotMessageProperties message;
+
     @Override
     public boolean supports(String cmd) {
         return cmd.equals(Commands.START);
