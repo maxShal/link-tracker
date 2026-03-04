@@ -1,5 +1,6 @@
 package backend.academy.linktracker.bot;
 
+import backend.academy.linktracker.bot.exception.BotStartException;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.ApplicationArguments;
@@ -14,7 +15,12 @@ public class TelegramBotStart implements ApplicationRunner {
     private final TelegramBotService telegramBotService;
 
     @Override
-    public void run(@NotNull ApplicationArguments args) throws Exception {
-        telegramBotService.start();
+    public void run(@NotNull ApplicationArguments args){
+        try{
+            telegramBotService.start();
+        }
+        catch (Exception e){
+            throw new BotStartException("Бот не запустился",e);
+        }
     }
 }
