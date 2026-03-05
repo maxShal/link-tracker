@@ -1,13 +1,15 @@
-package backend.academy.linktracker.bot.commands;
+package backend.academy.linktracker.bot.update;
 
+import backend.academy.linktracker.bot.commands.CommandRoute;
+import backend.academy.linktracker.bot.session.FirstTimeCheck;
 import com.pengrad.telegrambot.model.Update;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class HandleService {
-    private final FirstTimeService firstTimeService;
+public class UpdateHandler {
+    private final FirstTimeCheck firstTimeCheck;
     private final CommandRoute commandRoute;
 
     public void handle(Update update) {
@@ -15,7 +17,7 @@ public class HandleService {
         long chatId = update.message().chat().id();
         String text = update.message().text();
 
-        if (firstTimeService.newChat(chatId, text)) {
+        if (firstTimeCheck.newChat(chatId, text)) {
             return;
         }
         commandRoute.route(chatId, text);

@@ -4,7 +4,10 @@ server:
 spring:
   application:
     name: bot
-
+config:
+  import:
+    optional:
+      file: .env
 app:
   telegram:
     url: https://api.telegram.org/bot

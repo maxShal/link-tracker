@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class CommandRoute {
-    private final TelegramBot bot;
+    private final TelegramBot telegramBot;
 
-    private final BotMessageProperties messageProp;
+    private final BotMessageProperties botMessageProperties;
 
     private final List<CommandHandler> commandHandlers;
 
@@ -25,7 +25,7 @@ public class CommandRoute {
         }
 
         if (message.startsWith("/")) {
-            bot.execute(new SendMessage(chatId, messageProp.getUnknown()));
+            telegramBot.execute(new SendMessage(chatId, botMessageProperties.getUnknown()));
         }
     }
 }

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class StartCommand implements CommandHandler {
 
-    private final TelegramBot bot;
-    private final BotMessageProperties message;
+    private final TelegramBot telegramBot;
+    private final BotMessageProperties botMessageProperties;
 
     @Override
     public boolean supports(String cmd) {
@@ -20,6 +20,6 @@ public class StartCommand implements CommandHandler {
 
     @Override
     public void handler(long chatId, String command) {
-        bot.execute(new SendMessage(chatId, message.getStart()));
+        telegramBot.execute(new SendMessage(chatId, botMessageProperties.getStart()));
     }
 }

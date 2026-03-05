@@ -1,6 +1,7 @@
-package backend.academy.linktracker.bot;
+package backend.academy.linktracker.bot.lifecycle;
 
 import backend.academy.linktracker.bot.exception.BotStartException;
+import backend.academy.linktracker.bot.service.TelegramBotService;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.ApplicationArguments;

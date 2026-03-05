@@ -1,5 +1,6 @@
-package backend.academy.linktracker.bot.commands;
+package backend.academy.linktracker.bot.session;
 
+import backend.academy.linktracker.bot.commands.Commands;
 import backend.academy.linktracker.bot.properties.BotMessageProperties;
 import backend.academy.linktracker.bot.repository.BotRepository;
 import com.pengrad.telegrambot.TelegramBot;
@@ -9,18 +10,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class FirstTimeService {
+public class FirstTimeCheck {
 
-    private final BotRepository repository;
-    private final TelegramBot bot;
-    private final BotMessageProperties message;
+    private final BotRepository botRepository;
+    private final TelegramBot telegramBot;
+    private final BotMessageProperties botMessageProperties;
 
     public boolean newChat(long chatId, String text) {
-        if (repository.isOld(chatId)) return false;
+        if (botRepository.isOld(chatId)) return false;
         // infoLog("event", "new_chat", "New Chat");
         if (text.equals(Commands.START)) {
-            repository.save(chatId);
-            bot.execute(new SendMessage(chatId, message.getFirst()));
+            botRepository.save(chatId);
+            telegramBot.execute(new SendMessage(chatId, botMessageProperties.getFirst()));
             return true;
         }
         return false;

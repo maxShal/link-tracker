@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class CommandsInit {
-    private final TelegramBot bot;
+    private final TelegramBot telegramBot;
 
     public BaseResponse comInit() {
-        return bot.execute(
+        return telegramBot.execute(
                 new SetMyCommands(new BotCommand("/start", "Начало работы"), new BotCommand("/help", "Список команд")));
     }
 }

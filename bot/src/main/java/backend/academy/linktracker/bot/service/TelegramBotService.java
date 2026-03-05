@@ -1,22 +1,22 @@
-package backend.academy.linktracker.bot;
+package backend.academy.linktracker.bot.service;
 
 import backend.academy.linktracker.bot.commands.CommandsInit;
-import backend.academy.linktracker.bot.commands.HandleService;
+import backend.academy.linktracker.bot.update.UpdateHandler;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 @AllArgsConstructor
 public class TelegramBotService {
 
-    private final TelegramBot bot;
+    private final TelegramBot telegramBot;
 
-    private final HandleService handleService;
+    private final UpdateHandler updateHandler;
 
     private final CommandsInit commandsInit;
 
@@ -27,10 +27,10 @@ public class TelegramBotService {
 
         startInit();
 
-        bot.setUpdatesListener(
+        telegramBot.setUpdatesListener(
                 updates -> {
                     for (Update update : updates) {
-                        handleService.handle(update);
+                        updateHandler.handle(update);
                     }
                     return UpdatesListener.CONFIRMED_UPDATES_ALL;
                 },
