@@ -1,5 +1,6 @@
 package backend.academy.linktracker.bot.session;
 
+import backend.academy.linktracker.bot.client.ScrapperClient;
 import backend.academy.linktracker.bot.commands.Commands;
 import backend.academy.linktracker.bot.properties.BotMessageProperties;
 import backend.academy.linktracker.bot.repository.BotRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class FirstTimeCheck {
 
     private final BotRepository botRepository;
+    private final ScrapperClient scrapperClient;
     private final TelegramBot telegramBot;
     private final BotMessageProperties botMessageProperties;
 
@@ -21,6 +23,7 @@ public class FirstTimeCheck {
         // infoLog("event", "new_chat", "New Chat");
         if (text.equals(Commands.START)) {
             botRepository.save(chatId);
+            scrapperClient.registerChat(chatId);
             telegramBot.execute(new SendMessage(chatId, botMessageProperties.getFirst()));
             return true;
         }

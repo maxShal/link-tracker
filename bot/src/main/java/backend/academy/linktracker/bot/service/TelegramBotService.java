@@ -1,10 +1,12 @@
 package backend.academy.linktracker.bot.service;
 
 import backend.academy.linktracker.bot.commands.CommandsInit;
+import backend.academy.linktracker.bot.dto.LinkUpdate;
 import backend.academy.linktracker.bot.update.UpdateHandler;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -71,5 +73,11 @@ public class TelegramBotService {
                 .addKeyValue("code", code)
                 .addKeyValue("desc", desc)
                 .log(msg);
+    }
+
+    public void sendUpdate(LinkUpdate update) {
+        for (Long chatId : update.tgChatIds()) {
+            telegramBot.execute(new SendMessage(chatId, "Обновление по ссылке " + update.url()));
+        }
     }
 }
