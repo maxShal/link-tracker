@@ -33,7 +33,11 @@ public class LinksService {
         }
 
         Link link = new Link(
-                idGenerator.incrementAndGet(), addLinkRequest.link(), addLinkRequest.tags(), addLinkRequest.filters(), null);
+                idGenerator.incrementAndGet(),
+                addLinkRequest.link(),
+                addLinkRequest.tags(),
+                addLinkRequest.filters(),
+                null);
 
         Link saved = linksRepository.saveLink(chatId, link);
         return new LinkResponse(saved.id(), saved.url(), saved.tags(), saved.filters());

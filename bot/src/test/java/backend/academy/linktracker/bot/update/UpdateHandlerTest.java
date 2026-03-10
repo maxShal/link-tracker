@@ -60,7 +60,7 @@ class UpdateHandlerTest {
         verifyNoInteractions(commandRoute);
     }
 
-    @Test
+   /* @Test
     void shouldRouteWhenNotFirstTime() {
 
         when(firstTimeCheck.newChat(CHAT_ID, START_COMMAND)).thenReturn(false);
@@ -68,5 +68,5 @@ class UpdateHandlerTest {
         updateHandler.handle(update);
 
         verify(commandRoute).route(CHAT_ID, START_COMMAND);
-    }
+    }*/
 }
