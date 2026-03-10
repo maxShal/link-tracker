@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 
 import backend.academy.linktracker.bot.commands.CommandRoute;
 import backend.academy.linktracker.bot.session.FirstTimeCheck;
+import backend.academy.linktracker.bot.state.UserState;
+import backend.academy.linktracker.bot.state.UserStateStorage;
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
@@ -28,6 +30,9 @@ class UpdateHandlerTest {
 
     @Mock
     private CommandRoute commandRoute;
+
+    @Mock
+    private UserStateStorage userStateStorage;
 
     @Mock
     private Update update;
@@ -60,13 +65,13 @@ class UpdateHandlerTest {
         verifyNoInteractions(commandRoute);
     }
 
-    /* @Test
+    @Test
     void shouldRouteWhenNotFirstTime() {
-
+        when(userStateStorage.getState(CHAT_ID)).thenReturn(UserState.IDLE);
         when(firstTimeCheck.newChat(CHAT_ID, START_COMMAND)).thenReturn(false);
 
         updateHandler.handle(update);
 
         verify(commandRoute).route(CHAT_ID, START_COMMAND);
-    }*/
+    }
 }

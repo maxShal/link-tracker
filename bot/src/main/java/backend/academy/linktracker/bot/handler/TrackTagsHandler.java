@@ -28,7 +28,7 @@ public class TrackTagsHandler {
 
     public boolean handle(long chatId, String text) {
         String pendingLink = userStateStorage.getPendingLink(chatId);
-        if (pendingLink == null) {
+        if (pendingLink.equals("-")) {
             userStateStorage.clearState(chatId);
             return true;
         }
@@ -52,7 +52,7 @@ public class TrackTagsHandler {
     }
 
     private List<String> parseTags(String text) {
-        if (text == null || text.isBlank()) {
+        if (text == null || text.isBlank() || text.equals("-")) {
             return List.of();
         }
 
