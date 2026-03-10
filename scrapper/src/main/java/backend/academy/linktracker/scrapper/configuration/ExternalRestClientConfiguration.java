@@ -17,7 +17,9 @@ public class ExternalRestClientConfiguration {
 
     @Bean
     public RestClient githubRestClient() {
-        RestClient.Builder builder = RestClient.builder().baseUrl("https://api.github.com");
+        RestClient.Builder builder = RestClient.builder()
+                .baseUrl("https://api.github.com")
+                .defaultHeader(HttpHeaders.ACCEPT, "application/vnd.github.v3+json");
 
         if (githubProperties.getToken() != null && !githubProperties.getToken().isBlank()) {
             builder.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + githubProperties.getToken());
