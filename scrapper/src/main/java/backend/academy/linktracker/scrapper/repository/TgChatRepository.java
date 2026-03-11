@@ -24,4 +24,8 @@ public class TgChatRepository implements ITgChatRepository {
     public void deleteChat(Long id) {
         chats.remove(id);
     }
+
+    public void clear() {
+        chats.clear();
+    }
 }

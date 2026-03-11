@@ -84,4 +84,8 @@ public class LinksRepository implements ILinksRepository {
             }
         }
     }
+
+    public void clear() {
+        links.clear();
+    }
 }
