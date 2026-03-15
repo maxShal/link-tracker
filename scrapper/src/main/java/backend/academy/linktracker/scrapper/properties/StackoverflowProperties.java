@@ -18,5 +18,4 @@ public class StackoverflowProperties {
 
     @NotEmpty
     private String key;
-
 }

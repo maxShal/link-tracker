@@ -23,9 +23,7 @@ public class LinkUpdaterScheduler {
     @Scheduled(fixedDelay = 10000)
     public void checkUpdates() {
         var links = linksRepository.findAllForUpdateCheck();
-        log.atInfo()
-            .addKeyValue("Scheduled", "Start")
-            .log("Scheduled check");
+        log.atInfo().addKeyValue("Scheduled", "Start").log("Scheduled check");
 
         for (LinkForUpdateCheck link : links) {
             try {
