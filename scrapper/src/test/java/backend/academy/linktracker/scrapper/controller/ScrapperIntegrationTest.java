@@ -118,6 +118,7 @@ class ScrapperIntegrationTest {
         mockMvc.perform(delete("/tg-chat/1")).andExpect(status().isNotFound());
     }
 
+
     private void registerChat(long chatId) throws Exception {
         mockMvc.perform(post("/tg-chat/" + chatId)).andExpect(status().isOk());
     }

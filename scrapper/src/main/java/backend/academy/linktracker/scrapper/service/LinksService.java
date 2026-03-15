@@ -10,6 +10,7 @@ import backend.academy.linktracker.scrapper.request.AddLinkRequest;
 import backend.academy.linktracker.scrapper.request.RemoveLinkRequest;
 import backend.academy.linktracker.scrapper.response.LinkResponse;
 import backend.academy.linktracker.scrapper.response.ListLinksResponse;
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class LinksService {
                 addLinkRequest.link(),
                 addLinkRequest.tags(),
                 addLinkRequest.filters(),
-                null);
+                Instant.now());
 
         Link saved = linksRepository.saveLink(chatId, link);
         return new LinkResponse(saved.id(), saved.url(), saved.tags(), saved.filters());

@@ -24,11 +24,6 @@ public class StackoverflowClient {
                         builder = builder.queryParam("key", stackoverflowProperties.getKey());
                     }
 
-                    if (stackoverflowProperties.getAccessToken() != null
-                            && !stackoverflowProperties.getAccessToken().isBlank()) {
-                        builder = builder.queryParam("access_token", stackoverflowProperties.getAccessToken());
-                    }
-
                     return builder.build(questionId);
                 })
                 .retrieve()

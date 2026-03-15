@@ -7,6 +7,6 @@ public class StackoverflowRepositoryResponse {
 
     public record StackoverflowQuestionResponse(List<QuestionItem> items) {
         public record QuestionItem(
-                @JsonProperty("last_activity_date") Long lastActivityDate) {}
+                @JsonProperty("last_edit_date") Long lastActivityDate) {}
     }
 }
