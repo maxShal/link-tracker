@@ -1,6 +1,5 @@
 package backend.academy.linktracker.scrapper.properties;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 public class GithubProperties {
 
-    @NotEmpty
     private String token;
+
+    private String url;
 }

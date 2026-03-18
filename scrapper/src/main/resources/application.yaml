@@ -7,8 +7,10 @@ spring:
 
 app:
   stackoverflow:
+    url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
     key: ${STACKOVERFLOW_KEY} # Use env variable. DO NOT KEEP TOKEN HERE
   github:
+    url: ${APP_GITHUB_URL:https://api.github.com}
     token: ${GITHUB_TOKEN} # Use env variable. DO NOT KEEP TOKEN HERE
   bot:
-    url: http://localhost:8080
+    url: ${APP_BOT_URL:http://localhost:8080}

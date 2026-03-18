@@ -18,7 +18,7 @@ public class ExternalRestClientConfiguration {
     @Bean
     public RestClient githubRestClient() {
         RestClient.Builder builder = RestClient.builder()
-                .baseUrl("https://api.github.com")
+                .baseUrl(githubProperties.getUrl())
                 .defaultHeader(HttpHeaders.ACCEPT, "application/vnd.github.v3+json");
 
         if (githubProperties.getToken() != null && !githubProperties.getToken().isBlank()) {
@@ -30,6 +30,6 @@ public class ExternalRestClientConfiguration {
 
     @Bean
     public RestClient stackoverflowRestClient() {
-        return RestClient.builder().baseUrl("https://api.stackexchange.com").build();
+        return RestClient.builder().baseUrl(stackoverflowProperties.getUrl()).build();
     }
 }
