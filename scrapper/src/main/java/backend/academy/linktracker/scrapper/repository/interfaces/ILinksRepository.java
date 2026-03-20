@@ -1,9 +1,8 @@
 package backend.academy.linktracker.scrapper.repository.interfaces;
 
 import backend.academy.linktracker.scrapper.model.Link;
-import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
-import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 public interface ILinksRepository {
     Link saveLink(Long chatId, Link link);
@@ -14,7 +13,9 @@ public interface ILinksRepository {
 
     List<Link> findAllLinks(Long chatId);
 
-    List<LinkForUpdateCheck> findAllForUpdateCheck();
+    Map<Long, List<Link>> findAllLinksGroupedByChatId();
 
-    void updateLastUpdated(Long linkId, Instant lastUpdatedAt);
+    // List<LinkForUpdateCheck> findAllForUpdateCheck();
+
+    // void updateLastUpdated(Long linkId, Instant lastUpdatedAt);
 }

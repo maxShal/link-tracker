@@ -7,6 +7,7 @@ import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.request.LinkUpdateRequest;
+import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
 import java.util.List;
@@ -25,6 +26,9 @@ class LinkUpdaterSchedulerTest {
     private ILinksRepository linksRepository;
 
     @Mock
+    private LinksService linksService;
+
+    @Mock
     private MetadataService metadataService;
 
     @Mock
@@ -38,12 +42,12 @@ class LinkUpdaterSchedulerTest {
         LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK, List.of(1L, 2L), null);
 
         Instant actual = Instant.now();
-        when(linksRepository.findAllForUpdateCheck()).thenReturn(List.of(link));
+        when(linksService.findAllForUpdateCheck()).thenReturn(List.of(link));
         when(metadataService.getLastUpdated(link.url())).thenReturn(actual);
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(linksRepository).updateLastUpdated(1L, actual);
+        verify(linksService).updateLastUpdated(1L, actual);
         verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
     }
 
@@ -54,12 +58,12 @@ class LinkUpdaterSchedulerTest {
 
         LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK, List.of(1L), oldDate);
 
-        when(linksRepository.findAllForUpdateCheck()).thenReturn(List.of(link));
+        when(linksService.findAllForUpdateCheck()).thenReturn(List.of(link));
         when(metadataService.getLastUpdated(link.url())).thenReturn(newDate);
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(linksRepository).updateLastUpdated(1L, newDate);
+        verify(linksService).updateLastUpdated(1L, newDate);
         verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
     }
 
@@ -69,12 +73,12 @@ class LinkUpdaterSchedulerTest {
 
         LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK, List.of(1L), date);
 
-        when(linksRepository.findAllForUpdateCheck()).thenReturn(List.of(link));
+        when(linksService.findAllForUpdateCheck()).thenReturn(List.of(link));
         when(metadataService.getLastUpdated(link.url())).thenReturn(date);
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(linksRepository, never()).updateLastUpdated(anyLong(), any());
+        verify(linksService, never()).updateLastUpdated(anyLong(), any());
         verify(botClient, never()).sendUpdate(any());
     }
 
@@ -83,7 +87,7 @@ class LinkUpdaterSchedulerTest {
         LinkForUpdateCheck first = new LinkForUpdateCheck(1L, "https://github.com/owner/repo1", List.of(1L), null);
         LinkForUpdateCheck second = new LinkForUpdateCheck(2L, "https://github.com/owner/repo2", List.of(2L), null);
 
-        when(linksRepository.findAllForUpdateCheck()).thenReturn(List.of(first, second));
+        when(linksService.findAllForUpdateCheck()).thenReturn(List.of(first, second));
         when(metadataService.getLastUpdated(first.url())).thenThrow(new RuntimeException("Exception"));
         when(metadataService.getLastUpdated(second.url())).thenReturn(Instant.now());
 

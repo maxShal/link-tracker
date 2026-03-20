@@ -2,8 +2,8 @@ package backend.academy.linktracker.scrapper;
 
 import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
-import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.request.LinkUpdateRequest;
+import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class LinkUpdaterScheduler {
 
-    private final ILinksRepository linksRepository;
+    private final LinksService linksService;
     private final MetadataService linkMetadataService;
     private final BotClient botClient;
 
     @Scheduled(fixedDelay = 10000)
     public void checkUpdates() {
-        var links = linksRepository.findAllForUpdateCheck();
+        var links = linksService.findAllForUpdateCheck();
         log.atInfo().addKeyValue("Scheduled", "Start").log("Scheduled check");
 
         for (LinkForUpdateCheck link : links) {
@@ -30,7 +30,7 @@ public class LinkUpdaterScheduler {
                 Instant actualLastUpdated = linkMetadataService.getLastUpdated(link.url());
 
                 if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
-                    linksRepository.updateLastUpdated(link.id(), actualLastUpdated);
+                    linksService.updateLastUpdated(link.id(), actualLastUpdated);
 
                     botClient.sendUpdate(
                             new LinkUpdateRequest(link.id(), link.url(), "Обнаружено обновление", link.tgChatIds()));

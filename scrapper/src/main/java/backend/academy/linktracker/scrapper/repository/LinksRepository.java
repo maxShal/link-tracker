@@ -1,13 +1,12 @@
 package backend.academy.linktracker.scrapper.repository;
 
 import backend.academy.linktracker.scrapper.model.Link;
-import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -41,48 +40,10 @@ public class LinksRepository implements ILinksRepository {
     }
 
     @Override
-    public List<LinkForUpdateCheck> findAllForUpdateCheck() {
-        Map<String, LinkForUpdateCheck> aggregated = new ConcurrentHashMap<>();
-
-        for (Map.Entry<Long, Map<String, Link>> chatEntry : links.entrySet()) {
-            Long chatId = chatEntry.getKey();
-
-            for (Link link : chatEntry.getValue().values()) {
-                aggregated.compute(link.url(), (url, existing) -> {
-                    if (existing == null) {
-                        List<Long> chatIds = new ArrayList<>();
-                        chatIds.add(chatId);
-
-                        return new LinkForUpdateCheck(link.id(), link.url(), chatIds, link.lastUpdatedAt());
-                    } else {
-                        List<Long> updatedChatIds = new ArrayList<>(existing.tgChatIds());
-                        if (!updatedChatIds.contains(chatId)) {
-                            updatedChatIds.add(chatId);
-                        }
-
-                        return new LinkForUpdateCheck(
-                                existing.id(), existing.url(), updatedChatIds, existing.lastUpdatedAt());
-                    }
-                });
-            }
-        }
-
-        return aggregated.values().stream().toList();
-    }
-
-    @Override
-    public void updateLastUpdated(Long linkId, Instant lastUpdatedAt) {
-        for (Map<String, Link> chatLinks : links.values()) {
-            for (Map.Entry<String, Link> entry : chatLinks.entrySet()) {
-                Link oldLink = entry.getValue();
-
-                if (oldLink.id().equals(linkId)) {
-                    Link updatedLink =
-                            new Link(oldLink.id(), oldLink.url(), oldLink.tags(), oldLink.filters(), lastUpdatedAt);
-                    entry.setValue(updatedLink);
-                }
-            }
-        }
+    public Map<Long, List<Link>> findAllLinksGroupedByChatId() {
+        return links.entrySet().stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey, e -> new ArrayList<>(e.getValue().values())));
     }
 
     public void clear() {

@@ -8,6 +8,7 @@ import backend.academy.linktracker.bot.state.UserStateStorage;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
 
@@ -38,7 +39,7 @@ public class UntrackLinkHandler {
             scrapperClient.deleteLink(chatId, new RemoveLinkRequest(text));
             telegramBot.execute(new SendMessage(chatId, botMessageProperties.getUntrackSuccess()));
         } catch (RestClientResponseException e) {
-            if (e.getStatusCode().value() == 404) {
+            if (e.getStatusCode().value() == HttpStatus.NOT_FOUND.value()) {
                 telegramBot.execute(new SendMessage(chatId, botMessageProperties.getLinkNot()));
             } else {
                 telegramBot.execute(new SendMessage(chatId, "Ошибка при удалении ссылки."));
