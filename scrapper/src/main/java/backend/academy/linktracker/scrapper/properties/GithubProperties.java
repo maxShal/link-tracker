@@ -18,4 +18,6 @@ public class GithubProperties {
     private String token;
 
     private String url;
+
+    String urlEndpoint;
 }

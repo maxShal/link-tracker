@@ -15,4 +15,10 @@ import org.springframework.validation.annotation.Validated;
 public class ScrapperProperties {
     @NotBlank
     String url;
+
+    String chatEndpoint;
+
+    String linkEndpoint;
+
+    String header;
 }

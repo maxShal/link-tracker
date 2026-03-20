@@ -1,6 +1,7 @@
 package backend.academy.linktracker.scrapper.client;
 
 import backend.academy.linktracker.scrapper.dto.github.GitHubRepositoryResponse;
+import backend.academy.linktracker.scrapper.properties.GithubProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -11,10 +12,12 @@ public class GitHubClient {
 
     private final RestClient githubRestClient;
 
+    private final GithubProperties githubProperties;
+
     public GitHubRepositoryResponse getRepository(String owner, String repo) {
         return githubRestClient
                 .get()
-                .uri("/repos/{owner}/{repo}", owner, repo)
+                .uri(githubProperties.getUrlEndpoint(), owner, repo)
                 .retrieve()
                 .body(GitHubRepositoryResponse.class);
     }

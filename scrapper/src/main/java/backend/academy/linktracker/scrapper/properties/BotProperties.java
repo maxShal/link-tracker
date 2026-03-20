@@ -15,4 +15,6 @@ import org.springframework.validation.annotation.Validated;
 public class BotProperties {
     @NotBlank
     private String url;
+
+    String updateEndpoint;
 }

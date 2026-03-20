@@ -18,4 +18,6 @@ public class StackoverflowProperties {
     private String key;
 
     private String url;
+
+    String urlPathEndpoint;
 }

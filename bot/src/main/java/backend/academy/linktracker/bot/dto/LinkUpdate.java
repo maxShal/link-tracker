@@ -1,5 +1,6 @@
 package backend.academy.linktracker.bot.dto;
 
+import backend.academy.linktracker.bot.utils.Utils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +9,6 @@ import java.util.List;
 
 public record LinkUpdate(
         @NotNull Long id,
-        @NotBlank @Pattern(regexp = "^(https?)://.*$") String url,
+        @NotBlank @Pattern(regexp = Utils.PARAM) String url,
         @NotBlank String description,
         @NotEmpty List<@NotNull Long> tgChatIds) {}

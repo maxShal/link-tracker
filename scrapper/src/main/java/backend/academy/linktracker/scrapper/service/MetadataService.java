@@ -2,6 +2,7 @@ package backend.academy.linktracker.scrapper.service;
 
 import backend.academy.linktracker.scrapper.client.GitHubClient;
 import backend.academy.linktracker.scrapper.client.StackoverflowClient;
+import backend.academy.linktracker.scrapper.utils.Utils;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.regex.Matcher;
@@ -16,10 +17,9 @@ public class MetadataService {
     private final GitHubClient githubClient;
     private final StackoverflowClient stackoverflowClient;
 
-    private static final Pattern GITHUB_PATTERN = Pattern.compile("^https://github\\.com/([^/]+)/([^/]+?)/?$");
+    private static final Pattern GITHUB_PATTERN = Pattern.compile(Utils.GITHUB);
 
-    private static final Pattern STACKOVERFLOW_PATTERN =
-            Pattern.compile("^https://stackoverflow\\.com/questions/(\\d+).*$");
+    private static final Pattern STACKOVERFLOW_PATTERN = Pattern.compile(Utils.STACKOVERFLOW);
 
     public Instant getLastUpdated(String url) {
         Matcher githubMatcher = GITHUB_PATTERN.matcher(url);

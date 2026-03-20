@@ -16,6 +16,9 @@ app:
     debug: false
   scrapper:
     url: ${APP_SCRAPPER_URL:http://localhost:8081}
+    chat-endpoint: /tg-chat/{id}
+    link-endpoint: /links
+    header: Tg-Chat-Id
   messages:
     first: "Добро пожаловать! Используйте /help, чтобы посмотреть доступные команды."
     start: "Бот уже работает."

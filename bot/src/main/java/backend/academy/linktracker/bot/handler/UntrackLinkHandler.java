@@ -5,6 +5,7 @@ import backend.academy.linktracker.bot.dto.request.RemoveLinkRequest;
 import backend.academy.linktracker.bot.properties.BotMessageProperties;
 import backend.academy.linktracker.bot.state.UserState;
 import backend.academy.linktracker.bot.state.UserStateStorage;
+import backend.academy.linktracker.bot.utils.Utils;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class UntrackLinkHandler implements ITrackHandler {
     }
 
     private boolean isValidLink(String text) {
-        return text != null && (text.startsWith("http://") || text.startsWith("https://"));
+        return text != null && (text.startsWith(Utils.HTTP) || text.startsWith(Utils.HTTPS));
     }
 
     @Override

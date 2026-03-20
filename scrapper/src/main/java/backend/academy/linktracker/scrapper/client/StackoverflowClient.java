@@ -17,7 +17,9 @@ public class StackoverflowClient {
         return stackoverflowRestClient
                 .get()
                 .uri(uriBuilder -> {
-                    var builder = uriBuilder.path("/2.3/questions/{id}").queryParam("site", "stackoverflow");
+                    var builder = uriBuilder
+                            .path(stackoverflowProperties.getUrlPathEndpoint())
+                            .queryParam("site", "stackoverflow");
 
                     if (stackoverflowProperties.getKey() != null
                             && !stackoverflowProperties.getKey().isBlank()) {
