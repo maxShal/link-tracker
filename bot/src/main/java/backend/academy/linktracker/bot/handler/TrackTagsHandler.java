@@ -10,6 +10,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import java.util.Arrays;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
 
@@ -39,7 +40,7 @@ public class TrackTagsHandler {
             scrapperClient.addLink(chatId, new AddLinkRequest(pendingLink, tags, List.of()));
             telegramBot.execute(new SendMessage(chatId, botMessageProperties.getTrackSuccess()));
         } catch (RestClientResponseException e) {
-            if (e.getStatusCode().value() == 409) {
+            if (e.getStatusCode().value() == HttpStatus.CONFLICT.value()) {
                 telegramBot.execute(new SendMessage(chatId, botMessageProperties.getLinkAlreadyExists()));
             } else {
                 telegramBot.execute(new SendMessage(chatId, "Ошибка при добавлении ссылки."));
