@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TrackRoute {
-    private final List<TrackTagsHandler> trackTagsHandler;
+    private final List<ITrackHandler> trackTagsHandler;
 
     public void route(long chatId, String text) {
-        for (TrackTagsHandler trackTagsHandler : trackTagsHandler) {
+        for (var trackTagsHandler : trackTagsHandler) {
             if (trackTagsHandler.supports(chatId)) {
                 trackTagsHandler.handle(chatId, text);
                 return;
