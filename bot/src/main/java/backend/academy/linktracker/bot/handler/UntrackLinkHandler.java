@@ -14,13 +14,14 @@ import org.springframework.web.client.RestClientResponseException;
 
 @Component
 @AllArgsConstructor
-public class UntrackLinkHandler {
+public class UntrackLinkHandler implements ITrackHandler {
 
     private final TelegramBot telegramBot;
     private final UserStateStorage userStateStorage;
     private final BotMessageProperties botMessageProperties;
     private final ScrapperClient scrapperClient;
 
+    @Override
     public boolean supports(long chatId) {
         return userStateStorage.getState(chatId) == UserState.WAITING_UNTRACK_LINK;
     }
@@ -29,6 +30,7 @@ public class UntrackLinkHandler {
         return text != null && (text.startsWith("http://") || text.startsWith("https://"));
     }
 
+    @Override
     public boolean handle(long chatId, String text) {
         if (!isValidLink(text)) {
             telegramBot.execute(new SendMessage(chatId, botMessageProperties.getInvalidLink()));

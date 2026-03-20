@@ -16,17 +16,19 @@ import org.springframework.web.client.RestClientResponseException;
 
 @Component
 @AllArgsConstructor
-public class TrackTagsHandler {
+public class TrackTagsHandler implements ITrackHandler {
 
     private final TelegramBot telegramBot;
     private final UserStateStorage userStateStorage;
     private final BotMessageProperties botMessageProperties;
     private final ScrapperClient scrapperClient;
 
+    @Override
     public boolean supports(long chatId) {
         return userStateStorage.getState(chatId) == UserState.WAITING_TRACK_TAGS;
     }
 
+    @Override
     public boolean handle(long chatId, String text) {
         String pendingLink = userStateStorage.getPendingLink(chatId);
         if (pendingLink.equals("-")) {

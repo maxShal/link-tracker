@@ -10,16 +10,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class TrackLinkHandler {
+public class TrackLinkHandler implements ITrackHandler {
 
     private final TelegramBot telegramBot;
     private final UserStateStorage userStateStorage;
     private final BotMessageProperties botMessageProperties;
 
+    @Override
     public boolean supports(long chatId) {
         return userStateStorage.getState(chatId) == UserState.WAITING_TRACK_LINK;
     }
 
+    @Override
     public boolean handle(long chatId, String text) {
         if (!isValidLink(text)) {
             telegramBot.execute(new SendMessage(chatId, botMessageProperties.getInvalidLink()));

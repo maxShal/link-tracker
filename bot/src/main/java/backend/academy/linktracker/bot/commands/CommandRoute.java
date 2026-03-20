@@ -4,11 +4,11 @@ import backend.academy.linktracker.bot.properties.BotMessageProperties;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CommandRoute {
     private final TelegramBot telegramBot;
 

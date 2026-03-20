@@ -6,12 +6,12 @@ import backend.academy.linktracker.bot.properties.BotMessageProperties;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.util.List;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ListCommand implements CommandHandler {
 
     private final TelegramBot telegramBot;

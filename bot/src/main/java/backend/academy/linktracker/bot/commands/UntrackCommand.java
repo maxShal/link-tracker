@@ -5,11 +5,11 @@ import backend.academy.linktracker.bot.state.UserState;
 import backend.academy.linktracker.bot.state.UserStateStorage;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UntrackCommand implements CommandHandler {
     private final TelegramBot telegramBot;
     private final BotMessageProperties botMessageProperties;

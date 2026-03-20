@@ -4,10 +4,10 @@ import backend.academy.linktracker.bot.properties.BotMessageProperties;
 import backend.academy.linktracker.bot.state.UserStateStorage;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Component
 public class CancelCommand implements CommandHandler {
 
