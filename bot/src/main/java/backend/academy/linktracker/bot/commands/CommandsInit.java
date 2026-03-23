@@ -4,16 +4,21 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CommandsInit {
     private final TelegramBot telegramBot;
 
     public BaseResponse comInit() {
-        return telegramBot.execute(
-                new SetMyCommands(new BotCommand("/start", "Начало работы"), new BotCommand("/help", "Список команд")));
+        return telegramBot.execute(new SetMyCommands(
+                new BotCommand(Commands.START, "Начало работы"),
+                new BotCommand(Commands.HELP, "Список команд"),
+                new BotCommand(Commands.TRACK, "Начать отслеживать ссылку"),
+                new BotCommand(Commands.UNTRACK, "Перестать отслеживать ссылку"),
+                new BotCommand(Commands.LIST, "Список команд"),
+                new BotCommand(Commands.CANCEL, "Отмена")));
     }
 }

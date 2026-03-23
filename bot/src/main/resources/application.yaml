@@ -10,19 +10,37 @@ config:
       file: .env
 app:
   telegram:
-    url: https://api.telegram.org/bot
+    url: ${APP_TELEGRAM_URL:https://api.telegram.org/bot}
     token: ${TELEGRAM_TOKEN} # Use env variable. DO NOT KEEP TOKEN HERE
     update-listener-sleep: 1s
     debug: false
   scrapper:
-    url: http://localhost:8081
+    url: ${APP_SCRAPPER_URL:http://localhost:8081}
+    chat-endpoint: /tg-chat/{id}
+    link-endpoint: /links
+    header: Tg-Chat-Id
   messages:
     first: "Добро пожаловать! Используйте /help, чтобы посмотреть доступные команды."
-    start: "Бот уже работает"
+    start: "Бот уже работает."
     help: |
       На данный момент доступны команды
       /start - начало работы
       /help - список команд
+      /list <tag> - список отслеживаемых ссылок с тегом
+      /track - добавить ссылку для отслеживания
+      /untrack - перестать отслеживать ссылку
+    list: "Нет отслеживаемых ссылок."
+    cancel: "Действие отменено."
+    track-link: "Пришлите ссылку для отслеживания."
+    track-tags: "Теперь пришлите теги через запятую. Отправьте -, если теги не нужны."
+    invalid-link: "Ссылка некорректна."
+    track-success: "Ссылка добавлена в отслеживание."
+    link-already-exists: "Ссылка уже отслеживается"
+
+    untrack-link: "Пришлите ссылку для удаления."
+    untrack-success: "Ссылка больше не отслеживается."
+
+    link-not: "Ссылка не найдена"
 
     unknown: |
       Неизвестная команда.

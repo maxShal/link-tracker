@@ -14,4 +14,17 @@ public class BotMessageProperties {
     private String start;
     private String unknown;
     private String first;
+    private String list;
+    private String cancel;
+    // Для track
+    private String trackLink;
+    private String trackTags;
+    private String invalidLink;
+    private String trackSuccess;
+    private String linkAlreadyExists;
+
+    private String untrackLink;
+    private String untrackSuccess;
+
+    private String linkNot;
 }

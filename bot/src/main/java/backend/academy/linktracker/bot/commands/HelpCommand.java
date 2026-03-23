@@ -3,11 +3,11 @@ package backend.academy.linktracker.bot.commands;
 import backend.academy.linktracker.bot.properties.BotMessageProperties;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HelpCommand implements CommandHandler {
 
     private final TelegramBot telegramBot;
