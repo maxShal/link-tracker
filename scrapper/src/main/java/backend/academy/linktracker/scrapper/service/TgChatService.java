@@ -25,4 +25,8 @@ public class TgChatService {
         }
         tgChatRepository.deleteChat(id);
     }
+
+    public boolean existsChat(Long id) {
+        return tgChatRepository.existsChats(id);
+    }
 }

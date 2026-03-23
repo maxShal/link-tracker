@@ -18,7 +18,7 @@ public class CommandsInit {
                 new BotCommand(Commands.HELP, "Список команд"),
                 new BotCommand(Commands.TRACK, "Начать отслеживать ссылку"),
                 new BotCommand(Commands.UNTRACK, "Перестать отслеживать ссылку"),
-                new BotCommand(Commands.LIST, "Список команд"),
+                new BotCommand(Commands.LIST, "список отслеживаемых ссылок с тегом"),
                 new BotCommand(Commands.CANCEL, "Отмена")));
     }
 }

@@ -25,6 +25,14 @@ public class ScrapperClient {
                 .toBodilessEntity();
     }
 
+    public boolean existChat(long chatId) {
+        return Boolean.TRUE.equals(scrapperRestClient
+                .get()
+                .uri(scrapperProperties.getChatEndpoint(), chatId)
+                .retrieve()
+                .body(Boolean.class));
+    }
+
     public ListLinksResponse getLinks(long chatId) {
 
         var request = scrapperRestClient.get().uri(scrapperProperties.getLinkEndpoint());

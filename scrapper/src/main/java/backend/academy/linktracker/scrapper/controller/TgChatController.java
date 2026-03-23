@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +28,11 @@ public class TgChatController {
     public ResponseEntity<@NotNull Void> removeChat(@PathVariable Long id) {
         tgChatService.removeChat(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<@NotNull Boolean> existChat(@PathVariable Long id) {
+        boolean exist = tgChatService.existsChat(id);
+        return ResponseEntity.ok(exist);
     }
 }

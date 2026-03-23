@@ -12,6 +12,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
+import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -20,6 +21,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class IntegrationTestBotAndScrapper {
 
     private static final Network NETWORK = Network.newNetwork();
+
+
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");
 
     @Container
     static GenericContainer<?> wiremock = new GenericContainer<>("wiremock/wiremock:3.9.1")

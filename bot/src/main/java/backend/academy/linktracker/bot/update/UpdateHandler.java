@@ -15,9 +15,6 @@ public class UpdateHandler {
     private final FirstTimeCheck firstTimeCheck;
     private final UserStateStorage userStateStorage;
     private final CommandRoute commandRoute;
-    // private final TrackTagsHandler trackTagsHandler;
-    // private final TrackLinkHandler trackLinkHandler;
-    //    private final UntrackLinkHandler untrackLinkHandler;
     private final TrackRoute trackRoute;
 
     public void handle(Update update) {

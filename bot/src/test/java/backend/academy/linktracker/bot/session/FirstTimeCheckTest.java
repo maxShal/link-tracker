@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import backend.academy.linktracker.bot.client.ScrapperClient;
 import backend.academy.linktracker.bot.commands.Commands;
 import backend.academy.linktracker.bot.properties.BotMessageProperties;
-import backend.academy.linktracker.bot.repository.BotRepository;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.Test;
@@ -19,9 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class FirstTimeCheckTest {
 
     private static final String WELCOME_MESSAGE = "WELCOME";
-
-    @Mock
-    private BotRepository botRepository;
 
     @Mock
     private ScrapperClient scrapperClient;
@@ -37,35 +33,34 @@ class FirstTimeCheckTest {
 
     @Test
     void shouldReturnFalseForOldUser() {
-        when(botRepository.isOld(1L)).thenReturn(true);
+        when(scrapperClient.existChat(1L)).thenReturn(true);
 
         boolean result = firstTimeCheck.newChat(1L, Commands.START);
 
         assertFalse(result);
-        verifyNoInteractions(scrapperClient, telegramBot);
+        verify(scrapperClient).existChat(1L);
     }
 
     @Test
     void shouldHandleNewUserStart() {
-        when(botRepository.isOld(1L)).thenReturn(false);
+        when(scrapperClient.existChat(1L)).thenReturn(false);
         when(botMessageProperties.getFirst()).thenReturn(WELCOME_MESSAGE);
 
         boolean result = firstTimeCheck.newChat(1L, Commands.START);
 
         assertTrue(result);
-        verify(botRepository).save(1L);
         verify(scrapperClient).registerChat(1L);
         verify(telegramBot).execute(any(SendMessage.class));
     }
 
     @Test
     void shouldReturnFalseForNewUserNonStartCommand() {
-        when(botRepository.isOld(1L)).thenReturn(false);
+        when(scrapperClient.existChat(1L)).thenReturn(false);
 
         boolean result = firstTimeCheck.newChat(1L, "/help");
 
         assertFalse(result);
-        verify(botRepository, never()).save(anyLong());
-        verifyNoInteractions(scrapperClient, telegramBot);
+        verify(scrapperClient).existChat(1L);
+        verifyNoInteractions(telegramBot);
     }
 }
