@@ -55,7 +55,7 @@ class ListCommandTest {
     @Test
     void shouldSendLinks() {
         long chatId = 1L;
-        LinkResponse link = new LinkResponse(1L, LINK, List.of("work"), List.of());
+        LinkResponse link = new LinkResponse(1L, LINK, List.of("work"));
         when(scrapperClient.getLinks(chatId)).thenReturn(new ListLinksResponse(List.of(link), 1));
 
         listCommand.handler(chatId, "/list");
@@ -69,8 +69,8 @@ class ListCommandTest {
     @Test
     void shouldFilterByTag() {
         long chatId = 1L;
-        LinkResponse first = new LinkResponse(1L, "https://github.com/owner/repo1", List.of("work"), List.of());
-        LinkResponse second = new LinkResponse(2L, "https://github.com/owner/repo2", List.of("study"), List.of());
+        LinkResponse first = new LinkResponse(1L, "https://github.com/owner/repo1", List.of("work"));
+        LinkResponse second = new LinkResponse(2L, "https://github.com/owner/repo2", List.of("study"));
         when(scrapperClient.getLinks(chatId)).thenReturn(new ListLinksResponse(List.of(first, second), 2));
 
         listCommand.handler(chatId, "/list work");

@@ -40,9 +40,7 @@ class LinksServiceTest {
     void addLinkShouldThrowWhenChatNotFound() {
         when(chatRepository.existsChats(1L)).thenReturn(false);
 
-        assertThrows(
-                ChatNotFoundException.class,
-                () -> linksService.addLink(1L, new AddLinkRequest(LINK, List.of(), List.of())));
+        assertThrows(ChatNotFoundException.class, () -> linksService.addLink(1L, new AddLinkRequest(LINK, List.of())));
     }
 
     @Test
@@ -51,8 +49,7 @@ class LinksServiceTest {
         when(linksRepository.existsLink(1L, LINK)).thenReturn(true);
 
         assertThrows(
-                LinkAlreadyExistException.class,
-                () -> linksService.addLink(1L, new AddLinkRequest(LINK, List.of(), List.of())));
+                LinkAlreadyExistException.class, () -> linksService.addLink(1L, new AddLinkRequest(LINK, List.of())));
     }
 
     @Test
@@ -60,10 +57,10 @@ class LinksServiceTest {
         when(chatRepository.existsChats(1L)).thenReturn(true);
         when(linksRepository.existsLink(1L, LINK)).thenReturn(false);
 
-        Link saved = new Link(1L, LINK, List.of("tag"), List.of("f1"), null);
+        Link saved = new Link(1L, LINK, List.of("tag"), null);
         when(linksRepository.saveLink(eq(1L), any(Link.class))).thenReturn(saved);
 
-        LinkResponse response = linksService.addLink(1L, new AddLinkRequest(LINK, List.of("tag"), List.of("f1")));
+        LinkResponse response = linksService.addLink(1L, new AddLinkRequest(LINK, List.of("tag")));
 
         assertEquals(LINK, response.url());
     }
@@ -78,8 +75,7 @@ class LinksServiceTest {
     @Test
     void getAllLinksShouldReturnListResponse() {
         when(chatRepository.existsChats(1L)).thenReturn(true);
-        when(linksRepository.findAllLinks(1L))
-                .thenReturn(List.of(new Link(1L, LINK, List.of(), List.of(), Instant.now())));
+        when(linksRepository.findAllLinks(1L)).thenReturn(List.of(new Link(1L, LINK, List.of(), Instant.now())));
 
         ListLinksResponse response = linksService.getAllLinks(1L);
 
@@ -105,7 +101,7 @@ class LinksServiceTest {
     @Test
     void deleteLinkShouldReturnRemovedLink() {
         when(chatRepository.existsChats(1L)).thenReturn(true);
-        when(linksRepository.deleteLink(1L, LINK)).thenReturn(new Link(1L, LINK, List.of(), List.of(), Instant.now()));
+        when(linksRepository.deleteLink(1L, LINK)).thenReturn(new Link(1L, LINK, List.of(), Instant.now()));
 
         LinkResponse response = linksService.deleteLink(1L, new RemoveLinkRequest(LINK));
 

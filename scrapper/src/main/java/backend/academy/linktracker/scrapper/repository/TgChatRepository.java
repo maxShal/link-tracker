@@ -1,4 +1,4 @@
-package backend.academy.linktracker.scrapper.repository;
+/*package backend.academy.linktracker.scrapper.repository;
 
 import backend.academy.linktracker.scrapper.repository.interfaces.ITgChatRepository;
 import java.util.Set;
@@ -28,4 +28,4 @@ public class TgChatRepository implements ITgChatRepository {
     public void clear() {
         chats.clear();
     }
-}
+}*/

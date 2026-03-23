@@ -19,6 +19,7 @@ spring:
       ddl-auto: none
 
 app:
+  repository-type: jdbc
   stackoverflow:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
     key: ${STACKOVERFLOW_KEY} # Use env variable. DO NOT KEEP TOKEN HERE

@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.scrapper.repository;
 
 import backend.academy.linktracker.scrapper.model.Link;
@@ -50,3 +51,4 @@ public class LinksRepository implements ILinksRepository {
         links.clear();
     }
 }
+*/

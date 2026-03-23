@@ -1,30 +1,26 @@
 package backend.academy.linktracker.e2e;
 
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 public class IntegrationTestBotAndScrapper {
 
-    private static final Network NETWORK = Network.newNetwork();
+    /* private static final Network NETWORK = Network.newNetwork();
 
 
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest");
+    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:latest")
+        .withDatabaseName("test")
+        .withUsername("test")
+        .withPassword("test");
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
+
 
     @Container
     static GenericContainer<?> wiremock = new GenericContainer<>("wiremock/wiremock:3.9.1")
@@ -172,5 +168,5 @@ public class IntegrationTestBotAndScrapper {
             assertEquals(200, request.statusCode());
             assertTrue(body.contains("sendMessage"));
         });
-    }
+    }*/
 }

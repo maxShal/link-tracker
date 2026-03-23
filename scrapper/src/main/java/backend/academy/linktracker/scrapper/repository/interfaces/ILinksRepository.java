@@ -14,8 +14,4 @@ public interface ILinksRepository {
     List<Link> findAllLinks(Long chatId);
 
     Map<Long, List<Link>> findAllLinksGroupedByChatId();
-
-    // List<LinkForUpdateCheck> findAllForUpdateCheck();
-
-    // void updateLastUpdated(Long linkId, Instant lastUpdatedAt);
 }

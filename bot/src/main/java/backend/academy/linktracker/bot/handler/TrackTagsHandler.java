@@ -39,7 +39,7 @@ public class TrackTagsHandler implements ITrackHandler {
         List<String> tags = parseTags(text);
 
         try {
-            scrapperClient.addLink(chatId, new AddLinkRequest(pendingLink, tags, List.of()));
+            scrapperClient.addLink(chatId, new AddLinkRequest(pendingLink, tags));
             telegramBot.execute(new SendMessage(chatId, botMessageProperties.getTrackSuccess()));
         } catch (RestClientResponseException e) {
             if (e.getStatusCode().value() == HttpStatus.CONFLICT.value()) {

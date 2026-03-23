@@ -6,34 +6,50 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import backend.academy.linktracker.scrapper.repository.LinksRepository;
-import backend.academy.linktracker.scrapper.repository.TgChatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
 class ScrapperIntegrationTest {
+
+    @Container
+    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:latest")
+            .withDatabaseName("test")
+            .withPassword("test")
+            .withUsername("test");
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+    }
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private TgChatRepository tgChatRepository;
-
-    @Autowired
-    private LinksRepository linksRepository;
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    void clearStage() {
-        tgChatRepository.clear();
-        linksRepository.clear();
+    void clearDatabase() {
+        jdbcTemplate.update("DELETE FROM link_chat");
+        jdbcTemplate.update("DELETE FROM links");
+        jdbcTemplate.update("DELETE FROM chats");
     }
 
     @Test
@@ -80,8 +96,7 @@ class ScrapperIntegrationTest {
         String body = """
             {
             "link": "https://github.com/owner/repo",
-            "tags": ["tags"],
-            "filters": ["f1"]
+            "tags": ["tags"]
             }
         """;
 
@@ -101,8 +116,7 @@ class ScrapperIntegrationTest {
         String body = """
             {
             "link": "https://github.com/owner/repo",
-            "tags": ["tags"],
-            "filters": ["f1"]
+            "tags": ["tags"]
             }
         """;
 
@@ -126,8 +140,7 @@ class ScrapperIntegrationTest {
         String body = """
         {
           "link": "%s",
-          "tags": ["tags"],
-          "filters": ["f1"]
+          "tags": ["tags"]
         }
         """.formatted(link);
 

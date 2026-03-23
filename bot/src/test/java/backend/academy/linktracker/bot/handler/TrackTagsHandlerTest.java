@@ -56,7 +56,7 @@ class TrackTagsHandlerTest {
         trackTagsHandler.handle(chatId, "-");
 
         verify(userStateStorage).getPendingLink(chatId);
-        verify(scrapperClient).addLink(eq(chatId), eq(new AddLinkRequest(LINK, List.of(), List.of())));
+        verify(scrapperClient).addLink(eq(chatId), eq(new AddLinkRequest(LINK, List.of())));
         verify(userStateStorage).clearState(chatId);
         verify(telegramBot).execute(any(SendMessage.class));
     }

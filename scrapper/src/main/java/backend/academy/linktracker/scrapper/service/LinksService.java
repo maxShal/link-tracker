@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,7 @@ public class LinksService {
 
     private final ITgChatRepository chatRepository;
 
-    private final AtomicLong idGenerator = new AtomicLong(0);
+    // private final AtomicLong idGenerator = new AtomicLong(0);
 
     public LinkResponse addLink(Long chatId, AddLinkRequest addLinkRequest) {
 
@@ -38,15 +37,10 @@ public class LinksService {
             throw new LinkAlreadyExistException("Ссылка" + addLinkRequest.link() + "уже существует");
         }
 
-        Link link = new Link(
-                idGenerator.incrementAndGet(),
-                addLinkRequest.link(),
-                addLinkRequest.tags(),
-                addLinkRequest.filters(),
-                Instant.now());
+        Link link = new Link(null, addLinkRequest.link(), addLinkRequest.tags(), Instant.now());
 
         Link saved = linksRepository.saveLink(chatId, link);
-        return new LinkResponse(saved.id(), saved.url(), saved.tags(), saved.filters());
+        return new LinkResponse(saved.id(), saved.url(), saved.tags());
     }
 
     public ListLinksResponse getAllLinks(long chatId) {
@@ -54,7 +48,7 @@ public class LinksService {
             throw new ChatNotFoundException("Чат" + chatId + " не найден");
         }
         var links = linksRepository.findAllLinks(chatId).stream()
-                .map(link -> new LinkResponse(link.id(), link.url(), link.tags(), link.filters()))
+                .map(link -> new LinkResponse(link.id(), link.url(), link.tags()))
                 .toList();
         return new ListLinksResponse(links, links.size());
     }
@@ -68,7 +62,7 @@ public class LinksService {
             throw new LinkNotFoundException("Ссылка" + removeLinkRequest.link() + "не найдена");
         }
 
-        return new LinkResponse(removed.id(), removed.url(), removed.tags(), removed.filters());
+        return new LinkResponse(removed.id(), removed.url(), removed.tags());
     }
 
     public List<LinkForUpdateCheck> findAllForUpdateCheck() {
@@ -108,7 +102,7 @@ public class LinksService {
             for (Link entry : chatLinks.getValue()) {
 
                 if (entry.id().equals(linkId)) {
-                    Link updatedLink = new Link(entry.id(), entry.url(), entry.tags(), entry.filters(), lastUpdatedAt);
+                    Link updatedLink = new Link(entry.id(), entry.url(), entry.tags(), lastUpdatedAt);
                     linksRepository.saveLink(linkId, updatedLink);
                 }
             }

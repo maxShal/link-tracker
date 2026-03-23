@@ -8,5 +8,4 @@ public record AddLinkRequest(
         @Pattern(regexp = "^(https?)://.*$", message = "Некорректная ссылка") @NotBlank
         String link,
 
-        List<String> tags,
-        List<String> filters) {}
+        List<String> tags) {}
