@@ -6,9 +6,9 @@ spring:
     name: scrapper
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/postgres_db
-    username: user
-    password: password
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
