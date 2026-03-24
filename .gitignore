@@ -4,6 +4,7 @@
 *.ear
 .env
 
+**/pgdata/
 ### Maven ###
 target/
 pom.xml.tag
