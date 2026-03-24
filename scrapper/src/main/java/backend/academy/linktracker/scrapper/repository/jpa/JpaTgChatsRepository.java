@@ -13,9 +13,10 @@ import org.springframework.stereotype.Repository;
 public class JpaTgChatsRepository implements ITgChatRepository {
 
     private final IJpaTgChatRepository tgChatRepository;
+
     @Override
     public void saveChat(Long id) {
-        if(!tgChatRepository.existsById(id)){
+        if (!tgChatRepository.existsById(id)) {
             tgChatRepository.save(new ChatsEntity(id));
         }
     }
@@ -28,6 +29,5 @@ public class JpaTgChatsRepository implements ITgChatRepository {
     @Override
     public void deleteChat(Long id) {
         tgChatRepository.deleteById(id);
-
     }
 }

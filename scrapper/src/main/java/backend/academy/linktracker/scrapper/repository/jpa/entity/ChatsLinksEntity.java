@@ -17,8 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ChatsLinksEntity
-{
+public class ChatsLinksEntity {
     @EmbeddedId
     private LinkChatId id;
 
