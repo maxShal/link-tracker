@@ -61,3 +61,4 @@ migration:
     - Dliquibase.url=jdbc:postgresql://localhost:5432/postgres_db
     - Dliquibase.username=user
     - Dliquibase.password=password
+    - Dliquibase.changeLogFile=scrapper/src/main/resources/db/changelog/db.changelog-master.yaml
