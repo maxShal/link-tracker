@@ -1,11 +1,15 @@
 package backend.academy.linktracker.scrapper.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaChatsLinksRepository;
+import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaLinksRepository;
+import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTgChatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +29,15 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 @AutoConfigureMockMvc
 @Testcontainers
 class ScrapperIntegrationTest {
+
+    @Autowired
+    private IJpaChatsLinksRepository jpaChatsLinksRepository;
+
+    @Autowired
+    private IJpaTgChatRepository jpaTgChatsRepository;
+
+    @Autowired
+    private IJpaLinksRepository jpaLinksRepository;
 
     @Container
     static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:latest")
@@ -47,7 +60,9 @@ class ScrapperIntegrationTest {
 
     @BeforeEach
     void clearDatabase() {
+        jdbcTemplate.update("DELETE FROM link_tag");
         jdbcTemplate.update("DELETE FROM link_chat");
+        jdbcTemplate.update("DELETE FROM tags");
         jdbcTemplate.update("DELETE FROM links");
         jdbcTemplate.update("DELETE FROM chats");
     }
@@ -63,18 +78,20 @@ class ScrapperIntegrationTest {
                 .andExpect(jsonPath("$.links[0].url").value(DEFAULT_LINK));
     }
 
-    /*@Test
+    @Test
     void addAndDeleteAndGetLinkTest() throws Exception {
         registerChat(1L);
-
+        assertTrue(jpaTgChatsRepository.existsById(1L));
         addLink(1L, DEFAULT_LINK);
+        assertTrue(jpaLinksRepository.findByUrl(DEFAULT_LINK).isPresent());
         deleteLink(1L, DEFAULT_LINK, status().isOk());
+        assertTrue(jpaLinksRepository.findByUrl(DEFAULT_LINK).isEmpty());
 
         mockMvc.perform(get("/links").header("Tg-Chat-Id", 1))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.links").isArray())
-            .andExpect(jsonPath("$.links").isEmpty());
-    }*/
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.links").isArray())
+                .andExpect(jsonPath("$.links").isEmpty());
+    }
 
     @Test
     void deleteLinkWithoutChat() throws Exception {

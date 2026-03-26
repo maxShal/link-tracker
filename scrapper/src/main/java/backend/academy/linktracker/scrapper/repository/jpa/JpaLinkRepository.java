@@ -9,6 +9,7 @@ import backend.academy.linktracker.scrapper.repository.jpa.entity.LinkChatId;
 import backend.academy.linktracker.scrapper.repository.jpa.entity.LinksEntity;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaChatsLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaLinksRepository;
+import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTagsLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTgChatRepository;
 import jakarta.transaction.Transactional;
 import java.time.OffsetDateTime;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Repository;
 public class JpaLinkRepository implements ILinksRepository {
 
     private final IJpaLinksRepository jpaLinksRepository;
+    private final IJpaTagsLinksRepository jpaTagsLinksRepository;
     private final IJpaChatsLinksRepository jpaChatsLinksRepository;
     private final IJpaTgChatRepository jpaTgChatsRepository;
     private final ITagsRepository jpaTagsRepository;
@@ -80,10 +82,15 @@ public class JpaLinkRepository implements ILinksRepository {
         return jpaChatsLinksRepository
                 .findByChatsEntityIdAndLinksEntityUrl(chatId, url)
                 .map(relation -> {
-                    Link link = mapToModel(relation.getLinksEntity());
+                    LinksEntity entity = relation.getLinksEntity();
+                    Long linkId = entity.getId();
+                    Link link = mapToModel(entity);
                     jpaChatsLinksRepository.delete(relation);
-                    if (!jpaChatsLinksRepository.existsByLinksEntityId(link.id()))
-                        jpaLinksRepository.deleteById(link.id());
+                    if (!jpaChatsLinksRepository.existsByLinksEntityId(linkId)) {
+                        jpaTagsLinksRepository.deleteByLinkId(linkId);
+                        jpaLinksRepository.delete(entity);
+                        // if(!jpaTagsLinksRepository.existsByTagsEntityId(link.tags().get());
+                    }
                     return link;
                 })
                 .orElse(null);
