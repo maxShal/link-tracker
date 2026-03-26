@@ -56,11 +56,18 @@ test:
 
 migration:
   stage: migration
+  services:
+    - name: postgres:16
+      alias: postgres
+  variables:
+    POSTGRES_DB: postgres_db
+    POSTGRES_USER: user
+    POSTGRES_PASSWORD: password
   script:
     - |
       ./mvnw \
         liquibase:update \
-        -Dliquibase.url=jdbc:postgresql://localhost:5432/postgres_db \
-        -Dliquibase.username=user \
-        -Dliquibase.password=password \
+        -Dliquibase.url=jdbc:postgresql://postgres:5432/$POSTGRES_DB \
+        -Dliquibase.username=$POSTGRES_USER \
+        -Dliquibase.password=$POSTGRES_PASSWORD \
         -Dliquibase.changeLogFile=scrapper/src/main/resources/db/changelog/db.changelog-master.yaml
