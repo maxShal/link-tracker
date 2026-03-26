@@ -12,4 +12,6 @@ public interface IJpaChatsLinksRepository extends JpaRepository<ChatsLinksEntity
     Optional<ChatsLinksEntity> findByChatsEntityIdAndLinksEntityUrl(Long chatsEntityId, String url);
 
     void deleteById(LinkChatId id);
+
+    boolean existsByLinksEntityId(Long linkId);
 }

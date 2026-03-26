@@ -2,6 +2,7 @@ package backend.academy.linktracker.scrapper.repository.jpa;
 
 import backend.academy.linktracker.scrapper.model.Link;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
+import backend.academy.linktracker.scrapper.repository.interfaces.ITagsRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.entity.ChatsEntity;
 import backend.academy.linktracker.scrapper.repository.jpa.entity.ChatsLinksEntity;
 import backend.academy.linktracker.scrapper.repository.jpa.entity.LinkChatId;
@@ -26,17 +27,27 @@ public class JpaLinkRepository implements ILinksRepository {
     private final IJpaLinksRepository jpaLinksRepository;
     private final IJpaChatsLinksRepository jpaChatsLinksRepository;
     private final IJpaTgChatRepository jpaTgChatsRepository;
+    private final ITagsRepository jpaTagsRepository;
+
+    @Transactional
+    @Override
+    public void updateLink(String url, OffsetDateTime updatedAt) {
+        LinksEntity linksEntity =
+                jpaLinksRepository.findByUrl(url).orElseThrow(() -> new RuntimeException("Links not found!"));
+
+        linksEntity.setLastUpdatedAt(updatedAt);
+    }
 
     @Override
     @Transactional
     public Link saveLink(Long chatId, Link link) {
 
-        LinksEntity linkEntity = new LinksEntity();
-        linkEntity.setUrl(link.url());
-        linkEntity.setTags(link.tags());
-        linkEntity.setLastUpdatedAt(OffsetDateTime.now());
-
-        jpaLinksRepository.save(linkEntity);
+        LinksEntity linkEntity = jpaLinksRepository.findByUrl(link.url()).orElseGet(() -> {
+            LinksEntity newLink = new LinksEntity();
+            newLink.setUrl(link.url());
+            newLink.setLastUpdatedAt(OffsetDateTime.now());
+            return jpaLinksRepository.save(newLink);
+        });
 
         ChatsEntity chatsEntity =
                 jpaTgChatsRepository.findById(chatId).orElseThrow(() -> new RuntimeException("Chat Not Found"));
@@ -45,6 +56,10 @@ public class JpaLinkRepository implements ILinksRepository {
         if (!jpaChatsLinksRepository.existsById(id)) {
             ChatsLinksEntity chatsLinksEntity = new ChatsLinksEntity(id, chatsEntity, linkEntity);
             jpaChatsLinksRepository.save(chatsLinksEntity);
+        }
+
+        if (link.tags() != null && !link.tags().isEmpty()) {
+            jpaTagsRepository.saveTag(linkEntity.getId(), link.tags());
         }
 
         return mapToModel(linkEntity);
@@ -61,17 +76,17 @@ public class JpaLinkRepository implements ILinksRepository {
     @Transactional
     @Override
     public Link deleteLink(Long chatId, String url) {
-        ChatsLinksEntity relation = jpaChatsLinksRepository
-                .findByChatsEntityIdAndLinksEntityUrl(chatId, url)
-                .orElse(null);
-        if (relation == null) {
-            return null;
-        }
 
-        Link link = mapToModel(relation.getLinksEntity());
-        jpaChatsLinksRepository.delete(relation);
-        jpaLinksRepository.deleteById(link.id());
-        return link;
+        return jpaChatsLinksRepository
+                .findByChatsEntityIdAndLinksEntityUrl(chatId, url)
+                .map(relation -> {
+                    Link link = mapToModel(relation.getLinksEntity());
+                    jpaChatsLinksRepository.delete(relation);
+                    if (!jpaChatsLinksRepository.existsByLinksEntityId(link.id()))
+                        jpaLinksRepository.deleteById(link.id());
+                    return link;
+                })
+                .orElse(null);
     }
 
     @Transactional
@@ -95,7 +110,7 @@ public class JpaLinkRepository implements ILinksRepository {
         return new Link(
                 entity.getId(),
                 entity.getUrl(),
-                entity.getTags(),
+                jpaTagsRepository.findAllTagsByLinkId(entity.getId()),
                 entity.getLastUpdatedAt() != null ? entity.getLastUpdatedAt().toInstant() : null);
     }
 }

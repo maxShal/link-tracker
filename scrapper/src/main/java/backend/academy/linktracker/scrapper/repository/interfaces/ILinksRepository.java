@@ -1,10 +1,14 @@
 package backend.academy.linktracker.scrapper.repository.interfaces;
 
 import backend.academy.linktracker.scrapper.model.Link;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
 public interface ILinksRepository {
+
+    void updateLink(String url, OffsetDateTime updatedAt);
+
     Link saveLink(Long chatId, Link link);
 
     boolean existsLink(Long chatId, String url);

@@ -12,6 +12,7 @@ import backend.academy.linktracker.scrapper.request.RemoveLinkRequest;
 import backend.academy.linktracker.scrapper.response.LinkResponse;
 import backend.academy.linktracker.scrapper.response.ListLinksResponse;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,6 @@ public class LinksService {
     private final ILinksRepository linksRepository;
 
     private final ITgChatRepository chatRepository;
-
-    // private final AtomicLong idGenerator = new AtomicLong(0);
 
     public LinkResponse addLink(Long chatId, AddLinkRequest addLinkRequest) {
 
@@ -103,7 +102,7 @@ public class LinksService {
 
                 if (entry.id().equals(linkId)) {
                     Link updatedLink = new Link(entry.id(), entry.url(), entry.tags(), lastUpdatedAt);
-                    linksRepository.saveLink(linkId, updatedLink);
+                    linksRepository.updateLink(updatedLink.url(), lastUpdatedAt.atOffset(ZoneOffset.UTC));
                 }
             }
         }
