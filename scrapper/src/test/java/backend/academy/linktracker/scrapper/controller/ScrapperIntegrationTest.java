@@ -62,8 +62,8 @@ class ScrapperIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.links[0].url").value(DEFAULT_LINK));
     }
-/*
-    @Test
+
+    /*@Test
     void addAndDeleteAndGetLinkTest() throws Exception {
         registerChat(1L);
 
@@ -71,9 +71,9 @@ class ScrapperIntegrationTest {
         deleteLink(1L, DEFAULT_LINK, status().isOk());
 
         mockMvc.perform(get("/links").header("Tg-Chat-Id", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.links").isArray())
-                .andExpect(jsonPath("$.links").isEmpty());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.links").isArray())
+            .andExpect(jsonPath("$.links").isEmpty());
     }*/
 
     @Test

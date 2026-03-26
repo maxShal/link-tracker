@@ -30,5 +30,4 @@ public class LinkTagEntity {
     @MapsId("tagId")
     @JoinColumn(name = "tag_id")
     private TagsEntity tagsEntity;
-
 }

@@ -27,8 +27,7 @@ public class JpaTagsRepository implements ITagsRepository {
     @Override
     public void saveTag(Long linkId, List<String> tags) {
         LinksEntity linksEntity =
-            jpaLinksRepository.findById(linkId)
-                .orElseThrow(() -> new RuntimeException("Link not found"));
+                jpaLinksRepository.findById(linkId).orElseThrow(() -> new RuntimeException("Link not found"));
 
         for (String tagName : tags) {
             TagsEntity tag = jpaTagsRepository
