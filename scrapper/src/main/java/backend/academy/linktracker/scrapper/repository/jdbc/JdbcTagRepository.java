@@ -71,7 +71,7 @@ public class JdbcTagRepository implements ITagsRepository {
         return jdbcTemplate.queryForObject("""
                INSERT INTO tags(tag)
                VALUES (?)
-               RETURNED id
+               RETURNING id
         """, Long.class, tag);
     }
 }

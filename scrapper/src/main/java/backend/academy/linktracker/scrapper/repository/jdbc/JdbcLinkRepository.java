@@ -157,3 +157,4 @@ public class JdbcLinkRepository implements ILinksRepository {
 
     private record LinksRow(Long id, String url, OffsetDateTime lastUpdatedAt) {}
 }
+

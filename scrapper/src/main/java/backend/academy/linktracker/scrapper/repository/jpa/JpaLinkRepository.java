@@ -46,7 +46,7 @@ public class JpaLinkRepository implements ILinksRepository {
             LinksEntity newLink = new LinksEntity();
             newLink.setUrl(link.url());
             newLink.setLastUpdatedAt(OffsetDateTime.now());
-            return jpaLinksRepository.save(newLink);
+            return jpaLinksRepository.saveAndFlush(newLink);
         });
 
         ChatsEntity chatsEntity =

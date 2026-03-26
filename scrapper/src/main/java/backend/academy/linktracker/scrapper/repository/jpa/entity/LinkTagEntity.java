@@ -22,12 +22,13 @@ public class LinkTagEntity {
     private LinkTagId id;
 
     @ManyToOne
+    @MapsId("linkId")
+    @JoinColumn(name = "link_id")
+    private LinksEntity linksEntity;
+
+    @ManyToOne
     @MapsId("tagId")
     @JoinColumn(name = "tag_id")
     private TagsEntity tagsEntity;
 
-    @ManyToOne
-    @MapsId("linkId")
-    @JoinColumn(name = "link_id")
-    private LinksEntity linksEntity;
 }
