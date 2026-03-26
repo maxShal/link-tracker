@@ -58,3 +58,6 @@ migration:
   stage: migration
   script:
     - ./mvnw liquibase:update
+    - Dliquibase.url=jdbc:postgresql://localhost:5432/postgres_db
+    - Dliquibase.username=user
+    - Dliquibase.password=password
