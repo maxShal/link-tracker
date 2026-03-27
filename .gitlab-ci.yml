@@ -66,7 +66,7 @@ migration:
   script:
     - |
       ./mvnw \
-        liquibase:update \
+        -pl scrapper liquibase:update \
         -Dliquibase.url=jdbc:postgresql://postgres:5432/$POSTGRES_DB \
         -Dliquibase.username=$POSTGRES_USER \
         -Dliquibase.password=$POSTGRES_PASSWORD \
