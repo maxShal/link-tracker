@@ -3,9 +3,9 @@ package backend.academy.linktracker.bot.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import backend.academy.linktracker.bot.properties.BotMessageProperties;
-import backend.academy.linktracker.bot.state.UserState;
-import backend.academy.linktracker.bot.state.UserStateStorage;
+import backend.academy.linktracker.bot.configuration.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.handler.state.UserState;
+import backend.academy.linktracker.bot.handler.state.UserStateStorage;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.Test;

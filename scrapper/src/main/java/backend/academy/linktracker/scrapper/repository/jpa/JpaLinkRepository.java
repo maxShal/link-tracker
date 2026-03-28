@@ -1,12 +1,12 @@
 package backend.academy.linktracker.scrapper.repository.jpa;
 
+import backend.academy.linktracker.scrapper.entity.ChatsEntity;
+import backend.academy.linktracker.scrapper.entity.ChatsLinksEntity;
+import backend.academy.linktracker.scrapper.entity.LinkChatId;
+import backend.academy.linktracker.scrapper.entity.LinksEntity;
 import backend.academy.linktracker.scrapper.model.Link;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITagsRepository;
-import backend.academy.linktracker.scrapper.repository.jpa.entity.ChatsEntity;
-import backend.academy.linktracker.scrapper.repository.jpa.entity.ChatsLinksEntity;
-import backend.academy.linktracker.scrapper.repository.jpa.entity.LinkChatId;
-import backend.academy.linktracker.scrapper.repository.jpa.entity.LinksEntity;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaChatsLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTagsLinksRepository;

@@ -8,5 +8,4 @@ public interface ITagsRepository {
     boolean existsTag(Long linkId, String tag);
 
     List<String> findAllTagsByLinkId(Long linkId);
-    // void deleteTagsByLinkId(Long linkId);
 }

@@ -1,7 +1,7 @@
 package backend.academy.linktracker.scrapper.configuration;
 
-import backend.academy.linktracker.scrapper.properties.GithubProperties;
-import backend.academy.linktracker.scrapper.properties.StackoverflowProperties;
+import backend.academy.linktracker.scrapper.configuration.properties.GithubProperties;
+import backend.academy.linktracker.scrapper.configuration.properties.StackoverflowProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

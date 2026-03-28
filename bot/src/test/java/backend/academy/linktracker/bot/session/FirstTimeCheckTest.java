@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import backend.academy.linktracker.bot.client.ScrapperClient;
-import backend.academy.linktracker.bot.commands.Commands;
-import backend.academy.linktracker.bot.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.configuration.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.model.commands.Commands;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.Test;

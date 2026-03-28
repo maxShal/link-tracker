@@ -1,6 +1,6 @@
 package backend.academy.linktracker.bot.controller;
 
-import backend.academy.linktracker.bot.dto.LinkUpdate;
+import backend.academy.linktracker.bot.model.dto.LinkUpdate;
 import backend.academy.linktracker.bot.service.TelegramBotService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

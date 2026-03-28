@@ -1,7 +1,7 @@
 package backend.academy.linktracker.scrapper.client;
 
-import backend.academy.linktracker.scrapper.dto.stackoverflow.StackoverflowRepositoryResponse;
-import backend.academy.linktracker.scrapper.properties.StackoverflowProperties;
+import backend.academy.linktracker.scrapper.configuration.properties.StackoverflowProperties;
+import backend.academy.linktracker.scrapper.model.stackoverflow.StackoverflowRepositoryResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;

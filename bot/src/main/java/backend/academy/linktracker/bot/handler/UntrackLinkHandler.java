@@ -1,11 +1,11 @@
 package backend.academy.linktracker.bot.handler;
 
 import backend.academy.linktracker.bot.client.ScrapperClient;
-import backend.academy.linktracker.bot.dto.request.RemoveLinkRequest;
-import backend.academy.linktracker.bot.properties.BotMessageProperties;
-import backend.academy.linktracker.bot.state.UserState;
-import backend.academy.linktracker.bot.state.UserStateStorage;
-import backend.academy.linktracker.bot.utils.Utils;
+import backend.academy.linktracker.bot.configuration.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.handler.state.UserState;
+import backend.academy.linktracker.bot.handler.state.UserStateStorage;
+import backend.academy.linktracker.bot.model.dto.request.RemoveLinkRequest;
+import backend.academy.linktracker.bot.util.Utils;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AllArgsConstructor;

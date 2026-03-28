@@ -1,7 +1,7 @@
 package backend.academy.linktracker.scrapper.repository.jpa;
 
+import backend.academy.linktracker.scrapper.entity.ChatsEntity;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITgChatRepository;
-import backend.academy.linktracker.scrapper.repository.jpa.entity.ChatsEntity;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTgChatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

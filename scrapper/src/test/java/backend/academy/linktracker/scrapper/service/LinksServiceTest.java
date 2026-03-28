@@ -8,12 +8,12 @@ import backend.academy.linktracker.scrapper.exception.errors.ChatNotFoundExcepti
 import backend.academy.linktracker.scrapper.exception.errors.LinkAlreadyExistException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
 import backend.academy.linktracker.scrapper.model.Link;
+import backend.academy.linktracker.scrapper.model.request.AddLinkRequest;
+import backend.academy.linktracker.scrapper.model.request.RemoveLinkRequest;
+import backend.academy.linktracker.scrapper.model.response.LinkResponse;
+import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITgChatRepository;
-import backend.academy.linktracker.scrapper.request.AddLinkRequest;
-import backend.academy.linktracker.scrapper.request.RemoveLinkRequest;
-import backend.academy.linktracker.scrapper.response.LinkResponse;
-import backend.academy.linktracker.scrapper.response.ListLinksResponse;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

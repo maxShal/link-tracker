@@ -1,9 +1,9 @@
 package backend.academy.linktracker.scrapper.controller;
 
-import backend.academy.linktracker.scrapper.request.AddLinkRequest;
-import backend.academy.linktracker.scrapper.request.RemoveLinkRequest;
-import backend.academy.linktracker.scrapper.response.LinkResponse;
-import backend.academy.linktracker.scrapper.response.ListLinksResponse;
+import backend.academy.linktracker.scrapper.model.request.AddLinkRequest;
+import backend.academy.linktracker.scrapper.model.request.RemoveLinkRequest;
+import backend.academy.linktracker.scrapper.model.response.LinkResponse;
+import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
 import backend.academy.linktracker.scrapper.service.LinksService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;

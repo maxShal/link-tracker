@@ -4,9 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import backend.academy.linktracker.bot.client.ScrapperClient;
-import backend.academy.linktracker.bot.dto.response.LinkResponse;
-import backend.academy.linktracker.bot.dto.response.ListLinksResponse;
-import backend.academy.linktracker.bot.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.configuration.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.model.commands.Commands;
+import backend.academy.linktracker.bot.model.commands.ListCommand;
+import backend.academy.linktracker.bot.model.dto.response.LinkResponse;
+import backend.academy.linktracker.bot.model.dto.response.ListLinksResponse;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.util.List;

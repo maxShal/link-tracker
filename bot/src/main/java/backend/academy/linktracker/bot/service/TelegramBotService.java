@@ -1,8 +1,8 @@
 package backend.academy.linktracker.bot.service;
 
-import backend.academy.linktracker.bot.commands.CommandsInit;
-import backend.academy.linktracker.bot.dto.LinkUpdate;
-import backend.academy.linktracker.bot.update.UpdateHandler;
+import backend.academy.linktracker.bot.integration.UpdateHandler;
+import backend.academy.linktracker.bot.model.commands.CommandsInit;
+import backend.academy.linktracker.bot.model.dto.LinkUpdate;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
@@ -21,8 +21,6 @@ public class TelegramBotService {
     private final UpdateHandler updateHandler;
 
     private final CommandsInit commandsInit;
-
-    // private final ScrapperClient scrapperClient;
 
     public void start() {
         infoLog("event", "bot_start", "Bot start");

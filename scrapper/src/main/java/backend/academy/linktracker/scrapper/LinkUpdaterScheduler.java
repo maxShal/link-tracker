@@ -2,7 +2,7 @@ package backend.academy.linktracker.scrapper;
 
 import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
-import backend.academy.linktracker.scrapper.request.LinkUpdateRequest;
+import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
 import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;

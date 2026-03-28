@@ -3,7 +3,9 @@ package backend.academy.linktracker.bot.commands;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-import backend.academy.linktracker.bot.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.configuration.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.model.commands.CommandHandler;
+import backend.academy.linktracker.bot.model.commands.CommandRoute;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import java.util.List;

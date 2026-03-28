@@ -1,6 +1,6 @@
 package backend.academy.linktracker.scrapper.repository.jpa.intarfaces;
 
-import backend.academy.linktracker.scrapper.repository.jpa.entity.LinksEntity;
+import backend.academy.linktracker.scrapper.entity.LinksEntity;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

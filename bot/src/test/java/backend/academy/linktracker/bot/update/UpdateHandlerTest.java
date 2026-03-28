@@ -1,15 +1,15 @@
 package backend.academy.linktracker.bot.update;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import backend.academy.linktracker.bot.commands.CommandRoute;
 import backend.academy.linktracker.bot.handler.TrackRoute;
+import backend.academy.linktracker.bot.handler.state.UserState;
+import backend.academy.linktracker.bot.handler.state.UserStateStorage;
+import backend.academy.linktracker.bot.integration.UpdateHandler;
+import backend.academy.linktracker.bot.model.commands.CommandRoute;
 import backend.academy.linktracker.bot.session.FirstTimeCheck;
-import backend.academy.linktracker.bot.state.UserState;
-import backend.academy.linktracker.bot.state.UserStateStorage;
 import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
