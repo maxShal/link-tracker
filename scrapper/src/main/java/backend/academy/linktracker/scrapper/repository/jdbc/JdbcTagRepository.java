@@ -119,5 +119,4 @@ public class JdbcTagRepository implements ITagsRepository {
     }
 
     private record TagsRow(Long id, String tag) {}
-    ;
 }
