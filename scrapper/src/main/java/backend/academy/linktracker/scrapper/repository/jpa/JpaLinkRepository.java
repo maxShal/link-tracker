@@ -89,7 +89,6 @@ public class JpaLinkRepository implements ILinksRepository {
                     if (!jpaChatsLinksRepository.existsByLinksEntityId(linkId)) {
                         jpaTagsLinksRepository.deleteByLinkId(linkId);
                         jpaLinksRepository.delete(entity);
-                        // if(!jpaTagsLinksRepository.existsByTagsEntityId(link.tags().get());
                     }
                     return link;
                 })

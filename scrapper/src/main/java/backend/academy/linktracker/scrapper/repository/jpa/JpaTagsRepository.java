@@ -1,10 +1,14 @@
 package backend.academy.linktracker.scrapper.repository.jpa;
 
+import backend.academy.linktracker.scrapper.entity.ChatsLinksEntity;
 import backend.academy.linktracker.scrapper.entity.LinkTagEntity;
 import backend.academy.linktracker.scrapper.entity.LinkTagId;
 import backend.academy.linktracker.scrapper.entity.LinksEntity;
 import backend.academy.linktracker.scrapper.entity.TagsEntity;
+import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
+import backend.academy.linktracker.scrapper.model.Tag;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITagsRepository;
+import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaChatsLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTagsLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTagsRepository;
@@ -22,6 +26,7 @@ public class JpaTagsRepository implements ITagsRepository {
     private final IJpaTagsRepository jpaTagsRepository;
     private final IJpaTagsLinksRepository jpaTagsLinksRepository;
     private final IJpaLinksRepository jpaLinksRepository;
+    private final IJpaChatsLinksRepository jpaChatsLinksRepository;
 
     @Transactional
     @Override
@@ -52,5 +57,34 @@ public class JpaTagsRepository implements ITagsRepository {
         return jpaTagsLinksRepository.findByLinksEntityId(linkId).stream()
                 .map(rel -> rel.getTagsEntity().getTag())
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public Tag deleteTag(Long chatId, String url, String tagName) {
+
+        ChatsLinksEntity chatLink = jpaChatsLinksRepository
+                .findByChatsEntityIdAndLinksEntityUrl(chatId, url)
+                .orElseThrow(() -> new LinkNotFoundException("Ссылка " + url + " не найдена у чата " + chatId));
+
+        LinksEntity link = chatLink.getLinksEntity();
+
+        TagsEntity tag = jpaTagsRepository
+                .findByTag(tagName)
+                .orElseThrow(() -> new IllegalArgumentException("Тег " + tagName + " не найден"));
+
+        LinkTagId id = new LinkTagId(link.getId(), tag.getId());
+
+        if (!jpaTagsLinksRepository.existsById(id)) {
+            return null;
+        }
+
+        jpaTagsLinksRepository.deleteById(id);
+
+        if (!jpaTagsLinksRepository.existsByTagsEntityId(tag.getId())) {
+            jpaTagsRepository.delete(tag);
+        }
+
+        return new Tag(tag.getId(), tag.getTag());
     }
 }

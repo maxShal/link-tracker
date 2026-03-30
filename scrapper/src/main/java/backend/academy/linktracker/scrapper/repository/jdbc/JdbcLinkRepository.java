@@ -155,5 +155,16 @@ public class JdbcLinkRepository implements ILinksRepository {
         });
     }
 
+    /*    @Override
+    public Link findLinkByUrl(String url) {
+        return jdbcTemplate.queryForObject(
+            """
+        SELECT l.id, l.url. l.last_updated_at
+        FROM links l
+        WHERE l.url = ?
+        """, Link.class, url
+        );
+    }*/
+
     private record LinksRow(Long id, String url, OffsetDateTime lastUpdatedAt) {}
 }
