@@ -42,11 +42,11 @@ public class LinksService {
         return new LinkResponse(saved.id(), saved.url(), saved.tags());
     }
 
-    public ListLinksResponse getAllLinks(long chatId) {
+    public ListLinksResponse getAllLinks(long chatId, int page, int size) {
         if (!chatRepository.existsChats(chatId)) {
             throw new ChatNotFoundException("Чат" + chatId + " не найден");
         }
-        var links = linksRepository.findAllLinks(chatId).stream()
+        var links = linksRepository.findAllLinks(chatId, page, size).stream()
                 .map(link -> new LinkResponse(link.id(), link.url(), link.tags()))
                 .toList();
         return new ListLinksResponse(links, links.size());
@@ -64,11 +64,12 @@ public class LinksService {
         return new LinkResponse(removed.id(), removed.url(), removed.tags());
     }
 
-    public List<LinkForUpdateCheck> findAllForUpdateCheck() {
+    public List<LinkForUpdateCheck> findAllForUpdateCheck(int page, int size) {
+
         Map<String, LinkForUpdateCheck> aggregated = new ConcurrentHashMap<>();
 
         for (Map.Entry<Long, List<Link>> chatEntry :
-                linksRepository.findAllLinksGroupedByChatId().entrySet()) {
+                linksRepository.findAllLinksGroupedByChatId(page, size).entrySet()) {
             Long chatId = chatEntry.getKey();
 
             for (Link link : chatEntry.getValue()) {
@@ -94,10 +95,10 @@ public class LinksService {
         return aggregated.values().stream().toList();
     }
 
-    public void updateLastUpdated(Long linkId, Instant lastUpdatedAt) {
+    public void updateLastUpdated(Long linkId, Instant lastUpdatedAt, int page, int size) {
 
         for (Map.Entry<Long, List<Link>> chatLinks :
-                linksRepository.findAllLinksGroupedByChatId().entrySet()) {
+                linksRepository.findAllLinksGroupedByChatId(page, size).entrySet()) {
             for (Link entry : chatLinks.getValue()) {
 
                 if (entry.id().equals(linkId)) {

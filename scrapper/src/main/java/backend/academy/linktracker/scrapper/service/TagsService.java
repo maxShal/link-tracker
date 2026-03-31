@@ -2,7 +2,7 @@ package backend.academy.linktracker.scrapper.service;
 
 import backend.academy.linktracker.scrapper.exception.errors.ChatNotFoundException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
-import backend.academy.linktracker.scrapper.model.Link;
+import backend.academy.linktracker.scrapper.exception.errors.TagNotFoundException;
 import backend.academy.linktracker.scrapper.model.Tag;
 import backend.academy.linktracker.scrapper.model.request.tags.AddTagRequest;
 import backend.academy.linktracker.scrapper.model.request.tags.RemoveTagRequest;
@@ -31,13 +31,7 @@ public class TagsService {
             throw new LinkNotFoundException("Ссылка: " + addTagRequest.url() + "не найдена");
         }
 
-        List<Link> links = linksRepository.findAllLinks(chatId);
-        Long linkId = null;
-        for (Link link : links) {
-            if (link.url().equals(addTagRequest.url())) {
-                linkId = link.id();
-            }
-        }
+        Long linkId = linksRepository.findLinkIdByUrl(addTagRequest.url());
 
         tagsRepository.saveTag(linkId, addTagRequest.tags());
     }
@@ -50,13 +44,7 @@ public class TagsService {
             throw new LinkNotFoundException("Ссылка: " + url + "не найдена");
         }
 
-        List<Link> links = linksRepository.findAllLinks(chatId);
-        Long linkId = null;
-        for (Link link : links) {
-            if (link.url().equals(url)) {
-                linkId = link.id();
-            }
-        }
+        Long linkId = linksRepository.findLinkIdByUrl(url);
 
         List<String> tags = tagsRepository.findAllTagsByLinkId(linkId);
         return new ListTagsResponse(tags);
@@ -79,14 +67,10 @@ public class TagsService {
             throw new ChatNotFoundException("Чат " + chatId + " не найден");
         }
 
-        Long linkId = linksRepository.findAllLinks(chatId).stream()
-                .filter(link -> link.url().equals(updateTagRequest.url()))
-                .map(Link::id)
-                .findFirst()
-                .orElseThrow(() -> new LinkNotFoundException("Ссылка " + updateTagRequest.url() + " не найдена"));
+        Long linkId = linksRepository.findLinkIdByUrl(updateTagRequest.url());
 
         if (tagsRepository.existsTag(linkId, updateTagRequest.oldTag())) {
-            throw new IllegalArgumentException("Тег " + updateTagRequest.oldTag() + " не найден");
+            throw new TagNotFoundException("Тег " + updateTagRequest.oldTag() + " не найден");
         }
 
         tagsRepository.deleteTag(chatId, updateTagRequest.url(), updateTagRequest.oldTag());

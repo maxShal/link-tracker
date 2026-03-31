@@ -2,6 +2,7 @@ package backend.academy.linktracker.scrapper.repository.jdbc;
 
 import backend.academy.linktracker.scrapper.model.Tag;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITagsRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -38,6 +39,7 @@ public class JdbcTagRepository implements ITagsRepository {
     }
 
     @Override
+    @Transactional
     public boolean existsTag(Long linkId, String tag) {
         Integer count = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
@@ -51,6 +53,7 @@ public class JdbcTagRepository implements ITagsRepository {
     }
 
     @Override
+    @Transactional
     public List<String> findAllTagsByLinkId(Long linkId) {
         return jdbcTemplate.query("""
                 SELECT t.tag
@@ -61,6 +64,7 @@ public class JdbcTagRepository implements ITagsRepository {
     }
 
     @Override
+    @Transactional
     public Tag deleteTag(Long chatId, String url, String tag) {
 
         Long linkId = jdbcTemplate.queryForObject("""

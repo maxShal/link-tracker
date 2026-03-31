@@ -4,6 +4,7 @@ import backend.academy.linktracker.scrapper.exception.errors.ChatAlreadyExistsEx
 import backend.academy.linktracker.scrapper.exception.errors.ChatNotFoundException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkAlreadyExistException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
+import backend.academy.linktracker.scrapper.exception.errors.TagNotFoundException;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -76,6 +77,17 @@ public class ApiExceptionHandler {
     public ResponseEntity<@NotNull ApiErrorResponse> linkExistOrNotFoundException(LinkNotFoundException exception) {
         var body = new ApiErrorResponse(
                 "Cсылка не найдена",
+                HttpStatus.CONFLICT.toString(),
+                exception.getClass().getSimpleName(),
+                exception.getMessage(),
+                List.of());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(TagNotFoundException.class)
+    public ResponseEntity<@NotNull ApiErrorResponse> tagNotFoundException(TagNotFoundException exception) {
+        var body = new ApiErrorResponse(
+                "Тег не найден",
                 HttpStatus.CONFLICT.toString(),
                 exception.getClass().getSimpleName(),
                 exception.getMessage(),

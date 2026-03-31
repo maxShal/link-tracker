@@ -3,6 +3,7 @@ package backend.academy.linktracker.scrapper.repository.jdbc;
 import backend.academy.linktracker.scrapper.model.Link;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITagsRepository;
+import jakarta.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -39,6 +40,7 @@ public class JdbcLinkRepository implements ILinksRepository {
     }
 
     @Override
+    @Transactional
     public Link saveLink(Long chatId, Link link) {
         Long linkId = jdbcTemplate.queryForObject(
                 """
@@ -63,6 +65,7 @@ public class JdbcLinkRepository implements ILinksRepository {
     }
 
     @Override
+    @Transactional
     public boolean existsLink(Long chatId, String url) {
         Integer count = jdbcTemplate.queryForObject("""
         SELECT COUNT(*)
@@ -74,6 +77,7 @@ public class JdbcLinkRepository implements ILinksRepository {
     }
 
     @Override
+    @Transactional
     public Link deleteLink(Long chatId, String url) {
         List<LinksRow> links = jdbcTemplate.query("""
             SELECT l.id, l.url, l.last_updated_at
@@ -111,13 +115,19 @@ public class JdbcLinkRepository implements ILinksRepository {
     }
 
     @Override
-    public List<Link> findAllLinks(Long chatId) {
+    @Transactional
+    public List<Link> findAllLinks(Long chatId, int page, int size) {
+
+        int offset = page * size;
+
         List<LinksRow> linksRows = jdbcTemplate.query("""
                 SELECT l.id, l.url, l.last_updated_at
                 FROM links l
                 JOIN link_chat lc on lc.link_id = l.id
-                where lc.chat_id = ?
-                """, rowMapper, chatId);
+                WHERE lc.chat_id = ?
+                ORDER BY l.id
+                LIMIT ? OFFSET ?
+                """, rowMapper, chatId, size, offset);
 
         return linksRows.stream()
                 .map(row -> new Link(
@@ -129,42 +139,49 @@ public class JdbcLinkRepository implements ILinksRepository {
     }
 
     @Override
-    public Map<Long, List<Link>> findAllLinksGroupedByChatId() {
-        return jdbcTemplate.query("""
+    public Long findLinkIdByUrl(String url) {
+        return jdbcTemplate.queryForObject("""
+        SELECT l.id
+        FROM links l
+        WHERE l.url = ?
+        """, Long.class, url);
+    }
+
+    @Override
+    @Transactional
+    public Map<Long, List<Link>> findAllLinksGroupedByChatId(int page, int size) {
+
+        int offset = page * size;
+        return jdbcTemplate.query(
+                """
             SELECT lc.chat_id, l.id, l.url, l.last_updated_at
             FROM links l
             JOIN link_chat lc ON l.id = lc.link_id
-        """, rs -> {
-            Map<Long, List<Link>> map = new HashMap<>();
+            GROUP BY lc.chat_id, l.id
+            LIMIT ? OFFSET ?
+        """,
+                rs -> {
+                    Map<Long, List<Link>> map = new HashMap<>();
 
-            while (rs.next()) {
-                Long chatId = rs.getLong("chat_id");
-                Long linkId = rs.getLong("id");
-                String url = rs.getString("url");
-                OffsetDateTime lastUpdatedAt = rs.getObject("last_updated_at", OffsetDateTime.class);
+                    while (rs.next()) {
+                        Long chatId = rs.getLong("chat_id");
+                        Long linkId = rs.getLong("id");
+                        String url = rs.getString("url");
+                        OffsetDateTime lastUpdatedAt = rs.getObject("last_updated_at", OffsetDateTime.class);
 
-                Link link = new Link(
-                        linkId,
-                        url,
-                        tagsRepository.findAllTagsByLinkId(linkId),
-                        lastUpdatedAt != null ? lastUpdatedAt.toInstant() : null);
-                map.computeIfAbsent(chatId, k -> new ArrayList<>()).add(link);
-            }
+                        Link link = new Link(
+                                linkId,
+                                url,
+                                tagsRepository.findAllTagsByLinkId(linkId),
+                                lastUpdatedAt != null ? lastUpdatedAt.toInstant() : null);
+                        map.computeIfAbsent(chatId, k -> new ArrayList<>()).add(link);
+                    }
 
-            return map;
-        });
+                    return map;
+                },
+                size,
+                offset);
     }
-
-    /*    @Override
-    public Link findLinkByUrl(String url) {
-        return jdbcTemplate.queryForObject(
-            """
-        SELECT l.id, l.url. l.last_updated_at
-        FROM links l
-        WHERE l.url = ?
-        """, Link.class, url
-        );
-    }*/
 
     private record LinksRow(Long id, String url, OffsetDateTime lastUpdatedAt) {}
 }

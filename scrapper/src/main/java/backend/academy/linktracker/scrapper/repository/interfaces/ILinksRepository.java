@@ -15,7 +15,9 @@ public interface ILinksRepository {
 
     Link deleteLink(Long chatId, String url);
 
-    List<Link> findAllLinks(Long chatId);
+    List<Link> findAllLinks(Long chatId, int page, int size);
 
-    Map<Long, List<Link>> findAllLinksGroupedByChatId();
+    Long findLinkIdByUrl(String url);
+
+    Map<Long, List<Link>> findAllLinksGroupedByChatId(int page, int size);
 }

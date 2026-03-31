@@ -4,6 +4,8 @@ import backend.academy.linktracker.scrapper.entity.ChatsEntity;
 import backend.academy.linktracker.scrapper.entity.ChatsLinksEntity;
 import backend.academy.linktracker.scrapper.entity.LinkChatId;
 import backend.academy.linktracker.scrapper.entity.LinksEntity;
+import backend.academy.linktracker.scrapper.exception.errors.ChatNotFoundException;
+import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
 import backend.academy.linktracker.scrapper.model.Link;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITagsRepository;
@@ -18,6 +20,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -31,11 +36,10 @@ public class JpaLinkRepository implements ILinksRepository {
     private final IJpaTgChatRepository jpaTgChatsRepository;
     private final ITagsRepository jpaTagsRepository;
 
-    @Transactional
     @Override
     public void updateLink(String url, OffsetDateTime updatedAt) {
         LinksEntity linksEntity =
-                jpaLinksRepository.findByUrl(url).orElseThrow(() -> new RuntimeException("Links not found!"));
+                jpaLinksRepository.findByUrl(url).orElseThrow(() -> new LinkNotFoundException("Links not found!"));
 
         linksEntity.setLastUpdatedAt(updatedAt);
     }
@@ -52,7 +56,7 @@ public class JpaLinkRepository implements ILinksRepository {
         });
 
         ChatsEntity chatsEntity =
-                jpaTgChatsRepository.findById(chatId).orElseThrow(() -> new RuntimeException("Chat Not Found"));
+                jpaTgChatsRepository.findById(chatId).orElseThrow(() -> new ChatNotFoundException("Chat Not Found"));
 
         LinkChatId id = new LinkChatId(chatId, linkEntity.getId());
         if (!jpaChatsLinksRepository.existsById(id)) {
@@ -68,7 +72,6 @@ public class JpaLinkRepository implements ILinksRepository {
     }
 
     @Override
-    @Transactional
     public boolean existsLink(Long chatId, String url) {
         return jpaChatsLinksRepository
                 .findByChatsEntityIdAndLinksEntityUrl(chatId, url)
@@ -95,18 +98,26 @@ public class JpaLinkRepository implements ILinksRepository {
                 .orElse(null);
     }
 
-    @Transactional
     @Override
-    public List<Link> findAllLinks(Long chatId) {
-        return jpaChatsLinksRepository.findByChatsEntityId(chatId).stream()
+    @Transactional
+    public List<Link> findAllLinks(Long chatId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        return jpaChatsLinksRepository.findByChatsEntityId(chatId, pageable).stream()
                 .map(relation -> mapToModel(relation.getLinksEntity()))
                 .toList();
     }
 
+    @Override
+    public Long findLinkIdByUrl(String url) {
+
+        return jpaLinksRepository.findIdByUrl(url).orElseThrow(() -> new LinkNotFoundException("Links not found!"));
+    }
+
     @Transactional
     @Override
-    public Map<Long, List<Link>> findAllLinksGroupedByChatId() {
-        return jpaChatsLinksRepository.findAll().stream()
+    public Map<Long, List<Link>> findAllLinksGroupedByChatId(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        return jpaChatsLinksRepository.findAll(pageable).stream()
                 .collect(Collectors.groupingBy(
                         rel -> rel.getChatsEntity().getId(),
                         Collectors.mapping(rel -> mapToModel(rel.getLinksEntity()), Collectors.toList())));

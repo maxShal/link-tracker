@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import backend.academy.linktracker.scrapper.configuration.properties.SchedulerProperties;
 import backend.academy.linktracker.scrapper.exception.errors.ChatNotFoundException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkAlreadyExistException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
@@ -26,6 +27,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class LinksServiceTest {
 
     private static final String LINK = "https://github.com/owner/repo";
+
+    @Mock
+    private SchedulerProperties properties;
 
     @Mock
     private ILinksRepository linksRepository;
@@ -69,15 +73,18 @@ class LinksServiceTest {
     void getAllLinksShouldThrowWhenChatNotFound() {
         when(chatRepository.existsChats(1L)).thenReturn(false);
 
-        assertThrows(ChatNotFoundException.class, () -> linksService.getAllLinks(1L));
+        assertThrows(
+                ChatNotFoundException.class,
+                () -> linksService.getAllLinks(1L, properties.getPage(), properties.getSize()));
     }
 
     @Test
     void getAllLinksShouldReturnListResponse() {
         when(chatRepository.existsChats(1L)).thenReturn(true);
-        when(linksRepository.findAllLinks(1L)).thenReturn(List.of(new Link(1L, LINK, List.of(), Instant.now())));
+        when(linksRepository.findAllLinks(1L, properties.getPage(), properties.getSize()))
+                .thenReturn(List.of(new Link(1L, LINK, List.of(), Instant.now())));
 
-        ListLinksResponse response = linksService.getAllLinks(1L);
+        ListLinksResponse response = linksService.getAllLinks(1L, properties.getPage(), properties.getSize());
 
         assertEquals(1, response.size());
         assertEquals(LINK, response.links().get(0).url());

@@ -19,6 +19,9 @@ spring:
       ddl-auto: none
 
 app:
+  scheduler:
+    page: 0
+    size: 5
   repository-type: jpa
   stackoverflow:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
