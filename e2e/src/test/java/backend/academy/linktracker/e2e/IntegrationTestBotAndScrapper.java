@@ -1,5 +1,14 @@
 package backend.academy.linktracker.e2e;
 
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -9,29 +18,19 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-
-import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 public class IntegrationTestBotAndScrapper {
 
-     private static final Network NETWORK = Network.newNetwork();
-
+    private static final Network NETWORK = Network.newNetwork();
 
     @Container
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:latest")
-        .withDatabaseName("test")
-        .withUsername("test")
-        .withPassword("test")
-        .withNetwork(NETWORK)
-        .withNetworkAliases("postgres");
+            .withDatabaseName("test")
+            .withUsername("test")
+            .withPassword("test")
+            .withNetwork(NETWORK)
+            .withNetworkAliases("postgres");
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
@@ -39,7 +38,6 @@ public class IntegrationTestBotAndScrapper {
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
     }
-
 
     @Container
     static GenericContainer<?> wiremock = new GenericContainer<>("wiremock/wiremock:3.9.1")
