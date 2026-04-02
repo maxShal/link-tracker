@@ -1,39 +1,70 @@
 package backend.academy.linktracker.scrapper.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import backend.academy.linktracker.scrapper.repository.LinksRepository;
-import backend.academy.linktracker.scrapper.repository.TgChatRepository;
+import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaChatsLinksRepository;
+import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaLinksRepository;
+import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTgChatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
 class ScrapperIntegrationTest {
+
+    @Autowired
+    private IJpaChatsLinksRepository jpaChatsLinksRepository;
+
+    @Autowired
+    private IJpaTgChatRepository jpaTgChatsRepository;
+
+    @Autowired
+    private IJpaLinksRepository jpaLinksRepository;
+
+    @Container
+    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:latest")
+            .withDatabaseName("test")
+            .withPassword("test")
+            .withUsername("test");
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+    }
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private TgChatRepository tgChatRepository;
-
-    @Autowired
-    private LinksRepository linksRepository;
+    JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    void clearStage() {
-        tgChatRepository.clear();
-        linksRepository.clear();
+    void clearDatabase() {
+        jdbcTemplate.update("DELETE FROM link_tag");
+        jdbcTemplate.update("DELETE FROM link_chat");
+        jdbcTemplate.update("DELETE FROM tags");
+        jdbcTemplate.update("DELETE FROM links");
+        jdbcTemplate.update("DELETE FROM chats");
     }
 
     @Test
@@ -50,9 +81,11 @@ class ScrapperIntegrationTest {
     @Test
     void addAndDeleteAndGetLinkTest() throws Exception {
         registerChat(1L);
-
+        assertTrue(jpaTgChatsRepository.existsById(1L));
         addLink(1L, DEFAULT_LINK);
+        assertTrue(jpaLinksRepository.findByUrl(DEFAULT_LINK).isPresent());
         deleteLink(1L, DEFAULT_LINK, status().isOk());
+        assertTrue(jpaLinksRepository.findByUrl(DEFAULT_LINK).isEmpty());
 
         mockMvc.perform(get("/links").header("Tg-Chat-Id", 1))
                 .andExpect(status().isOk())
@@ -80,8 +113,7 @@ class ScrapperIntegrationTest {
         String body = """
             {
             "link": "https://github.com/owner/repo",
-            "tags": ["tags"],
-            "filters": ["f1"]
+            "tags": ["tags"]
             }
         """;
 
@@ -101,8 +133,7 @@ class ScrapperIntegrationTest {
         String body = """
             {
             "link": "https://github.com/owner/repo",
-            "tags": ["tags"],
-            "filters": ["f1"]
+            "tags": ["tags"]
             }
         """;
 
@@ -126,8 +157,7 @@ class ScrapperIntegrationTest {
         String body = """
         {
           "link": "%s",
-          "tags": ["tags"],
-          "filters": ["f1"]
+          "tags": ["tags"]
         }
         """.formatted(link);
 

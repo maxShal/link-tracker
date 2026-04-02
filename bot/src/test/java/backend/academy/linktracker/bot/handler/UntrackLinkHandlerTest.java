@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import backend.academy.linktracker.bot.client.ScrapperClient;
-import backend.academy.linktracker.bot.dto.request.RemoveLinkRequest;
-import backend.academy.linktracker.bot.properties.BotMessageProperties;
-import backend.academy.linktracker.bot.state.UserState;
-import backend.academy.linktracker.bot.state.UserStateStorage;
+import backend.academy.linktracker.bot.configuration.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.handler.state.UserState;
+import backend.academy.linktracker.bot.handler.state.UserStateStorage;
+import backend.academy.linktracker.bot.model.dto.request.RemoveLinkRequest;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package backend.academy.linktracker.scrapper.configuration;
 
-import backend.academy.linktracker.scrapper.properties.BotProperties;
+import backend.academy.linktracker.scrapper.configuration.properties.BotProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

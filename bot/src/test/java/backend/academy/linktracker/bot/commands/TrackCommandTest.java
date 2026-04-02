@@ -3,9 +3,11 @@ package backend.academy.linktracker.bot.commands;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-import backend.academy.linktracker.bot.properties.BotMessageProperties;
-import backend.academy.linktracker.bot.state.UserState;
-import backend.academy.linktracker.bot.state.UserStateStorage;
+import backend.academy.linktracker.bot.configuration.properties.BotMessageProperties;
+import backend.academy.linktracker.bot.handler.state.UserState;
+import backend.academy.linktracker.bot.handler.state.UserStateStorage;
+import backend.academy.linktracker.bot.model.commands.Commands;
+import backend.academy.linktracker.bot.model.commands.TrackCommand;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.Test;

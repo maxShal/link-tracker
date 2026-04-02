@@ -1,7 +1,7 @@
 package backend.academy.linktracker.scrapper.client;
 
-import backend.academy.linktracker.scrapper.properties.BotProperties;
-import backend.academy.linktracker.scrapper.request.LinkUpdateRequest;
+import backend.academy.linktracker.scrapper.configuration.properties.BotProperties;
+import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

@@ -5,18 +5,18 @@ import backend.academy.linktracker.scrapper.exception.errors.LinkAlreadyExistExc
 import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
 import backend.academy.linktracker.scrapper.model.Link;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
+import backend.academy.linktracker.scrapper.model.request.AddLinkRequest;
+import backend.academy.linktracker.scrapper.model.request.RemoveLinkRequest;
+import backend.academy.linktracker.scrapper.model.response.LinkResponse;
+import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITgChatRepository;
-import backend.academy.linktracker.scrapper.request.AddLinkRequest;
-import backend.academy.linktracker.scrapper.request.RemoveLinkRequest;
-import backend.academy.linktracker.scrapper.response.LinkResponse;
-import backend.academy.linktracker.scrapper.response.ListLinksResponse;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,8 +27,6 @@ public class LinksService {
 
     private final ITgChatRepository chatRepository;
 
-    private final AtomicLong idGenerator = new AtomicLong(0);
-
     public LinkResponse addLink(Long chatId, AddLinkRequest addLinkRequest) {
 
         if (!chatRepository.existsChats(chatId)) {
@@ -38,23 +36,18 @@ public class LinksService {
             throw new LinkAlreadyExistException("Ссылка" + addLinkRequest.link() + "уже существует");
         }
 
-        Link link = new Link(
-                idGenerator.incrementAndGet(),
-                addLinkRequest.link(),
-                addLinkRequest.tags(),
-                addLinkRequest.filters(),
-                Instant.now());
+        Link link = new Link(null, addLinkRequest.link(), addLinkRequest.tags(), Instant.now());
 
         Link saved = linksRepository.saveLink(chatId, link);
-        return new LinkResponse(saved.id(), saved.url(), saved.tags(), saved.filters());
+        return new LinkResponse(saved.id(), saved.url(), saved.tags());
     }
 
-    public ListLinksResponse getAllLinks(long chatId) {
+    public ListLinksResponse getAllLinks(long chatId, int page, int size) {
         if (!chatRepository.existsChats(chatId)) {
             throw new ChatNotFoundException("Чат" + chatId + " не найден");
         }
-        var links = linksRepository.findAllLinks(chatId).stream()
-                .map(link -> new LinkResponse(link.id(), link.url(), link.tags(), link.filters()))
+        var links = linksRepository.findAllLinks(chatId, page, size).stream()
+                .map(link -> new LinkResponse(link.id(), link.url(), link.tags()))
                 .toList();
         return new ListLinksResponse(links, links.size());
     }
@@ -68,14 +61,15 @@ public class LinksService {
             throw new LinkNotFoundException("Ссылка" + removeLinkRequest.link() + "не найдена");
         }
 
-        return new LinkResponse(removed.id(), removed.url(), removed.tags(), removed.filters());
+        return new LinkResponse(removed.id(), removed.url(), removed.tags());
     }
 
-    public List<LinkForUpdateCheck> findAllForUpdateCheck() {
+    public List<LinkForUpdateCheck> findAllForUpdateCheck(int page, int size) {
+
         Map<String, LinkForUpdateCheck> aggregated = new ConcurrentHashMap<>();
 
         for (Map.Entry<Long, List<Link>> chatEntry :
-                linksRepository.findAllLinksGroupedByChatId().entrySet()) {
+                linksRepository.findAllLinksGroupedByChatId(page, size).entrySet()) {
             Long chatId = chatEntry.getKey();
 
             for (Link link : chatEntry.getValue()) {
@@ -103,15 +97,6 @@ public class LinksService {
 
     public void updateLastUpdated(Long linkId, Instant lastUpdatedAt) {
 
-        for (Map.Entry<Long, List<Link>> chatLinks :
-                linksRepository.findAllLinksGroupedByChatId().entrySet()) {
-            for (Link entry : chatLinks.getValue()) {
-
-                if (entry.id().equals(linkId)) {
-                    Link updatedLink = new Link(entry.id(), entry.url(), entry.tags(), entry.filters(), lastUpdatedAt);
-                    linksRepository.saveLink(linkId, updatedLink);
-                }
-            }
-        }
+        linksRepository.updateLinkByLinkId(linkId, lastUpdatedAt.atOffset(ZoneOffset.UTC));
     }
 }

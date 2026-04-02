@@ -10,16 +10,34 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 @Testcontainers
 public class IntegrationTestBotAndScrapper {
 
     private static final Network NETWORK = Network.newNetwork();
+
+    @Container
+    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:latest")
+            .withDatabaseName("test")
+            .withUsername("test")
+            .withPassword("test")
+            .withNetwork(NETWORK)
+            .withNetworkAliases("postgres");
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @Container
     static GenericContainer<?> wiremock = new GenericContainer<>("wiremock/wiremock:3.9.1")
@@ -49,6 +67,9 @@ public class IntegrationTestBotAndScrapper {
             .withEnv("APP_STACKOVERFLOW_URL", "http://wiremock:8080")
             .withEnv("GITHUB_TOKEN", "test-github-token")
             .withEnv("STACKOVERFLOW_KEY", "test-key")
+            .withEnv("SPRING_DATASOURCE_URL", "jdbc:postgresql://postgres:5432/test")
+            .withEnv("SPRING_DATASOURCE_USERNAME", "test")
+            .withEnv("SPRING_DATASOURCE_PASSWORD", "test")
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8081).forStatusCode(200));
 
     @Test
@@ -69,7 +90,7 @@ public class IntegrationTestBotAndScrapper {
                   "Content-Type": "application/json"
                 },
                 "jsonBody": {
-                  "pushed_at": "2026-03-20T10:00:00Z"
+                  "pushed_at": "2026-04-20T10:00:00Z"
                 }
               }
             }
@@ -127,8 +148,7 @@ public class IntegrationTestBotAndScrapper {
         String addBody = """
             {
               "link": "https://github.com/owner/repo",
-              "tags": [],
-              "filters": []
+              "tags": []
             }
             """;
 

@@ -2,7 +2,7 @@ package backend.academy.linktracker.scrapper.service;
 
 import backend.academy.linktracker.scrapper.client.GitHubClient;
 import backend.academy.linktracker.scrapper.client.StackoverflowClient;
-import backend.academy.linktracker.scrapper.utils.Utils;
+import backend.academy.linktracker.scrapper.util.Utils;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.regex.Matcher;

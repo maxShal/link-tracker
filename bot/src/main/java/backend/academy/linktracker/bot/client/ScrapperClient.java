@@ -1,10 +1,10 @@
 package backend.academy.linktracker.bot.client;
 
-import backend.academy.linktracker.bot.dto.request.AddLinkRequest;
-import backend.academy.linktracker.bot.dto.request.RemoveLinkRequest;
-import backend.academy.linktracker.bot.dto.response.LinkResponse;
-import backend.academy.linktracker.bot.dto.response.ListLinksResponse;
-import backend.academy.linktracker.bot.properties.ScrapperProperties;
+import backend.academy.linktracker.bot.configuration.properties.ScrapperProperties;
+import backend.academy.linktracker.bot.model.dto.request.AddLinkRequest;
+import backend.academy.linktracker.bot.model.dto.request.RemoveLinkRequest;
+import backend.academy.linktracker.bot.model.dto.response.LinkResponse;
+import backend.academy.linktracker.bot.model.dto.response.ListLinksResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -23,6 +23,14 @@ public class ScrapperClient {
                 .uri(scrapperProperties.getChatEndpoint(), chatId)
                 .retrieve()
                 .toBodilessEntity();
+    }
+
+    public boolean existChat(long chatId) {
+        return Boolean.TRUE.equals(scrapperRestClient
+                .get()
+                .uri(scrapperProperties.getChatEndpoint(), chatId)
+                .retrieve()
+                .body(Boolean.class));
     }
 
     public ListLinksResponse getLinks(long chatId) {
