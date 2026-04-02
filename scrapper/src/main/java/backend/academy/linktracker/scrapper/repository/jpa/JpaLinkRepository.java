@@ -37,9 +37,9 @@ public class JpaLinkRepository implements ILinksRepository {
     private final ITagsRepository jpaTagsRepository;
 
     @Override
-    public void updateLink(String url, OffsetDateTime updatedAt) {
+    public void updateLinkByLinkId(Long linkId, OffsetDateTime updatedAt) {
         LinksEntity linksEntity =
-                jpaLinksRepository.findByUrl(url).orElseThrow(() -> new LinkNotFoundException("Links not found!"));
+                jpaLinksRepository.findById(linkId).orElseThrow(() -> new LinkNotFoundException("Links not found!"));
 
         linksEntity.setLastUpdatedAt(updatedAt);
     }

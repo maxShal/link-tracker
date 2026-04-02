@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface ILinksRepository {
 
-    void updateLink(String url, OffsetDateTime updatedAt);
+    void updateLinkByLinkId(Long linkId, OffsetDateTime updatedAt);
 
     Link saveLink(Long chatId, Link link);
 

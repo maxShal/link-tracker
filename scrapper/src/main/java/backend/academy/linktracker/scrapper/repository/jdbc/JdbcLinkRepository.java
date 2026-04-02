@@ -32,11 +32,11 @@ public class JdbcLinkRepository implements ILinksRepository {
             rs.getTimestamp("last_updated_at").toInstant().atOffset(ZoneOffset.UTC));
 
     @Override
-    public void updateLink(String url, OffsetDateTime updatedAt) {
+    public void updateLinkByLinkId(Long linkId, OffsetDateTime updatedAt) {
         jdbcTemplate.update("""
-            UPDATE links SET  last_updated_at = ?
-            WHERE url = ?
-        """, updatedAt, url);
+        UPDATE links SET  last_updated_at = ?
+        WHERE id = ?
+        """, updatedAt, linkId);
     }
 
     @Override

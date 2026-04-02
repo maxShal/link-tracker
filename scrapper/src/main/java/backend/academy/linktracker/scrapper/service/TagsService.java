@@ -12,6 +12,7 @@ import backend.academy.linktracker.scrapper.model.response.TagResponse;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITagsRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITgChatRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,7 @@ public class TagsService {
         return new TagResponse(removed.id(), removed.tag());
     }
 
+    @Transactional
     public void updateTag(Long chatId, UpdateTagRequest updateTagRequest) {
         if (!chatRepository.existsChats(chatId)) {
             throw new ChatNotFoundException("Чат " + chatId + " не найден");

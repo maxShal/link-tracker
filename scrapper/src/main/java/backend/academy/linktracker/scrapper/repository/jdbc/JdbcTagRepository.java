@@ -19,6 +19,7 @@ public class JdbcTagRepository implements ITagsRepository {
     private final RowMapper<TagsRow> rowMapper = (rs, rowNum) -> new TagsRow(rs.getLong("id"), rs.getString("tag"));
 
     @Override
+    @Transactional
     public void saveTag(Long linkId, List<String> tags) {
         for (String tag : tags) {
 

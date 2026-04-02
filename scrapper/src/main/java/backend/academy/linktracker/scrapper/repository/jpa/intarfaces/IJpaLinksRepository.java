@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 public interface IJpaLinksRepository extends JpaRepository<LinksEntity, Long> {
     Optional<LinksEntity> findByUrl(String url);
 
+    Optional<LinksEntity> findById(Long id);
+
     @Query("select l.id from LinksEntity l where l.url = :url")
     Optional<Long> findIdByUrl(@Param("url") String url);
 }

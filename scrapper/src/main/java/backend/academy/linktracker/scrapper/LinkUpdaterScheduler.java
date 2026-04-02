@@ -37,7 +37,7 @@ public class LinkUpdaterScheduler {
                     Instant actualLastUpdated = linkMetadataService.getLastUpdated(link.url());
 
                     if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
-                        linksService.updateLastUpdated(link.id(), actualLastUpdated, page, properties.getSize());
+                        linksService.updateLastUpdated(link.id(), actualLastUpdated);
 
                         botClient.sendUpdate(new LinkUpdateRequest(
                                 link.id(), link.url(), "Обнаружено обновление", link.tgChatIds()));

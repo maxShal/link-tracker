@@ -52,7 +52,7 @@ class LinkUpdaterSchedulerTest {
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(linksService).updateLastUpdated(1L, actual, properties.getPage(), properties.getSize());
+        verify(linksService).updateLastUpdated(1L, actual);
         verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
     }
 
@@ -69,7 +69,7 @@ class LinkUpdaterSchedulerTest {
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(linksService).updateLastUpdated(1L, newDate, properties.getPage(), properties.getSize());
+        verify(linksService).updateLastUpdated(1L, newDate);
         verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
     }
 
@@ -82,10 +82,8 @@ class LinkUpdaterSchedulerTest {
         when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
                 .thenReturn(List.of(link));
         when(metadataService.getLastUpdated(link.url())).thenReturn(date);
-        int page = properties.getPage();
-        int size = properties.getSize();
         linkUpdaterScheduler.checkUpdates();
-        verify(linksService, never()).updateLastUpdated(anyLong(), any(), eq(page), eq(size));
+        verify(linksService, never()).updateLastUpdated(anyLong(), any());
         verify(botClient, never()).sendUpdate(any());
     }
 

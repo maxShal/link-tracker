@@ -95,17 +95,8 @@ public class LinksService {
         return aggregated.values().stream().toList();
     }
 
-    public void updateLastUpdated(Long linkId, Instant lastUpdatedAt, int page, int size) {
+    public void updateLastUpdated(Long linkId, Instant lastUpdatedAt) {
 
-        for (Map.Entry<Long, List<Link>> chatLinks :
-                linksRepository.findAllLinksGroupedByChatId(page, size).entrySet()) {
-            for (Link entry : chatLinks.getValue()) {
-
-                if (entry.id().equals(linkId)) {
-                    Link updatedLink = new Link(entry.id(), entry.url(), entry.tags(), lastUpdatedAt);
-                    linksRepository.updateLink(updatedLink.url(), lastUpdatedAt.atOffset(ZoneOffset.UTC));
-                }
-            }
-        }
+        linksRepository.updateLinkByLinkId(linkId, lastUpdatedAt.atOffset(ZoneOffset.UTC));
     }
 }
