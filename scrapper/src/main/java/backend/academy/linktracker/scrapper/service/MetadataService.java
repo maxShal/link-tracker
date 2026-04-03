@@ -28,7 +28,7 @@ public class MetadataService {
             String repo = githubMatcher.group(2);
 
             var response = githubClient.getRepository(owner, repo);
-            return OffsetDateTime.parse(response.pushedAt()).toInstant();
+            return OffsetDateTime.parse(response.createdAt()).toInstant();
         }
 
         Matcher stackMatcher = STACKOVERFLOW_PATTERN.matcher(url);
