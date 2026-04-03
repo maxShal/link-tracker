@@ -1,6 +1,3 @@
 package backend.academy.linktracker.scrapper.model.github;
 
-public record GitHubPullRequestResponse(
-    String url
-) {
-}
+public record GitHubPullRequestResponse(String url) {}

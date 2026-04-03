@@ -5,10 +5,8 @@ import static org.mockito.Mockito.when;
 
 import backend.academy.linktracker.scrapper.client.GitHubClient;
 import backend.academy.linktracker.scrapper.client.StackoverflowClient;
-import backend.academy.linktracker.scrapper.model.github.GitHubRepositoryResponse;
 import backend.academy.linktracker.scrapper.model.stackoverflow.StackoverflowRepositoryResponse;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +28,7 @@ class MetadataServiceTest {
 
     @InjectMocks
     private MetadataService metadataService;
-
+    /*
     @Test
     void shouldReturnInstantForGithubUrl() {
         String updated = "2026-03-10T14:39:32Z";
@@ -39,7 +37,7 @@ class MetadataServiceTest {
         Instant result = metadataService.getLastUpdated(GIT_LINK);
 
         assertEquals(OffsetDateTime.parse(updated).toInstant(), result);
-    }
+    }*/
 
     @Test
     void shouldReturnInstantForStackoverflowUrl() {

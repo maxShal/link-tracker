@@ -2,9 +2,11 @@ package backend.academy.linktracker.scrapper.service;
 
 import backend.academy.linktracker.scrapper.client.GitHubClient;
 import backend.academy.linktracker.scrapper.client.StackoverflowClient;
+import backend.academy.linktracker.scrapper.model.github.GitHubRepositoryResponse;
 import backend.academy.linktracker.scrapper.util.Utils;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
@@ -28,7 +30,12 @@ public class MetadataService {
             String repo = githubMatcher.group(2);
 
             var response = githubClient.getRepository(owner, repo);
-            return OffsetDateTime.parse(response.createdAt()).toInstant();
+            return Arrays.stream(response)
+                    .findFirst()
+                    .map(GitHubRepositoryResponse::createdAt)
+                    .map(OffsetDateTime::parse)
+                    .map(OffsetDateTime::toInstant)
+                    .orElse(null);
         }
 
         Matcher stackMatcher = STACKOVERFLOW_PATTERN.matcher(url);
