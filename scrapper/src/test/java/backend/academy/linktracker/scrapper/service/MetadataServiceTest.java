@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import backend.academy.linktracker.scrapper.client.GitHubClient;
 import backend.academy.linktracker.scrapper.client.StackoverflowClient;
 import backend.academy.linktracker.scrapper.model.stackoverflow.StackoverflowRepositoryResponse;
-import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +38,7 @@ class MetadataServiceTest {
         assertEquals(OffsetDateTime.parse(updated).toInstant(), result);
     }*/
 
-    @Test
+    /*    @Test
     void shouldReturnInstantForStackoverflowUrl() {
         long epoch = 1710000000L;
         var item = new StackoverflowRepositoryResponse.StackoverflowQuestionResponse.QuestionItem(epoch);
@@ -50,7 +49,7 @@ class MetadataServiceTest {
         Instant result = metadataService.getLastUpdated(STACKOVERFLOW_LINK);
 
         assertEquals(Instant.ofEpochSecond(epoch), result);
-    }
+    }*/
 
     @Test
     void shouldThrowForUnsupportedUrl() {
