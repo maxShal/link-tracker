@@ -31,7 +31,7 @@ public class BotMessageSender {
                         Название: %s
                         Время создания: %s
                         Описание: %s
-                        """.formatted(author, tittle, updateTime, makeShoter(body));
+                        """.formatted(author, tittle, updateTime, replaceHtml(makeShoter(body)));
 
         botClient.sendUpdate(new LinkUpdateRequest(link.id(), link.url(), description, link.tgChatIds()));
     }
@@ -41,5 +41,12 @@ public class BotMessageSender {
             return body.substring(0, 200);
         }
         return body;
+    }
+
+    private String replaceHtml(String body) {
+        if (body == null || body.isBlank()) {
+            return "";
+        }
+        return body.replaceAll("<[^>]*>", "");
     }
 }

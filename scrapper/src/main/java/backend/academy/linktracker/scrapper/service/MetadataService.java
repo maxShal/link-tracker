@@ -4,10 +4,12 @@ import backend.academy.linktracker.scrapper.client.GitHubClient;
 import backend.academy.linktracker.scrapper.client.StackoverflowClient;
 import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
 import backend.academy.linktracker.scrapper.util.Utils;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,17 +38,42 @@ public class MetadataService {
                     .findFirst();
         }
 
-        /*        Matcher stackMatcher = STACKOVERFLOW_PATTERN.matcher(url);
+        Matcher stackMatcher = STACKOVERFLOW_PATTERN.matcher(url);
         if (stackMatcher.matches()) {
             Long questionId = Long.parseLong(stackMatcher.group(1));
 
-            var response = stackoverflowClient.getQuestion(questionId);
-            if (response.items() == null || response.items().isEmpty()) {
+            var QuestionResponse = stackoverflowClient.getQuestion(questionId);
+            if (QuestionResponse.items() == null || QuestionResponse.items().isEmpty()) {
                 throw new IllegalArgumentException("Вопрос не найден: " + url);
             }
 
-            return Instant.ofEpochSecond(response.items().get(0).lastActivityDate());
-        }*/
+            String title = QuestionResponse.items().get(0).title();
+
+            var answersResponse = stackoverflowClient.getAnswers(questionId);
+            var commentResponse = stackoverflowClient.getComments(questionId);
+
+            var answerStream = answersResponse != null
+                    ? answersResponse.items().stream()
+                            .filter(item -> item.creationDate() != null)
+                            .map(item -> new LinkUpdateResponse(
+                                    title,
+                                    item.owner().displayName(),
+                                    Instant.ofEpochSecond(item.creationDate()).toString(),
+                                    item.body()))
+                    : Stream.<LinkUpdateResponse>empty();
+
+            var commentStream = commentResponse != null
+                    ? commentResponse.items().stream()
+                            .filter(item -> item.creationDate() != null)
+                            .map(item -> new LinkUpdateResponse(
+                                    title,
+                                    item.owner().displayName(),
+                                    Instant.ofEpochSecond(item.creationDate()).toString(),
+                                    item.body()))
+                    : Stream.<LinkUpdateResponse>empty();
+
+            return Stream.concat(answerStream, commentStream).findFirst();
+        }
 
         throw new IllegalArgumentException("Неподдерживаемая ссылка: " + url);
     }

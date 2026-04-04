@@ -27,6 +27,8 @@ app:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
     key: ${STACKOVERFLOW_KEY} # Use env variable. DO NOT KEEP TOKEN HERE
     url-path-endpoint: /2.3/questions/{id}
+    url-path-answer: /2.3/questions/{id}/answers
+    url-path-comment: /2.3/questions/{id}/comments
 
   github:
     url: ${APP_GITHUB_URL:https://api.github.com}
