@@ -27,10 +27,10 @@ public class BotMessageSender {
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
         String description = """
-                        Автор: %s
-                        Название: %s
-                        Время создания: %s
-                        Описание: %s
+                        Автор: %s%n\
+                        Название: %s%n\
+                        Время создания: %s%n\
+                        Описание: %s%n\
                         """.formatted(author, tittle, updateTime, replaceHtml(makeShoter(body)));
 
         botClient.sendUpdate(new LinkUpdateRequest(link.id(), link.url(), description, link.tgChatIds()));
