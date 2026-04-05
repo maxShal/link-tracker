@@ -1,4 +1,3 @@
-/*
 package backend.academy.linktracker.scrapper;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -7,12 +6,13 @@ import static org.mockito.Mockito.*;
 import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.configuration.properties.SchedulerProperties;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
-import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
+import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
-import java.createdAt.Instant;
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,6 +26,9 @@ class LinkUpdaterSchedulerTest {
 
     @Mock
     private ILinksRepository linksRepository;
+
+    @Mock
+    private BotMessageSender sender;
 
     @Mock
     private SchedulerProperties properties;
@@ -49,12 +52,13 @@ class LinkUpdaterSchedulerTest {
         Instant actual = Instant.now();
         when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
                 .thenReturn(List.of(link));
-        when(metadataService.getLastUpdated(link.url())).thenReturn(actual);
+        LinkUpdateResponse response = new LinkUpdateResponse("title", "author", actual.toString(), "description");
+        when(metadataService.getLastUpdated(link.url())).thenReturn(Optional.of(response));
 
         linkUpdaterScheduler.checkUpdates();
 
         verify(linksService).updateLastUpdated(1L, actual);
-        verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
+        verify(sender).sendMessageToBot(response, link);
     }
 
     @Test
@@ -66,12 +70,14 @@ class LinkUpdaterSchedulerTest {
 
         when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
                 .thenReturn(List.of(link));
-        when(metadataService.getLastUpdated(link.url())).thenReturn(newDate);
+        LinkUpdateResponse response = new LinkUpdateResponse("title", "author", newDate.toString(), "description");
+
+        when(metadataService.getLastUpdated(link.url())).thenReturn(Optional.of(response));
 
         linkUpdaterScheduler.checkUpdates();
 
         verify(linksService).updateLastUpdated(1L, newDate);
-        verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
+        verify(sender).sendMessageToBot(response, link);
     }
 
     @Test
@@ -82,10 +88,12 @@ class LinkUpdaterSchedulerTest {
 
         when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
                 .thenReturn(List.of(link));
-        when(metadataService.getLastUpdated(link.url())).thenReturn(date);
+        LinkUpdateResponse response = new LinkUpdateResponse("title", "author", date.toString(), "description");
+
+        when(metadataService.getLastUpdated(link.url())).thenReturn(Optional.of(response));
         linkUpdaterScheduler.checkUpdates();
         verify(linksService, never()).updateLastUpdated(anyLong(), any());
-        verify(botClient, never()).sendUpdate(any());
+        verify(sender, never()).sendMessageToBot(any(), any());
     }
 
     @Test
@@ -95,12 +103,14 @@ class LinkUpdaterSchedulerTest {
 
         when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
                 .thenReturn(List.of(first, second));
+        LinkUpdateResponse response =
+                new LinkUpdateResponse("title", "author", Instant.now().toString(), "description");
+
         when(metadataService.getLastUpdated(first.url())).thenThrow(new RuntimeException("Exception"));
-        when(metadataService.getLastUpdated(second.url())).thenReturn(Instant.now());
+        when(metadataService.getLastUpdated(second.url())).thenReturn(Optional.of(response));
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(botClient, times(1)).sendUpdate(any());
+        verify(sender, times(1)).sendMessageToBot(any(), any());
     }
 }
-*/
