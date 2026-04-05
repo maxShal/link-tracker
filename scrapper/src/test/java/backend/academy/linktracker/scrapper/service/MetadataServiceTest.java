@@ -62,7 +62,7 @@ class MetadataServiceTest {
         Instant result = OffsetDateTime.parse(
                         metadataService.getLastUpdated(STACKOVERFLOW_LINK).get().createdAt())
                 .toInstant();
-        //
+
         assertEquals(Instant.ofEpochSecond(epoch), result);
     }
 
