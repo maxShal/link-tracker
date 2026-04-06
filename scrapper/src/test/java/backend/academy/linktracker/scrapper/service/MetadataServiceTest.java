@@ -60,7 +60,7 @@ class MetadataServiceTest {
 
         when(stackoverflowClient.getAnswers(questionId)).thenReturn(answerItems);
         Instant result = OffsetDateTime.parse(
-                        metadataService.getLastUpdated(STACKOVERFLOW_LINK).get().createdAt())//
+                        metadataService.getLastUpdated(STACKOVERFLOW_LINK).get().createdAt())
                 .toInstant();
         assertEquals(Instant.ofEpochSecond(epoch), result);
     }
