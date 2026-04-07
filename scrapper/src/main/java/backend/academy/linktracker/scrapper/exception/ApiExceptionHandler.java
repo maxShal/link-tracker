@@ -2,8 +2,10 @@ package backend.academy.linktracker.scrapper.exception;
 
 import backend.academy.linktracker.scrapper.exception.errors.ChatAlreadyExistsException;
 import backend.academy.linktracker.scrapper.exception.errors.ChatNotFoundException;
+import backend.academy.linktracker.scrapper.exception.errors.GitHubMatchException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkAlreadyExistException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
+import backend.academy.linktracker.scrapper.exception.errors.StackOverFlowMatchException;
 import backend.academy.linktracker.scrapper.exception.errors.TagNotFoundException;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -86,6 +88,28 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(TagNotFoundException.class)
     public ResponseEntity<@NotNull ApiErrorResponse> tagNotFoundException(TagNotFoundException exception) {
+        var body = new ApiErrorResponse(
+                "Тег не найден",
+                HttpStatus.CONFLICT.toString(),
+                exception.getClass().getSimpleName(),
+                exception.getMessage(),
+                List.of());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(GitHubMatchException.class)
+    public ResponseEntity<@NotNull ApiErrorResponse> gitHubNotMatch(GitHubMatchException exception) {
+        var body = new ApiErrorResponse(
+                "Тег не найден",
+                HttpStatus.CONFLICT.toString(),
+                exception.getClass().getSimpleName(),
+                exception.getMessage(),
+                List.of());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(StackOverFlowMatchException.class)
+    public ResponseEntity<@NotNull ApiErrorResponse> stackOverFlowNotMatch(StackOverFlowMatchException exception) {
         var body = new ApiErrorResponse(
                 "Тег не найден",
                 HttpStatus.CONFLICT.toString(),

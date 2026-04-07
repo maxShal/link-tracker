@@ -5,12 +5,14 @@ import static org.mockito.Mockito.when;
 
 import backend.academy.linktracker.scrapper.client.GitHubClient;
 import backend.academy.linktracker.scrapper.client.StackoverflowClient;
-import backend.academy.linktracker.scrapper.model.github.GitHubRepositoryResponse;
-import backend.academy.linktracker.scrapper.model.github.GitHubUserResponse;
-import backend.academy.linktracker.scrapper.model.stackoverflow.StackoverflowRepositoryResponse;
+import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
+import backend.academy.linktracker.scrapper.service.strateges.GitHubStrategy;
+import backend.academy.linktracker.scrapper.service.strateges.StackOverFlowStrategy;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,15 +31,26 @@ class MetadataServiceTest {
     @Mock
     private StackoverflowClient stackoverflowClient;
 
+    @Mock
+    private GitHubStrategy gitHubStrategy;
+
+    @Mock
+    private StackOverFlowStrategy stackOverFlowStrategy;
+
     @InjectMocks
     private MetadataService metadataService;
+
+    @BeforeEach
+    void setUp() {
+        metadataService = new MetadataService(List.of(gitHubStrategy, stackOverFlowStrategy));
+    }
 
     @Test
     void shouldReturnInstantForGithubUrl() {
         String updated = "2026-03-10T14:39:32Z";
-        when(githubClient.getRepository("owner", "repo")).thenReturn(new GitHubRepositoryResponse[] {
-            new GitHubRepositoryResponse(new GitHubUserResponse("user"), updated, "title", "body")
-        });
+        when(gitHubStrategy.patternCheck(GIT_LINK)).thenReturn(true);
+        when(gitHubStrategy.getLastUpdated(GIT_LINK))
+                .thenReturn(Optional.of(new LinkUpdateResponse("title", "author", updated, "description")));
 
         Instant result = OffsetDateTime.parse(
                         metadataService.getLastUpdated(GIT_LINK).get().createdAt())
@@ -51,14 +64,10 @@ class MetadataServiceTest {
         long epoch = 1710000000L;
         long questionId = 123L;
 
-        when(stackoverflowClient.getQuestion(questionId))
-                .thenReturn(new StackoverflowRepositoryResponse.StackoverflowQuestionResponse(
-                        List.of(new StackoverflowRepositoryResponse.QuestionItem(questionId, "Test title"))));
-        var answerItem = new StackoverflowRepositoryResponse.AnswerItem(
-                1L, epoch, "body", new StackoverflowRepositoryResponse.Owner("display_name"));
-        var answerItems = new StackoverflowRepositoryResponse.AnswersResponse(List.of(answerItem));
-
-        when(stackoverflowClient.getAnswers(questionId)).thenReturn(answerItems);
+        when(stackOverFlowStrategy.patternCheck(STACKOVERFLOW_LINK)).thenReturn(true);
+        when(stackOverFlowStrategy.getLastUpdated(STACKOVERFLOW_LINK))
+                .thenReturn(Optional.of(new LinkUpdateResponse(
+                        "title", "author", Instant.ofEpochSecond(epoch).toString(), "description")));
         Instant result = OffsetDateTime.parse(
                         metadataService.getLastUpdated(STACKOVERFLOW_LINK).get().createdAt())
                 .toInstant();
@@ -72,9 +81,9 @@ class MetadataServiceTest {
 
     @Test
     void shouldThrowWhenStackoverflowItemsEmpty() {
-        when(stackoverflowClient.getQuestion(123L))
-                .thenReturn(new StackoverflowRepositoryResponse.StackoverflowQuestionResponse(List.of()));
+        when(stackOverFlowStrategy.patternCheck(STACKOVERFLOW_LINK)).thenReturn(true);
+        when(stackOverFlowStrategy.getLastUpdated(STACKOVERFLOW_LINK)).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> metadataService.getLastUpdated(STACKOVERFLOW_LINK));
+        assertTrue(metadataService.getLastUpdated(STACKOVERFLOW_LINK).isEmpty());
     }
 }
