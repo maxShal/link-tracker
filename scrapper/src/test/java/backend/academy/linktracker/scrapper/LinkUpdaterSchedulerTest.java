@@ -11,6 +11,7 @@ import backend.academy.linktracker.scrapper.repository.interfaces.ILinksReposito
 import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -112,5 +113,91 @@ class LinkUpdaterSchedulerTest {
         linkUpdaterScheduler.checkUpdates();
 
         verify(sender, times(1)).sendMessageToBot(any(), any());
+    }
+
+    @Test
+    void shouldContinueProcessingWhenOneLinkFails() {
+        LinkForUpdateCheck badLink = new LinkForUpdateCheck(1L, "https://github.com/bad/repo", List.of(1L), null);
+        LinkForUpdateCheck goodLink = new LinkForUpdateCheck(2L, "https://github.com/good/repo", List.of(1L), null);
+
+        when(properties.getPage()).thenReturn(0);
+        when(properties.getSize()).thenReturn(10);
+
+        when(linksService.findAllForUpdateCheck(0, 10)).thenReturn(List.of(badLink, goodLink));
+        when(linksService.findAllForUpdateCheck(1, 10)).thenReturn(List.of());
+
+        when(metadataService.getLastUpdated(badLink.url())).thenThrow(new RuntimeException("GitHub API unavailable"));
+
+        LinkUpdateResponse goodResponse =
+                new LinkUpdateResponse("New issue", "octocat", "2026-04-07T10:00:00Z", "Issue description");
+
+        when(metadataService.getLastUpdated(goodLink.url())).thenReturn(Optional.of(goodResponse));
+
+        linkUpdaterScheduler.checkUpdates();
+
+        verify(sender, times(1)).sendMessageToBot(goodResponse, goodLink);
+        verify(linksService)
+                .updateLastUpdated(
+                        eq(2L), eq(OffsetDateTime.parse("2026-04-07T10:00:00Z").toInstant()));
+        verify(sender, never()).sendMessageToBot(any(), eq(badLink));
+    }
+
+    @Test
+    void shouldProcessLinksInBatches() {
+        LinkForUpdateCheck link1 = new LinkForUpdateCheck(1L, "https://github.com/owner/repo1", List.of(1L), null);
+        LinkForUpdateCheck link2 = new LinkForUpdateCheck(2L, "https://github.com/owner/repo2", List.of(1L), null);
+
+        when(properties.getPage()).thenReturn(0);
+        when(properties.getSize()).thenReturn(1);
+
+        when(linksService.findAllForUpdateCheck(0, 1)).thenReturn(List.of(link1));
+        when(linksService.findAllForUpdateCheck(1, 1)).thenReturn(List.of(link2));
+        when(linksService.findAllForUpdateCheck(2, 1)).thenReturn(List.of());
+
+        LinkUpdateResponse response1 =
+                new LinkUpdateResponse("title1", "author1", "2026-04-07T10:00:00Z", "description1");
+        LinkUpdateResponse response2 =
+                new LinkUpdateResponse("title2", "author2", "2026-04-07T11:00:00Z", "description2");
+
+        when(metadataService.getLastUpdated(link1.url())).thenReturn(Optional.of(response1));
+        when(metadataService.getLastUpdated(link2.url())).thenReturn(Optional.of(response2));
+
+        linkUpdaterScheduler.checkUpdates();
+
+        verify(linksService).findAllForUpdateCheck(0, 1);
+        verify(linksService).findAllForUpdateCheck(1, 1);
+        verify(linksService).findAllForUpdateCheck(2, 1);
+
+        verify(sender).sendMessageToBot(response1, link1);
+        verify(sender).sendMessageToBot(response2, link2);
+    }
+
+    @Test
+    void shouldIsolateErrorsInsideBatch() {
+        LinkForUpdateCheck link1 = new LinkForUpdateCheck(1L, "https://github.com/bad/repo", List.of(1L), null);
+        LinkForUpdateCheck link2 = new LinkForUpdateCheck(2L, "https://github.com/good/repo", List.of(1L), null);
+        LinkForUpdateCheck link3 = new LinkForUpdateCheck(3L, "https://github.com/good/repo2", List.of(1L), null);
+
+        when(properties.getPage()).thenReturn(0);
+        when(properties.getSize()).thenReturn(10);
+
+        when(linksService.findAllForUpdateCheck(0, 10)).thenReturn(List.of(link1, link2, link3));
+        when(linksService.findAllForUpdateCheck(1, 10)).thenReturn(List.of());
+
+        when(metadataService.getLastUpdated(link1.url())).thenThrow(new RuntimeException("Некорректная ссылка"));
+
+        LinkUpdateResponse response2 =
+                new LinkUpdateResponse("title2", "author2", "2026-04-07T10:00:00Z", "description2");
+        LinkUpdateResponse response3 =
+                new LinkUpdateResponse("title3", "author3", "2026-04-07T11:00:00Z", "description3");
+
+        when(metadataService.getLastUpdated(link2.url())).thenReturn(Optional.of(response2));
+        when(metadataService.getLastUpdated(link3.url())).thenReturn(Optional.of(response3));
+
+        linkUpdaterScheduler.checkUpdates();
+
+        verify(sender, never()).sendMessageToBot(any(), eq(link1));
+        verify(sender).sendMessageToBot(response2, link2);
+        verify(sender).sendMessageToBot(response3, link3);
     }
 }
