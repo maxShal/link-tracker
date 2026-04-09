@@ -25,7 +25,7 @@ public class LinkUpdaterScheduler {
     private final BotMessageSender sender;
     private final SchedulerProperties properties;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelayString = "${app.scheduler.check}")
     public void checkUpdates() {
         int page = properties.getPage();
         while (true) {
