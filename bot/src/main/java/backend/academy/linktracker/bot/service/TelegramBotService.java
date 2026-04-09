@@ -76,7 +76,7 @@ public class TelegramBotService {
     public void sendUpdate(LinkUpdate update) {
         for (Long chatId : update.tgChatIds()) {
             String desc = update.description();
-            telegramBot.execute(new SendMessage(chatId, "Обновление по ссылке: " + update.url() + "%n" + desc));
+            telegramBot.execute(new SendMessage(chatId, "Обновление по ссылке: " + update.url() + desc));
         }
     }
 }

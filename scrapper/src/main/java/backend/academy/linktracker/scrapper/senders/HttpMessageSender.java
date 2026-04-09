@@ -27,6 +27,7 @@ public class HttpMessageSender implements ISendUpdate {
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
         String description = """
+                        %n\
                         Автор: %s%n\
                         Название: %s%n\
                         Время создания: %s%n\
