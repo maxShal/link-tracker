@@ -16,12 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BotMessageSenderTest {
+class HttpMessageSenderTest {
     @Mock
     private BotClient botClient;
 
     @InjectMocks
-    private BotMessageSender botMessageSender;
+    private HttpMessageSender httpMessageSender;
 
     @Test
     void shouldSendShortMessage() {
@@ -33,7 +33,7 @@ class BotMessageSenderTest {
         LinkForUpdateCheck linkForUpdateCheck =
                 new LinkForUpdateCheck(1L, "https://github.com/owner/repo", List.of(1L), null);
 
-        botMessageSender.sendMessageToBot(linkUpdateResponse, linkForUpdateCheck);
+        httpMessageSender.send(linkUpdateResponse, linkForUpdateCheck);
 
         ArgumentCaptor<LinkUpdateRequest> captor = ArgumentCaptor.forClass(LinkUpdateRequest.class);
 

@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BotMessageSender {
+public class HttpMessageSender implements ISendUpdate{
 
     private final BotClient botClient;
 
-    public void sendMessageToBot(LinkUpdateResponse latestUpdate, LinkForUpdateCheck link) {
+    public void send(LinkUpdateResponse latestUpdate, LinkForUpdateCheck link) {
 
         String author = latestUpdate.author();
         String tittle = latestUpdate.title();

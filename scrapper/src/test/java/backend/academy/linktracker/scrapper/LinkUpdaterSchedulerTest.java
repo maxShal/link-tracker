@@ -29,7 +29,7 @@ class LinkUpdaterSchedulerTest {
     private ILinksRepository linksRepository;
 
     @Mock
-    private BotMessageSender sender;
+    private HttpMessageSender sender;
 
     @Mock
     private SchedulerProperties properties;
@@ -59,7 +59,7 @@ class LinkUpdaterSchedulerTest {
         linkUpdaterScheduler.checkUpdates();
 
         verify(linksService).updateLastUpdated(1L, actual);
-        verify(sender).sendMessageToBot(response, link);
+        verify(sender).send(response, link);
     }
 
     @Test
@@ -78,7 +78,7 @@ class LinkUpdaterSchedulerTest {
         linkUpdaterScheduler.checkUpdates();
 
         verify(linksService).updateLastUpdated(1L, newDate);
-        verify(sender).sendMessageToBot(response, link);
+        verify(sender).send(response, link);
     }
 
     @Test
@@ -94,7 +94,7 @@ class LinkUpdaterSchedulerTest {
         when(metadataService.getLastUpdated(link.url())).thenReturn(Optional.of(response));
         linkUpdaterScheduler.checkUpdates();
         verify(linksService, never()).updateLastUpdated(anyLong(), any());
-        verify(sender, never()).sendMessageToBot(any(), any());
+        verify(sender, never()).send(any(), any());
     }
 
     @Test
@@ -112,7 +112,7 @@ class LinkUpdaterSchedulerTest {
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(sender, times(1)).sendMessageToBot(any(), any());
+        verify(sender, times(1)).send(any(), any());
     }
 
     @Test
@@ -135,11 +135,11 @@ class LinkUpdaterSchedulerTest {
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(sender, times(1)).sendMessageToBot(goodResponse, goodLink);
+        verify(sender, times(1)).send(goodResponse, goodLink);
         verify(linksService)
                 .updateLastUpdated(
                         eq(2L), eq(OffsetDateTime.parse("2026-04-07T10:00:00Z").toInstant()));
-        verify(sender, never()).sendMessageToBot(any(), eq(badLink));
+        verify(sender, never()).send(any(), eq(badLink));
     }
 
     @Test
@@ -168,8 +168,8 @@ class LinkUpdaterSchedulerTest {
         verify(linksService).findAllForUpdateCheck(1, 1);
         verify(linksService).findAllForUpdateCheck(2, 1);
 
-        verify(sender).sendMessageToBot(response1, link1);
-        verify(sender).sendMessageToBot(response2, link2);
+        verify(sender).send(response1, link1);
+        verify(sender).send(response2, link2);
     }
 
     @Test
@@ -196,8 +196,8 @@ class LinkUpdaterSchedulerTest {
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(sender, never()).sendMessageToBot(any(), eq(link1));
-        verify(sender).sendMessageToBot(response2, link2);
-        verify(sender).sendMessageToBot(response3, link3);
+        verify(sender, never()).send(any(), eq(link1));
+        verify(sender).send(response2, link2);
+        verify(sender).send(response3, link3);
     }
 }

@@ -1,6 +1,5 @@
 package backend.academy.linktracker.scrapper;
 
-import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.configuration.properties.SchedulerProperties;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
@@ -21,8 +20,8 @@ public class LinkUpdaterScheduler {
 
     private final LinksService linksService;
     private final MetadataService linkMetadataService;
-    private final BotClient botClient;
-    private final BotMessageSender sender;
+    //private final BotClient botClient;
+    private final HttpMessageSender sender;
     private final SchedulerProperties properties;
 
     @Scheduled(fixedDelayString = "${app.scheduler.check}")
@@ -58,7 +57,7 @@ public class LinkUpdaterScheduler {
                     if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
                         linksService.updateLastUpdated(link.id(), actualLastUpdated);
 
-                        sender.sendMessageToBot(latestUpdate, link);
+                        sender.send(latestUpdate, link);
 
                         log.atInfo()
                                 .addKeyValue("linkId", link.id())
