@@ -7,6 +7,7 @@ import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
 import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
+import backend.academy.linktracker.scrapper.senders.HttpMessageSender;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package backend.academy.linktracker.scrapper;
+package backend.academy.linktracker.scrapper.senders;
 
 import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class HttpMessageSender implements ISendUpdate{
+public class HttpMessageSender implements ISendUpdate {
 
     private final BotClient botClient;
 
