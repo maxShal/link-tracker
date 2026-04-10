@@ -5,9 +5,9 @@ import static org.mockito.Mockito.*;
 
 import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.configuration.properties.SchedulerProperties;
+import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
-import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.senders.HttpMessageSender;
 import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
@@ -25,9 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class LinkUpdaterSchedulerTest {
 
     private static final String LINK = "https://github.com/owner/repo";
-
-    @Mock
-    private ILinksRepository linksRepository;
 
     @Mock
     private HttpMessageSender sender;
@@ -56,11 +53,18 @@ class LinkUpdaterSchedulerTest {
                 .thenReturn(List.of(link));
         LinkUpdateResponse response = new LinkUpdateResponse("title", "author", actual.toString(), "description");
         when(metadataService.getLastUpdated(link.url())).thenReturn(Optional.of(response));
-
+        LinkForSend send = new LinkForSend(
+                link.id(),
+                link.url(),
+                link.tgChatIds(),
+                response.title(),
+                response.author(),
+                response.createdAt(),
+                response.description());
         linkUpdaterScheduler.checkUpdates();
 
         verify(linksService).updateLastUpdated(1L, actual);
-        verify(sender).send(response, link);
+        verify(sender).send(send);
     }
 
     @Test
@@ -75,11 +79,18 @@ class LinkUpdaterSchedulerTest {
         LinkUpdateResponse response = new LinkUpdateResponse("title", "author", newDate.toString(), "description");
 
         when(metadataService.getLastUpdated(link.url())).thenReturn(Optional.of(response));
-
+        LinkForSend send = new LinkForSend(
+                link.id(),
+                link.url(),
+                link.tgChatIds(),
+                response.title(),
+                response.author(),
+                response.createdAt(),
+                response.description());
         linkUpdaterScheduler.checkUpdates();
 
         verify(linksService).updateLastUpdated(1L, newDate);
-        verify(sender).send(response, link);
+        verify(sender).send(send);
     }
 
     @Test
@@ -95,7 +106,7 @@ class LinkUpdaterSchedulerTest {
         when(metadataService.getLastUpdated(link.url())).thenReturn(Optional.of(response));
         linkUpdaterScheduler.checkUpdates();
         verify(linksService, never()).updateLastUpdated(anyLong(), any());
-        verify(sender, never()).send(any(), any());
+        verify(sender, never()).send(any());
     }
 
     @Test
@@ -113,7 +124,7 @@ class LinkUpdaterSchedulerTest {
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(sender, times(1)).send(any(), any());
+        verify(sender, times(1)).send(any());
     }
 
     @Test
@@ -133,14 +144,22 @@ class LinkUpdaterSchedulerTest {
                 new LinkUpdateResponse("New issue", "octocat", "2026-04-07T10:00:00Z", "Issue description");
 
         when(metadataService.getLastUpdated(goodLink.url())).thenReturn(Optional.of(goodResponse));
-
+        LinkForSend send = new LinkForSend(
+                goodLink.id(),
+                goodLink.url(),
+                goodLink.tgChatIds(),
+                goodResponse.title(),
+                goodResponse.author(),
+                goodResponse.createdAt(),
+                goodResponse.description());
+        LinkForSend badSend = new LinkForSend(badLink.id(), badLink.url(), badLink.tgChatIds(), null, null, null, null);
         linkUpdaterScheduler.checkUpdates();
 
-        verify(sender, times(1)).send(goodResponse, goodLink);
+        verify(sender, times(1)).send(send);
         verify(linksService)
                 .updateLastUpdated(
                         eq(2L), eq(OffsetDateTime.parse("2026-04-07T10:00:00Z").toInstant()));
-        verify(sender, never()).send(any(), eq(badLink));
+        verify(sender, never()).send(badSend);
     }
 
     @Test
@@ -168,9 +187,24 @@ class LinkUpdaterSchedulerTest {
         verify(linksService).findAllForUpdateCheck(0, 1);
         verify(linksService).findAllForUpdateCheck(1, 1);
         verify(linksService).findAllForUpdateCheck(2, 1);
-
-        verify(sender).send(response1, link1);
-        verify(sender).send(response2, link2);
+        LinkForSend send1 = new LinkForSend(
+                link1.id(),
+                link1.url(),
+                link1.tgChatIds(),
+                response1.title(),
+                response1.author(),
+                response1.createdAt(),
+                response1.description());
+        LinkForSend send2 = new LinkForSend(
+                link2.id(),
+                link2.url(),
+                link2.tgChatIds(),
+                response2.title(),
+                response2.author(),
+                response2.createdAt(),
+                response2.description());
+        verify(sender).send(send1);
+        verify(sender).send(send2);
     }
 
     @Test
@@ -194,11 +228,28 @@ class LinkUpdaterSchedulerTest {
 
         when(metadataService.getLastUpdated(link2.url())).thenReturn(Optional.of(response2));
         when(metadataService.getLastUpdated(link3.url())).thenReturn(Optional.of(response3));
+        LinkForSend send1 = new LinkForSend(link1.id(), link1.url(), link1.tgChatIds(), null, null, null, null);
+        LinkForSend send2 = new LinkForSend(
+                link2.id(),
+                link2.url(),
+                link2.tgChatIds(),
+                response2.title(),
+                response2.author(),
+                response2.createdAt(),
+                response2.description());
+        LinkForSend send3 = new LinkForSend(
+                link3.id(),
+                link3.url(),
+                link3.tgChatIds(),
+                response3.title(),
+                response3.author(),
+                response3.createdAt(),
+                response3.description());
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(sender, never()).send(any(), eq(link1));
-        verify(sender).send(response2, link2);
-        verify(sender).send(response3, link3);
+        verify(sender, never()).send(eq(send1));
+        verify(sender).send(send2);
+        verify(sender).send(send3);
     }
 }

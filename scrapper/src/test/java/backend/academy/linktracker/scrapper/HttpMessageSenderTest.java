@@ -4,9 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 
 import backend.academy.linktracker.scrapper.client.BotClient;
-import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
+import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
-import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
 import backend.academy.linktracker.scrapper.senders.HttpMessageSender;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -27,14 +26,9 @@ class HttpMessageSenderTest {
     @Test
     void shouldSendShortMessage() {
         String longText = "a".repeat(250);
-
-        LinkUpdateResponse linkUpdateResponse =
-                new LinkUpdateResponse("title", "author", "2026-04-07T10:00:00Z", longText);
-
-        LinkForUpdateCheck linkForUpdateCheck =
-                new LinkForUpdateCheck(1L, "https://github.com/owner/repo", List.of(1L), null);
-
-        httpMessageSender.send(linkUpdateResponse, linkForUpdateCheck);
+        LinkForSend linkForSend = new LinkForSend(
+                1L, "https://github.com/owner/repo", List.of(1L), "title", "author", "2026-04-07T10:00:00Z", longText);
+        httpMessageSender.send(linkForSend);
 
         ArgumentCaptor<LinkUpdateRequest> captor = ArgumentCaptor.forClass(LinkUpdateRequest.class);
 

@@ -1,6 +1,7 @@
 package backend.academy.linktracker.scrapper;
 
 import backend.academy.linktracker.scrapper.configuration.properties.SchedulerProperties;
+import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
 import backend.academy.linktracker.scrapper.senders.HttpMessageSender;
@@ -56,8 +57,15 @@ public class LinkUpdaterScheduler {
 
                     if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
                         linksService.updateLastUpdated(link.id(), actualLastUpdated);
-
-                        sender.send(latestUpdate, link);
+                        LinkForSend linkForSend = new LinkForSend(
+                                link.id(),
+                                link.url(),
+                                link.tgChatIds(),
+                                latestUpdate.title(),
+                                latestUpdate.author(),
+                                latestUpdate.createdAt(),
+                                latestUpdate.description());
+                        sender.send(linkForSend);
 
                         log.atInfo()
                                 .addKeyValue("linkId", link.id())

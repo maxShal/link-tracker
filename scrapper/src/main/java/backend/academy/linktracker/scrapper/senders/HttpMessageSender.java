@@ -1,9 +1,8 @@
 package backend.academy.linktracker.scrapper.senders;
 
 import backend.academy.linktracker.scrapper.client.BotClient;
-import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
+import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
-import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -16,13 +15,13 @@ public class HttpMessageSender implements ISendUpdate {
 
     private final BotClient botClient;
 
-    public void send(LinkUpdateResponse latestUpdate, LinkForUpdateCheck link) {
+    public void send(LinkForSend linkForSend) {
 
-        String author = latestUpdate.author();
-        String tittle = latestUpdate.title();
-        String body = latestUpdate.description();
+        String author = linkForSend.author();
+        String tittle = linkForSend.title();
+        String body = linkForSend.description();
 
-        String updateTime = OffsetDateTime.parse(latestUpdate.createdAt())
+        String updateTime = OffsetDateTime.parse(linkForSend.createdAt())
                 .atZoneSameInstant(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
@@ -34,7 +33,8 @@ public class HttpMessageSender implements ISendUpdate {
                         Описание: %s%n\
                         """.formatted(author, tittle, updateTime, replaceHtml(makeShoter(body)));
 
-        botClient.sendUpdate(new LinkUpdateRequest(link.id(), link.url(), description, link.tgChatIds()));
+        botClient.sendUpdate(
+                new LinkUpdateRequest(linkForSend.linkId(), linkForSend.url(), description, linkForSend.tgChatIds()));
     }
 
     private String makeShoter(String body) {
