@@ -9,7 +9,12 @@ import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +29,7 @@ public class LinkUpdaterScheduler {
     private final MetadataService linkMetadataService;
     private final HttpMessageSender sender;
     private final SchedulerProperties properties;
+    private final ExecutorService linkUpdateExecutor;
 
     @Scheduled(fixedDelayString = "${app.scheduler.check}")
     public void checkUpdates() {
@@ -33,54 +39,88 @@ public class LinkUpdaterScheduler {
             if (links.isEmpty()) {
                 break;
             }
+
+            int threads = properties.getThreads();
+            int chunkSize = (int) Math.max(1, (double) (links.size() / threads));
             log.atInfo().addKeyValue("Scheduled", "Start").log("Scheduled check");
 
-            for (LinkForUpdateCheck link : links) {
-                try {
-                    var response = linkMetadataService.getLastUpdated(link.url());
+            List<List<LinkForUpdateCheck>> partitions = partition(links, chunkSize);
 
-                    LinkUpdateResponse latestUpdate = response.stream()
-                            .filter(item -> item.createdAt() != null)
-                            .max(Comparator.comparing(item ->
-                                    OffsetDateTime.parse(item.createdAt()).toInstant()))
-                            .orElse(null);
-
-                    if (latestUpdate == null) {
-                        log.atInfo()
-                                .addKeyValue("linkId", link.id())
-                                .addKeyValue("url", link.url())
-                                .log("No updates found");
-                        continue;
+            List<Callable<Void>> tasks = partitions.stream()
+                .map(part ->(Callable<Void>) ()->{
+                    for(LinkForUpdateCheck link : part) {
+                        processLink(link);
                     }
-                    Instant actualLastUpdated =
-                            OffsetDateTime.parse(latestUpdate.createdAt()).toInstant();
+                    return null;
+                })
+                .toList();
 
-                    if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
-                        linksService.updateLastUpdated(link.id(), actualLastUpdated);
-                        LinkForSend linkForSend = new LinkForSend(
-                                link.id(),
-                                link.url(),
-                                link.tgChatIds(),
-                                latestUpdate.title(),
-                                latestUpdate.author(),
-                                latestUpdate.createdAt(),
-                                latestUpdate.description());
-                        sender.send(linkForSend);
-
-                        log.atInfo()
-                                .addKeyValue("linkId", link.id())
-                                .addKeyValue("url", link.url())
-                                .log("Update sent");
-                    }
-
-                } catch (Exception e) {
-                    log.atError()
-                            .addKeyValue("linkId", link.id())
-                            .addKeyValue("url", link.url())
-                            .log("Failed to check link update", e);
+            try{
+                List<Future<Void>> futures = linkUpdateExecutor.invokeAll(tasks);
+                for (Future<Void> future : futures) {
+                    future.get();
                 }
+            }catch (Exception e)
+            {
+                log.atError()
+                    .log("Thread error", e);
             }
             page++;
         }
+    }
+
+    private void processLink(LinkForUpdateCheck link) {
+        try {
+            var response = linkMetadataService.getLastUpdated(link.url());
+
+            LinkUpdateResponse latestUpdate = response.stream()
+                .filter(item -> item.createdAt() != null)
+                .max(Comparator.comparing(item ->
+                    OffsetDateTime.parse(item.createdAt()).toInstant()))
+                .orElse(null);
+
+            if (latestUpdate == null) {
+                log.atInfo()
+                    .addKeyValue("linkId", link.id())
+                    .addKeyValue("url", link.url())
+                    .log("No updates found");
+            }
+            Instant actualLastUpdated =
+                OffsetDateTime.parse(latestUpdate.createdAt()).toInstant();
+
+            if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
+                linksService.updateLastUpdated(link.id(), actualLastUpdated);
+                LinkForSend linkForSend = new LinkForSend(
+                    link.id(),
+                    link.url(),
+                    link.tgChatIds(),
+                    latestUpdate.title(),
+                    latestUpdate.author(),
+                    latestUpdate.createdAt(),
+                    latestUpdate.description());
+                sender.send(linkForSend);
+
+                log.atInfo()
+                    .addKeyValue("linkId", link.id())
+                    .addKeyValue("url", link.url())
+                    .log("Update sent");
+            }
+
+        } catch (Exception e) {
+            log.atError()
+                .addKeyValue("linkId", link.id())
+                .addKeyValue("url", link.url())
+                .log("Failed to check link update", e);
+        }
+
+    }
+    private List<List<LinkForUpdateCheck>> partition(List<LinkForUpdateCheck> links, int chunkSize)
+    {
+        List<List<LinkForUpdateCheck>> result = new ArrayList<>();
+        for(int i = 0; i<links.size(); i+=chunkSize)
+        {
+            result.add(links.subList(i, Math.min(i+chunkSize, links.size())));
+        }
+        return result;
     }
 }

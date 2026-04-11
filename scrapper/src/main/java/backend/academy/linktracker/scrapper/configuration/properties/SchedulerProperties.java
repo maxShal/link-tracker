@@ -14,4 +14,5 @@ import org.springframework.validation.annotation.Validated;
 public class SchedulerProperties {
     private int page;
     private int size;
+    private int threads;
 }
