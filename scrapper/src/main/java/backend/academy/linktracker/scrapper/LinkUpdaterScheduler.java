@@ -10,7 +10,9 @@ import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -77,14 +79,11 @@ public class LinkUpdaterScheduler {
                         .log("No response found");
             }
 
-            LinkUpdateResponse latestUpdate = null;
-            if (response.isPresent()) {
-                latestUpdate = response.get();
-            }
-            /*            LinkUpdateResponse latestUpdate = response.stream()
-            .filter(r -> r.createdAt()!= null)
-            .max(Comparator.comparing(r))
-            ;*/
+            LinkUpdateResponse latestUpdate = response.stream()
+                    .filter(updateResponse -> updateResponse.createdAt() != null)
+                    .max(Comparator.comparing(updateResponse ->
+                            OffsetDateTime.parse(updateResponse.createdAt()).toInstant()))
+                    .orElseThrow(() -> new NoSuchElementException("No response found"));
 
             Instant actualLastUpdated =
                     OffsetDateTime.parse(latestUpdate.createdAt()).toInstant();
