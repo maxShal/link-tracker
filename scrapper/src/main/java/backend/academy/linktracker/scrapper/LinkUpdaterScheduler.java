@@ -10,7 +10,6 @@ import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -41,7 +40,7 @@ public class LinkUpdaterScheduler {
             }
 
             int threads = properties.getThreads();
-            int chunkSize = (int) Math.max(1, (double) (links.size() / threads));
+            int chunkSize = (int) Math.max(1, ((double) links.size() / threads));
             log.atInfo().addKeyValue("Scheduled", "Start").log("Scheduled check");
 
             List<List<LinkForUpdateCheck>> partitions = partition(links, chunkSize);
@@ -71,18 +70,15 @@ public class LinkUpdaterScheduler {
         try {
             var response = linkMetadataService.getLastUpdated(link.url());
 
-            LinkUpdateResponse latestUpdate = response.stream()
-                    .filter(item -> item.createdAt() != null)
-                    .max(Comparator.comparing(
-                            item -> OffsetDateTime.parse(item.createdAt()).toInstant()))
-                    .orElse(null);
-
-            if (latestUpdate == null) {
+            if (response.isEmpty()) {
                 log.atInfo()
                         .addKeyValue("linkId", link.id())
                         .addKeyValue("url", link.url())
-                        .log("No updates found");
+                        .log("No response found");
             }
+
+            LinkUpdateResponse latestUpdate = response.get();
+
             Instant actualLastUpdated =
                     OffsetDateTime.parse(latestUpdate.createdAt()).toInstant();
 
