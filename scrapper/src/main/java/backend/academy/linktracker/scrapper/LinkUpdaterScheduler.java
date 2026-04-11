@@ -77,7 +77,14 @@ public class LinkUpdaterScheduler {
                         .log("No response found");
             }
 
-            LinkUpdateResponse latestUpdate = response.get();
+            LinkUpdateResponse latestUpdate = null;
+            if (response.isPresent()) {
+                latestUpdate = response.get();
+            }
+            /*            LinkUpdateResponse latestUpdate = response.stream()
+            .filter(r -> r.createdAt()!= null)
+            .max(Comparator.comparing(r))
+            ;*/
 
             Instant actualLastUpdated =
                     OffsetDateTime.parse(latestUpdate.createdAt()).toInstant();
