@@ -3,7 +3,6 @@ package backend.academy.linktracker.scrapper;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.configuration.properties.SchedulerProperties;
 import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
@@ -13,8 +12,14 @@ import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,18 +44,34 @@ class LinkUpdaterSchedulerTest {
     private MetadataService metadataService;
 
     @Mock
-    private BotClient botClient;
+    private ExecutorService executorService;
 
     @InjectMocks
     private LinkUpdaterScheduler linkUpdaterScheduler;
+
+    @BeforeEach
+    void setUp() throws InterruptedException {
+        when(properties.getPage()).thenReturn(0);
+        when(properties.getSize()).thenReturn(10);
+        when(properties.getThreads()).thenReturn(1);
+        when(executorService.invokeAll(any())).thenAnswer(invoc -> {
+            List<Callable<Void>> tasks = invoc.getArgument(0);
+
+            List<Future<Void>> futures = new ArrayList<>();
+            for (Callable<Void> task : tasks) {
+                task.call();
+                futures.add(CompletableFuture.completedFuture(null));
+            }
+            return futures;
+        });
+    }
 
     @Test
     void shouldSendUpdateWhenLastUpdatedIsNull() {
         LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK, List.of(1L, 2L), null);
 
         Instant actual = Instant.now();
-        when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
-                .thenReturn(List.of(link));
+        when(linksService.findAllForUpdateCheck(0, 10)).thenReturn(List.of(link));
         LinkUpdateResponse response = new LinkUpdateResponse("title", "author", actual.toString(), "description");
         when(metadataService.getLastUpdated(link.url())).thenReturn(Optional.of(response));
         LinkForSend send = new LinkForSend(
@@ -61,9 +82,10 @@ class LinkUpdaterSchedulerTest {
                 response.author(),
                 response.createdAt(),
                 response.description());
+
         linkUpdaterScheduler.checkUpdates();
 
-        verify(linksService).updateLastUpdated(1L, actual);
+        verify(linksService).updateLastUpdated(eq(1L), eq(actual));
         verify(sender).send(send);
     }
 
@@ -73,7 +95,6 @@ class LinkUpdaterSchedulerTest {
         Instant newDate = Instant.parse("2026-03-10T12:00:00Z");
 
         LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK, List.of(1L), oldDate);
-
         when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
                 .thenReturn(List.of(link));
         LinkUpdateResponse response = new LinkUpdateResponse("title", "author", newDate.toString(), "description");

@@ -47,23 +47,21 @@ public class LinkUpdaterScheduler {
             List<List<LinkForUpdateCheck>> partitions = partition(links, chunkSize);
 
             List<Callable<Void>> tasks = partitions.stream()
-                .map(part ->(Callable<Void>) ()->{
-                    for(LinkForUpdateCheck link : part) {
-                        processLink(link);
-                    }
-                    return null;
-                })
-                .toList();
+                    .map(part -> (Callable<Void>) () -> {
+                        for (LinkForUpdateCheck link : part) {
+                            processLink(link);
+                        }
+                        return null;
+                    })
+                    .toList();
 
-            try{
+            try {
                 List<Future<Void>> futures = linkUpdateExecutor.invokeAll(tasks);
                 for (Future<Void> future : futures) {
                     future.get();
                 }
-            }catch (Exception e)
-            {
-                log.atError()
-                    .log("Thread error", e);
+            } catch (Exception e) {
+                log.atError().log("Thread error", e);
             }
             page++;
         }
@@ -74,52 +72,50 @@ public class LinkUpdaterScheduler {
             var response = linkMetadataService.getLastUpdated(link.url());
 
             LinkUpdateResponse latestUpdate = response.stream()
-                .filter(item -> item.createdAt() != null)
-                .max(Comparator.comparing(item ->
-                    OffsetDateTime.parse(item.createdAt()).toInstant()))
-                .orElse(null);
+                    .filter(item -> item.createdAt() != null)
+                    .max(Comparator.comparing(
+                            item -> OffsetDateTime.parse(item.createdAt()).toInstant()))
+                    .orElse(null);
 
             if (latestUpdate == null) {
                 log.atInfo()
-                    .addKeyValue("linkId", link.id())
-                    .addKeyValue("url", link.url())
-                    .log("No updates found");
+                        .addKeyValue("linkId", link.id())
+                        .addKeyValue("url", link.url())
+                        .log("No updates found");
             }
             Instant actualLastUpdated =
-                OffsetDateTime.parse(latestUpdate.createdAt()).toInstant();
+                    OffsetDateTime.parse(latestUpdate.createdAt()).toInstant();
 
             if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
                 linksService.updateLastUpdated(link.id(), actualLastUpdated);
                 LinkForSend linkForSend = new LinkForSend(
-                    link.id(),
-                    link.url(),
-                    link.tgChatIds(),
-                    latestUpdate.title(),
-                    latestUpdate.author(),
-                    latestUpdate.createdAt(),
-                    latestUpdate.description());
+                        link.id(),
+                        link.url(),
+                        link.tgChatIds(),
+                        latestUpdate.title(),
+                        latestUpdate.author(),
+                        latestUpdate.createdAt(),
+                        latestUpdate.description());
                 sender.send(linkForSend);
 
                 log.atInfo()
-                    .addKeyValue("linkId", link.id())
-                    .addKeyValue("url", link.url())
-                    .log("Update sent");
+                        .addKeyValue("linkId", link.id())
+                        .addKeyValue("url", link.url())
+                        .log("Update sent");
             }
 
         } catch (Exception e) {
             log.atError()
-                .addKeyValue("linkId", link.id())
-                .addKeyValue("url", link.url())
-                .log("Failed to check link update", e);
+                    .addKeyValue("linkId", link.id())
+                    .addKeyValue("url", link.url())
+                    .log("Failed to check link update", e);
         }
-
     }
-    private List<List<LinkForUpdateCheck>> partition(List<LinkForUpdateCheck> links, int chunkSize)
-    {
+
+    private List<List<LinkForUpdateCheck>> partition(List<LinkForUpdateCheck> links, int chunkSize) {
         List<List<LinkForUpdateCheck>> result = new ArrayList<>();
-        for(int i = 0; i<links.size(); i+=chunkSize)
-        {
-            result.add(links.subList(i, Math.min(i+chunkSize, links.size())));
+        for (int i = 0; i < links.size(); i += chunkSize) {
+            result.add(links.subList(i, Math.min(i + chunkSize, links.size())));
         }
         return result;
     }
