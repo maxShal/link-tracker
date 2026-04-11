@@ -42,7 +42,7 @@ public class LinkUpdaterScheduler {
             }
 
             int threads = properties.getThreads();
-            int chunkSize = (int) Math.max(1, ((double) links.size() / threads));
+            int chunkSize = (int) Math.max(1, (double) links.size() / threads);
             log.atInfo().addKeyValue("Scheduled", "Start").log("Scheduled check");
 
             List<List<LinkForUpdateCheck>> partitions = partition(links, chunkSize);
