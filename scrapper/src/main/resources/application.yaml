@@ -31,7 +31,7 @@ app:
     page: 0
     size: 50 #
     check: 10000
-    threads: 4.
+    threads: 4
   repository-type: jdbc
   stackoverflow:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
