@@ -8,6 +8,20 @@ config:
   import:
     optional:
       file: .env
+
+  kafka:
+    bootstrap-serves: localhost:19092, localhost:29092
+    consumer.properties:
+      enable.auto.commit: false
+      auto.offset.reset: earliest
+      isolation.level: read_commited
+      fetch.min.bytes: 1024
+      fetch.max.bytes: 1048576
+      fetch.max.wait.ms: 10000
+      max.pool.interval.ms: 10000
+      max.pool.records: 10
+      schema.registry.url: http://localhost:8083
+
 app:
   telegram:
     url: ${APP_TELEGRAM_URL:https://api.telegram.org/bot}

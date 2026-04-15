@@ -18,12 +18,20 @@ spring:
     hibernate:
       ddl-auto: none
 
+  kafka:
+    bootstrap-serves: localhost:19092, localhost:29092
+    producer-properties:
+      acks: 1
+      batch.size: 1024
+      linger.ms: 10000
+      schema.registry.url: http://localhost:8083
+
 app:
   scheduler:
     page: 0
-    size: 50
+    size: 50 #
     check: 10000
-    threads: 4
+    threads: 4.
   repository-type: jdbc
   stackoverflow:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
