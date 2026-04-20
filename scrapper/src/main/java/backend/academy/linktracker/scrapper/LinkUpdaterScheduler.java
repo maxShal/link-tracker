@@ -4,7 +4,6 @@ import backend.academy.linktracker.scrapper.configuration.properties.SchedulerPr
 import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
-import backend.academy.linktracker.scrapper.senders.HttpMessageSender;
 import backend.academy.linktracker.scrapper.senders.ISendUpdate;
 import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;

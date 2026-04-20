@@ -13,13 +13,8 @@ public class KafkaMessageConsumer {
 
     private final TelegramBotService service;
 
-    @KafkaListener(
-        containerFactory = "defaultFactory",
-        topics = "${app.kafka.topic}"
-    )
-    public void consume(ConsumerRecord<String, LinkUpdate> record)
-    {
+    @KafkaListener(containerFactory = "defaultFactory", topics = "${app.kafka.topic}")
+    public void consume(ConsumerRecord<String, LinkUpdate> record) {
         service.sendUpdate(record.value());
-
     }
 }

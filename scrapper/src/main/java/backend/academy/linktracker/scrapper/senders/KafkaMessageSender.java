@@ -2,27 +2,25 @@ package backend.academy.linktracker.scrapper.senders;
 
 import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
 
-//@EnableKafka
+// @EnableKafka
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.message-transport", havingValue = "kafka")
-public class KafkaMessageSender implements ISendUpdate{
+public class KafkaMessageSender implements ISendUpdate {
 
     private final KafkaTemplate<String, LinkUpdateRequest> kafkaTemplate;
 
     @Value("${app.kafka.topic}")
     private String topic;
-
 
     @Override
     public void send(LinkForSend linkForSend) {
@@ -32,8 +30,8 @@ public class KafkaMessageSender implements ISendUpdate{
         String body = linkForSend.description();
 
         String updateTime = OffsetDateTime.parse(linkForSend.createdAt())
-            .atZoneSameInstant(ZoneId.systemDefault())
-            .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+                .atZoneSameInstant(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
         String description = """
                         %n\
@@ -43,9 +41,11 @@ public class KafkaMessageSender implements ISendUpdate{
                         Описание: %s%n\
                         """.formatted(author, title, updateTime, replaceHtml(makeShoter(body)));
 
-        kafkaTemplate.send(topic, linkForSend.url(), new LinkUpdateRequest(linkForSend.linkId(), linkForSend.url(), description, linkForSend.tgChatIds()));
+        kafkaTemplate.send(
+                topic,
+                linkForSend.url(),
+                new LinkUpdateRequest(linkForSend.linkId(), linkForSend.url(), description, linkForSend.tgChatIds()));
     }
-
 
     private String makeShoter(String body) {
         if (body != null && body.length() > 200) {
