@@ -4,23 +4,24 @@ server:
 spring:
   application:
     name: bot
+  kafka:
+    bootstrap-servers: localhost:19092 #, localhost:29092
+    consumer:
+      group-id: consumer-2
+      properties:
+        enable.auto.commit: false
+        auto.offset.reset: latest
+        isolation.level: read_committed
+        fetch.min.bytes: 1024
+        fetch.max.bytes: 1048576
+        fetch.max.wait.ms: 10000
+        max.poll.interval.ms: 10000
+        max.poll.records: 10
+
 config:
   import:
     optional:
       file: .env
-
-  kafka:
-    bootstrap-serves: localhost:19092, localhost:29092
-    consumer.properties:
-      enable.auto.commit: false
-      auto.offset.reset: earliest
-      isolation.level: read_commited
-      fetch.min.bytes: 1024
-      fetch.max.bytes: 1048576
-      fetch.max.wait.ms: 10000
-      max.pool.interval.ms: 10000
-      max.pool.records: 10
-      schema.registry.url: http://localhost:8083
 
 app:
   telegram:
@@ -60,7 +61,9 @@ app:
       Неизвестная команда.
       Воспользуйтесь /help
 
-
+  kafka:
+    topic: message-send
+    fail-on-processing: false
 
 
 

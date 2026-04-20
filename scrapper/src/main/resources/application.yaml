@@ -19,12 +19,14 @@ spring:
       ddl-auto: none
 
   kafka:
-    bootstrap-serves: localhost:19092, localhost:29092
-    producer-properties:
-      acks: 1
-      batch.size: 1024
-      linger.ms: 10000
-      schema.registry.url: http://localhost:8083
+    bootstrap-servers: localhost:19092 #, localhost:29092
+    producer:
+      properties:
+        acks: 1
+        batch.size: 1024
+        linger.ms: 10000
+        spring.json.add.type.headers: false
+      #schema.registry.url: http://localhost:8083
 
 app:
   scheduler:
@@ -33,6 +35,7 @@ app:
     check: 10000
     threads: 4
   repository-type: jdbc
+  message-transport: kafka #http
   stackoverflow:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
     key: ${STACKOVERFLOW_KEY} # Use env variable. DO NOT KEEP TOKEN HERE
@@ -47,3 +50,7 @@ app:
   bot:
     url: ${APP_BOT_URL:http://localhost:8080}
     update-endpoint: /updates
+
+  kafka:
+    topic: message-send
+    partitions: 3

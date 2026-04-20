@@ -5,6 +5,7 @@ import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
 import backend.academy.linktracker.scrapper.senders.HttpMessageSender;
+import backend.academy.linktracker.scrapper.senders.ISendUpdate;
 import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
@@ -28,7 +29,7 @@ public class LinkUpdaterScheduler {
 
     private final LinksService linksService;
     private final MetadataService linkMetadataService;
-    private final HttpMessageSender sender;
+    private final ISendUpdate sender;
     private final SchedulerProperties properties;
     private final ExecutorService linkUpdateExecutor;
 
