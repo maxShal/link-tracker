@@ -31,13 +31,13 @@ public class HttpMessageSender implements ISendUpdate {
                         Название: %s%n\
                         Время создания: %s%n\
                         Описание: %s%n\
-                        """.formatted(author, tittle, updateTime, replaceHtml(makeShoter(body)));
+                        """.formatted(author, tittle, updateTime, replaceHtml(makeShorter(body)));
 
         botClient.sendUpdate(
                 new LinkUpdateRequest(linkForSend.linkId(), linkForSend.url(), description, linkForSend.tgChatIds()));
     }
 
-    private String makeShoter(String body) {
+    private String makeShorter(String body) {
         if (body != null && body.length() > 200) {
             return body.substring(0, 200);
         }

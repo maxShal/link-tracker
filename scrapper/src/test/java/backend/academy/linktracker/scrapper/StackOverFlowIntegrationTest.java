@@ -75,7 +75,7 @@ public class StackOverFlowIntegrationTest {
     }
 
     @Test
-    void shouldSendNewAnswer() {
+    void shouldSendNewAnswer() throws InterruptedException {
         long chatId = 1L;
         tgChatService.addChat(chatId);
 

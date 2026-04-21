@@ -76,7 +76,7 @@ class GitHubIntegrationTest {
     }
 
     @Test
-    void shouldSendGithubIssueUpdate() {
+    void shouldSendGithubIssueUpdate() throws InterruptedException {
         long chatId = 1L;
         tgChatService.addChat(chatId);
 
