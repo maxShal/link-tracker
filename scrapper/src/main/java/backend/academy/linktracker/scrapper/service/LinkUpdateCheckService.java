@@ -29,6 +29,7 @@ public class LinkUpdateCheckService {
                     .addKeyValue("linkId", link.id())
                     .addKeyValue("url", link.url())
                     .log("No response found");
+            return null;
         }
 
         LinkUpdateResponse latestUpdate = response.stream()

@@ -15,7 +15,7 @@ public class LinkUpdateSendService {
     private final LinkUpdateCheckService linkUpdateCheckService;
     private final ISendUpdate sendUpdate;
 
-    public void processLinkSen(LinkForUpdateCheck linkForUpdateCheck) {
+    public void processLinkSend(LinkForUpdateCheck linkForUpdateCheck) {
         try {
             LinkForSend linkForSend = linkUpdateCheckService.processLinkCheck(linkForUpdateCheck);
             if (linkForSend != null) {

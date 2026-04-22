@@ -32,39 +32,20 @@ public class LinkUpdaterScheduler {
             if (links.isEmpty()) {
                 break;
             }
-            int threads = properties.getThreads();
-            int chunkSize = (int) Math.max(1, (double) links.size() / threads);
+
+            linkProcess(links);
             log.atInfo().addKeyValue("Scheduled", "Start").log("Scheduled check");
-
-            List<List<LinkForUpdateCheck>> partitions = partition(links, chunkSize);
-
-            List<Callable<Void>> tasks = partitions.stream()
-                    .map(part -> (Callable<Void>) () -> {
-                        for (LinkForUpdateCheck link : part) {
-                            linkUpdateSendService.processLinkSen(link);
-                        }
-                        return null;
-                    })
-                    .toList();
-
-            List<Throwable> errors = new ArrayList<>();
-            List<Future<Void>> futures = linkUpdateExecutor.invokeAll(tasks);
-            for (Future<Void> future : futures) {
-                try {
-                    future.get();
-                } catch (Exception e) {
-                    errors.add(e.getCause());
-                }
-            }
-
             page++;
-
-            if (!errors.isEmpty()) {
-                for (Throwable error : errors) {
-                    log.atError().addKeyValue("error", error.getMessage()).log("Failed to check link update", error);
-                }
-            }
         }
+    }
+
+    private void linkProcess(List<LinkForUpdateCheck> links) throws InterruptedException {
+        int chunkSize = calculateChunkSize(links.size(), properties.getThreads());
+        List<List<LinkForUpdateCheck>> partitions = partition(links, chunkSize);
+
+        List<Throwable> errors = executeTasks(makeTasks(partitions));
+
+        errorsReport(errors);
     }
 
     private List<List<LinkForUpdateCheck>> partition(List<LinkForUpdateCheck> links, int chunkSize) {
@@ -73,5 +54,47 @@ public class LinkUpdaterScheduler {
             result.add(links.subList(i, Math.min(i + chunkSize, links.size())));
         }
         return result;
+    }
+
+    private int calculateChunkSize(int linksSize, int threads) {
+        int safeThreads = Math.max(1, threads);
+        return (int) Math.max(1, (double) linksSize / safeThreads);
+    }
+
+    private List<Callable<Void>> makeTasks(List<List<LinkForUpdateCheck>> partitions) {
+        return partitions.stream()
+                .map(part -> (Callable<Void>) () -> {
+                    for (LinkForUpdateCheck link : part) {
+                        linkUpdateSendService.processLinkSend(link);
+                    }
+                    return null;
+                })
+                .toList();
+    }
+
+    private List<Throwable> executeTasks(List<Callable<Void>> tasks) throws InterruptedException {
+        List<Throwable> errors = new ArrayList<>();
+        List<Future<Void>> futures = linkUpdateExecutor.invokeAll(tasks);
+        for (Future<Void> future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw e;
+            } catch (Exception e) {
+
+                errors.add(e.getCause() != null ? e.getCause() : e);
+            }
+        }
+        return errors;
+    }
+
+    private void errorsReport(List<Throwable> errors) {
+        if (errors.isEmpty()) {
+            return;
+        }
+        for (Throwable error : errors) {
+            log.atError().addKeyValue("error", error.getMessage()).log("Failed to check link update", error);
+        }
     }
 }

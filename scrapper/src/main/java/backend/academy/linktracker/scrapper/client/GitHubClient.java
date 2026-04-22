@@ -14,7 +14,7 @@ public class GitHubClient {
 
     private final GithubProperties githubProperties;
 
-    public GitHubRepositoryResponse[] getRepository(String owner, String repo) {
+    public GitHubRepositoryResponse[] getRepositoryIssues(String owner, String repo) {
         return githubRestClient
                 .get()
                 .uri(githubProperties.getUrlEndpoint(), owner, repo)
