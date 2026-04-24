@@ -1,12 +1,9 @@
 package backend.academy.linktracker.scrapper.service;
 
-import backend.academy.linktracker.scrapper.client.GitHubClient;
-import backend.academy.linktracker.scrapper.client.StackoverflowClient;
-import backend.academy.linktracker.scrapper.util.Utils;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
+import backend.academy.linktracker.scrapper.service.strateges.IStrategyHandler;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,35 +11,12 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MetadataService {
 
-    private final GitHubClient githubClient;
-    private final StackoverflowClient stackoverflowClient;
+    private final List<IStrategyHandler> metadataHandlers;
 
-    private static final Pattern GITHUB_PATTERN = Pattern.compile(Utils.GITHUB);
-
-    private static final Pattern STACKOVERFLOW_PATTERN = Pattern.compile(Utils.STACKOVERFLOW);
-
-    public Instant getLastUpdated(String url) {
-        Matcher githubMatcher = GITHUB_PATTERN.matcher(url);
-        if (githubMatcher.matches()) {
-            String owner = githubMatcher.group(1);
-            String repo = githubMatcher.group(2);
-
-            var response = githubClient.getRepository(owner, repo);
-            return OffsetDateTime.parse(response.pushedAt()).toInstant();
-        }
-
-        Matcher stackMatcher = STACKOVERFLOW_PATTERN.matcher(url);
-        if (stackMatcher.matches()) {
-            Long questionId = Long.parseLong(stackMatcher.group(1));
-
-            var response = stackoverflowClient.getQuestion(questionId);
-            if (response.items() == null || response.items().isEmpty()) {
-                throw new IllegalArgumentException("Вопрос не найден: " + url);
-            }
-
-            return Instant.ofEpochSecond(response.items().get(0).lastActivityDate());
-        }
-
-        throw new IllegalArgumentException("Неподдерживаемая ссылка: " + url);
+    public Optional<LinkUpdateResponse> getLastUpdated(String url) {
+        return metadataHandlers.stream()
+                .filter(handler -> handler.patternCheck(url))
+                .findFirst()
+                .flatMap(handler -> handler.getLastUpdated(url));
     }
 }

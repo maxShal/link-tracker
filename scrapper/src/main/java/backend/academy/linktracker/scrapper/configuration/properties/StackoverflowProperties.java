@@ -20,4 +20,8 @@ public class StackoverflowProperties {
     private String url;
 
     String urlPathEndpoint;
+
+    String urlPathAnswer;
+
+    String urlPathComment;
 }

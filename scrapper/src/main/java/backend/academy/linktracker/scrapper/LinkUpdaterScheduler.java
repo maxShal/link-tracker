@@ -1,12 +1,14 @@
 package backend.academy.linktracker.scrapper;
 
-import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.configuration.properties.SchedulerProperties;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
-import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
+import backend.academy.linktracker.scrapper.service.LinkUpdateSendService;
 import backend.academy.linktracker.scrapper.service.LinksService;
-import backend.academy.linktracker.scrapper.service.MetadataService;
-import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,44 +20,81 @@ import org.springframework.stereotype.Component;
 public class LinkUpdaterScheduler {
 
     private final LinksService linksService;
-    private final MetadataService linkMetadataService;
-    private final BotClient botClient;
+    private final LinkUpdateSendService linkUpdateSendService;
     private final SchedulerProperties properties;
+    private final ExecutorService linkUpdateExecutor;
 
-    @Scheduled(fixedDelay = 10000)
-    public void checkUpdates() {
+    @Scheduled(fixedDelayString = "${app.scheduler.check}")
+    public void checkUpdates() throws InterruptedException {
         int page = properties.getPage();
         while (true) {
             var links = linksService.findAllForUpdateCheck(page, properties.getSize());
             if (links.isEmpty()) {
                 break;
             }
+
+            linkProcess(links);
             log.atInfo().addKeyValue("Scheduled", "Start").log("Scheduled check");
-
-            for (LinkForUpdateCheck link : links) {
-                try {
-                    Instant actualLastUpdated = linkMetadataService.getLastUpdated(link.url());
-
-                    if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
-                        linksService.updateLastUpdated(link.id(), actualLastUpdated);
-
-                        botClient.sendUpdate(new LinkUpdateRequest(
-                                link.id(), link.url(), "Обнаружено обновление", link.tgChatIds()));
-
-                        log.atInfo()
-                                .addKeyValue("linkId", link.id())
-                                .addKeyValue("url", link.url())
-                                .log("Update sent");
-                    }
-
-                } catch (Exception e) {
-                    log.atError()
-                            .addKeyValue("linkId", link.id())
-                            .addKeyValue("url", link.url())
-                            .log("Failed to check link update", e);
-                }
-            }
             page++;
+        }
+    }
+
+    private void linkProcess(List<LinkForUpdateCheck> links) throws InterruptedException {
+        int chunkSize = calculateChunkSize(links.size(), properties.getThreads());
+        List<List<LinkForUpdateCheck>> partitions = partition(links, chunkSize);
+
+        List<Throwable> errors = executeTasks(makeTasks(partitions));
+
+        errorsReport(errors);
+    }
+
+    private List<List<LinkForUpdateCheck>> partition(List<LinkForUpdateCheck> links, int chunkSize) {
+        List<List<LinkForUpdateCheck>> result = new ArrayList<>();
+        for (int i = 0; i < links.size(); i += chunkSize) {
+            result.add(links.subList(i, Math.min(i + chunkSize, links.size())));
+        }
+        return result;
+    }
+
+    private int calculateChunkSize(int linksSize, int threads) {
+        int safeThreads = Math.max(1, threads);
+        return (int) Math.max(1, (double) linksSize / safeThreads);
+    }
+
+    private List<Callable<Void>> makeTasks(List<List<LinkForUpdateCheck>> partitions) {
+        return partitions.stream()
+                .map(part -> (Callable<Void>) () -> {
+                    for (LinkForUpdateCheck link : part) {
+                        linkUpdateSendService.processLinkSend(link);
+                    }
+                    return null;
+                })
+                .toList();
+    }
+
+    private List<Throwable> executeTasks(List<Callable<Void>> tasks) throws InterruptedException {
+        List<Throwable> errors = new ArrayList<>();
+        List<Future<Void>> futures = linkUpdateExecutor.invokeAll(tasks);
+        for (Future<Void> future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw e;
+            } catch (Exception e) {
+
+                errors.add(e.getCause() != null ? e.getCause() : e);
+            }
+        }
+        return errors;
+    }
+
+    private void errorsReport(List<Throwable> errors) {
+        if (errors.isEmpty()) {
+            return;
+        }
+        for (Throwable error : errors) {
+            log.atError().addKeyValue("error", error.getMessage()).log("Failed to check link update", error);
         }
     }
 }

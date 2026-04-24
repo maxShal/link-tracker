@@ -1,17 +1,21 @@
 package backend.academy.linktracker.scrapper;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.configuration.properties.SchedulerProperties;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
-import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
-import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
+import backend.academy.linktracker.scrapper.service.LinkUpdateSendService;
 import backend.academy.linktracker.scrapper.service.LinksService;
-import backend.academy.linktracker.scrapper.service.MetadataService;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,84 +25,117 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class LinkUpdaterSchedulerTest {
 
-    private static final String LINK = "https://github.com/owner/repo";
-
-    @Mock
-    private ILinksRepository linksRepository;
-
-    @Mock
-    private SchedulerProperties properties;
+    private static final String LINK1 = "https://github.com/owner/repo1";
+    private static final String LINK2 = "https://github.com/owner/repo2";
 
     @Mock
     private LinksService linksService;
 
     @Mock
-    private MetadataService metadataService;
+    private LinkUpdateSendService linkUpdateSendService;
 
     @Mock
-    private BotClient botClient;
+    private SchedulerProperties properties;
+
+    @Mock
+    private ExecutorService linkUpdateExecutor;
 
     @InjectMocks
     private LinkUpdaterScheduler linkUpdaterScheduler;
 
-    @Test
-    void shouldSendUpdateWhenLastUpdatedIsNull() {
-        LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK, List.of(1L, 2L), null);
+    @BeforeEach
+    void setUp() throws Exception {
+        when(properties.getPage()).thenReturn(0);
+        when(properties.getSize()).thenReturn(10);
+        when(properties.getThreads()).thenReturn(1);
 
-        Instant actual = Instant.now();
-        when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
-                .thenReturn(List.of(link));
-        when(metadataService.getLastUpdated(link.url())).thenReturn(actual);
+        when(linkUpdateExecutor.invokeAll(any())).thenAnswer(invocation -> {
+            List<Callable<Void>> tasks = invocation.getArgument(0);
+            List<Future<Void>> futures = new ArrayList<>();
 
-        linkUpdaterScheduler.checkUpdates();
+            for (Callable<Void> task : tasks) {
+                task.call();
+                futures.add(CompletableFuture.completedFuture(null));
+            }
 
-        verify(linksService).updateLastUpdated(1L, actual);
-        verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
+            return futures;
+        });
     }
 
     @Test
-    void shouldSendUpdateWhenActualDateIsAfterStoredDate() {
-        Instant oldDate = Instant.parse("2026-03-10T10:00:00Z");
-        Instant newDate = Instant.parse("2026-03-10T12:00:00Z");
+    void shouldProcessLinksFromSinglePage() throws Exception {
+        LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK1, List.of(1L), null);
 
-        LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK, List.of(1L), oldDate);
-
-        when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
-                .thenReturn(List.of(link));
-        when(metadataService.getLastUpdated(link.url())).thenReturn(newDate);
+        when(linksService.findAllForUpdateCheck(0, 10)).thenReturn(List.of(link));
+        when(linksService.findAllForUpdateCheck(1, 10)).thenReturn(List.of());
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(linksService).updateLastUpdated(1L, newDate);
-        verify(botClient).sendUpdate(any(LinkUpdateRequest.class));
+        verify(linkUpdateSendService).processLinkSend(link);
     }
 
     @Test
-    void shouldNotSendUpdateWhenDateDidNotChange() {
-        Instant date = Instant.parse("2026-03-10T10:00:00Z");
+    void shouldProcessLinksInBatches() throws Exception {
+        LinkForUpdateCheck link1 = new LinkForUpdateCheck(1L, LINK1, List.of(1L), null);
+        LinkForUpdateCheck link2 = new LinkForUpdateCheck(2L, LINK2, List.of(2L), Instant.now());
 
-        LinkForUpdateCheck link = new LinkForUpdateCheck(1L, LINK, List.of(1L), date);
+        when(linksService.findAllForUpdateCheck(0, 10)).thenReturn(List.of(link1, link2));
+        when(linksService.findAllForUpdateCheck(1, 10)).thenReturn(List.of());
 
-        when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
-                .thenReturn(List.of(link));
-        when(metadataService.getLastUpdated(link.url())).thenReturn(date);
         linkUpdaterScheduler.checkUpdates();
-        verify(linksService, never()).updateLastUpdated(anyLong(), any());
-        verify(botClient, never()).sendUpdate(any());
+
+        verify(linkUpdateSendService).processLinkSend(link1);
+        verify(linkUpdateSendService).processLinkSend(link2);
     }
 
     @Test
-    void shouldContinueWhenMetadataServiceThrows() {
-        LinkForUpdateCheck first = new LinkForUpdateCheck(1L, "https://github.com/owner/repo1", List.of(1L), null);
-        LinkForUpdateCheck second = new LinkForUpdateCheck(2L, "https://github.com/owner/repo2", List.of(2L), null);
+    void shouldRequestNextPage() throws Exception {
+        LinkForUpdateCheck link1 = new LinkForUpdateCheck(1L, LINK1, List.of(1L), null);
+        LinkForUpdateCheck link2 = new LinkForUpdateCheck(2L, LINK2, List.of(2L), null);
 
-        when(linksService.findAllForUpdateCheck(properties.getPage(), properties.getSize()))
-                .thenReturn(List.of(first, second));
-        when(metadataService.getLastUpdated(first.url())).thenThrow(new RuntimeException("Exception"));
-        when(metadataService.getLastUpdated(second.url())).thenReturn(Instant.now());
+        when(linksService.findAllForUpdateCheck(0, 10)).thenReturn(List.of(link1));
+        when(linksService.findAllForUpdateCheck(1, 10)).thenReturn(List.of(link2));
+        when(linksService.findAllForUpdateCheck(2, 10)).thenReturn(List.of());
 
         linkUpdaterScheduler.checkUpdates();
 
-        verify(botClient, times(1)).sendUpdate(any());
+        verify(linksService).findAllForUpdateCheck(0, 10);
+        verify(linksService).findAllForUpdateCheck(1, 10);
+        verify(linksService).findAllForUpdateCheck(2, 10);
+
+        verify(linkUpdateSendService).processLinkSend(link1);
+        verify(linkUpdateSendService).processLinkSend(link2);
+    }
+
+    @Test
+    void shouldContinueWhenOneTaskFails() throws Exception {
+        LinkForUpdateCheck badLink = new LinkForUpdateCheck(1L, LINK1, List.of(1L), null);
+        LinkForUpdateCheck goodLink = new LinkForUpdateCheck(2L, LINK2, List.of(2L), null);
+
+        when(properties.getThreads()).thenReturn(2);
+
+        when(linksService.findAllForUpdateCheck(0, 10)).thenReturn(List.of(badLink, goodLink));
+        when(linksService.findAllForUpdateCheck(1, 10)).thenReturn(List.of());
+
+        when(linkUpdateExecutor.invokeAll(anyList())).thenAnswer(invocation -> {
+            List<Callable<Void>> tasks = invocation.getArgument(0);
+            List<Future<Void>> futures = new ArrayList<>();
+
+            boolean first = true;
+            for (Callable<Void> task : tasks) {
+                if (first) {
+                    first = false;
+                    futures.add(CompletableFuture.failedFuture(new RuntimeException("boom")));
+                } else {
+                    task.call();
+                    futures.add(CompletableFuture.completedFuture(null));
+                }
+            }
+            return futures;
+        });
+
+        assertDoesNotThrow(() -> linkUpdaterScheduler.checkUpdates());
+
+        verify(linkUpdateSendService).processLinkSend(goodLink);
     }
 }
