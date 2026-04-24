@@ -27,7 +27,7 @@ class HttpMessageSenderTest {
     void shouldSendShortMessage() {
         String longText = "a".repeat(250);
         LinkForSend linkForSend = new LinkForSend(
-                1L, "https://github.com/owner/repo", List.of(1L), "title", "author", "2026-04-07T10:00:00Z", longText);
+                1L, "https://github.com/owner/repo", "title", "author", "2026-04-07T10:00:00Z", longText, List.of(1L));
         httpMessageSender.send(linkForSend);
 
         ArgumentCaptor<LinkUpdateRequest> captor = ArgumentCaptor.forClass(LinkUpdateRequest.class);

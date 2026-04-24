@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SchedulerExecutorConfiguration {
-    @Bean
+    @Bean(destroyMethod = "shutdown")
     public ExecutorService linkUpdateExecutor(SchedulerProperties properties) {
         return Executors.newFixedThreadPool(properties.getThreads());
     }

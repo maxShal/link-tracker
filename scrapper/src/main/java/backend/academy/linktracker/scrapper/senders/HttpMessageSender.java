@@ -7,12 +7,10 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "app.message-transport", havingValue = "http")
 public class HttpMessageSender implements ISendUpdate {
 
     private final BotClient botClient;
@@ -20,7 +18,7 @@ public class HttpMessageSender implements ISendUpdate {
     public void send(LinkForSend linkForSend) {
 
         String author = linkForSend.author();
-        String title = linkForSend.title();
+        String tittle = linkForSend.title();
         String body = linkForSend.description();
 
         String updateTime = OffsetDateTime.parse(linkForSend.createdAt())
@@ -33,13 +31,13 @@ public class HttpMessageSender implements ISendUpdate {
                         Название: %s%n\
                         Время создания: %s%n\
                         Описание: %s%n\
-                        """.formatted(author, title, updateTime, replaceHtml(makeShoter(body)));
+                        """.formatted(author, tittle, updateTime, replaceHtml(makeShorter(body)));
 
         botClient.sendUpdate(
                 new LinkUpdateRequest(linkForSend.linkId(), linkForSend.url(), description, linkForSend.tgChatIds()));
     }
 
-    private String makeShoter(String body) {
+    private String makeShorter(String body) {
         if (body != null && body.length() > 200) {
             return body.substring(0, 200);
         }

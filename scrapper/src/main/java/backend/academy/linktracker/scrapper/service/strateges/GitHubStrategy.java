@@ -28,8 +28,8 @@ public class GitHubStrategy implements IStrategyHandler {
         String owner = githubMatcher.group(1);
         String repo = githubMatcher.group(2);
 
-        var response = githubClient.getRepository(owner, repo);
-        return Arrays.stream(response)
+        var responses = githubClient.getRepositoryIssues(owner, repo);
+        return Arrays.stream(responses)
                 .filter(item -> item.createdAt() != null)
                 .map(item -> new LinkUpdateResponse(item.title(), item.user().login(), item.createdAt(), item.body()))
                 .findFirst();

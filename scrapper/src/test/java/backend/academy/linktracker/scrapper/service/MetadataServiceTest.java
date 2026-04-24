@@ -75,11 +75,6 @@ class MetadataServiceTest {
     }
 
     @Test
-    void shouldThrowForUnsupportedUrl() {
-        assertThrows(IllegalArgumentException.class, () -> metadataService.getLastUpdated("https://example.com/test"));
-    }
-
-    @Test
     void shouldThrowWhenStackoverflowItemsEmpty() {
         when(stackOverFlowStrategy.patternCheck(STACKOVERFLOW_LINK)).thenReturn(true);
         when(stackOverFlowStrategy.getLastUpdated(STACKOVERFLOW_LINK)).thenReturn(Optional.empty());

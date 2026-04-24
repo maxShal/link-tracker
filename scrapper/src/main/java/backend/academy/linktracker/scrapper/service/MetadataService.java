@@ -17,7 +17,6 @@ public class MetadataService {
         return metadataHandlers.stream()
                 .filter(handler -> handler.patternCheck(url))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Неподдерживаемая ссылка: " + url))
-                .getLastUpdated(url);
+                .flatMap(handler -> handler.getLastUpdated(url));
     }
 }
