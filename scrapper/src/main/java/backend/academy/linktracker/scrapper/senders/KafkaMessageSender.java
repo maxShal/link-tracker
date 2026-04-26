@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-// @EnableKafka
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.message-transport", havingValue = "kafka")

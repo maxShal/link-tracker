@@ -51,6 +51,9 @@ app:
     url: ${APP_BOT_URL:http://localhost:8080}
     update-endpoint: /updates
 
-  kafka:
+  message-send:
     topic: message-send
     partitions: 3
+    replicas: 3
+
+

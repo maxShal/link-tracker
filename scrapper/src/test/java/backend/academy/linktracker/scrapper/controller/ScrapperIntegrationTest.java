@@ -25,9 +25,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-@SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
+@SpringBootTest(properties = "app.message-transport=http")
 class ScrapperIntegrationTest {
 
     @Autowired

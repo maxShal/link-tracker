@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-@SpringBootTest(properties = "app.repository-type=jdbc")
+@SpringBootTest(properties = {"app.repository-type=jdbc", "app.message-transport=http"})
 @AutoConfigureMockMvc
 @Testcontainers
 class JdbcLinkRepositoryTest {

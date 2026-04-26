@@ -19,7 +19,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-@SpringBootTest(properties = "app.repository-type=jpa")
+@SpringBootTest(properties = {"app.repository-type=jpa", "app.message-transport=http"})
 @AutoConfigureMockMvc
 @Testcontainers
 class JpaTgChatsRepositoryTest {
