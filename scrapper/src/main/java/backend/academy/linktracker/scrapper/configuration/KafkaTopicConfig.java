@@ -16,7 +16,7 @@ import org.springframework.kafka.core.KafkaAdmin.NewTopics;
 @Configuration
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.message-transport", havingValue = "kafka", matchIfMissing = true)
-public class CommonKafkaConfig {
+public class KafkaTopicConfig {
     private final KafkaProperties kafkaProperties;
     private final MessageSendProperties messageSendProperties;
 
