@@ -1,5 +1,6 @@
 package backend.academy.linktracker.scrapper.senders;
 
+import backend.academy.linktracker.scrapper.configuration.properties.MessageSendProperties;
 import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
 import java.time.OffsetDateTime;

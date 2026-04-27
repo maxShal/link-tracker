@@ -37,7 +37,8 @@ class IntegrationKafkaTest {
             .withUsername("test")
             .withPassword("test")
             .withNetwork(NETWORK)
-            .withNetworkAliases("postgres");
+            .withNetworkAliases("postgres")
+            .waitingFor(Wait.forListeningPort());
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
@@ -45,7 +46,7 @@ class IntegrationKafkaTest {
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
-        registry.add("app.kafka.topic", () -> "message-send");
+        registry.add("app.message-send.topic", () -> "message-send");
     }
 
     @Container
@@ -66,7 +67,7 @@ class IntegrationKafkaTest {
             .withEnv("SPRING_KAFKA_BOOTSTRAP_SERVERS", "kafka:19092")
             .withEnv("SPRING_KAFKA_CONSUMER_GROUP_ID", "bot-e2e-consumer")
             .withEnv("SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET", "earliest")
-            .withEnv("APP_KAFKA_TOPIC", "message-send")
+            .withEnv("APP_MESSAGE_SEND_TOPIC", "message-send")
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8080).forStatusCode(200));
 
     @Container
@@ -78,7 +79,9 @@ class IntegrationKafkaTest {
             .withEnv("APP_MESSAGE_TRANSPORT", "kafka")
             .withEnv("APP_SCHEDULER_CHECK", "1000")
             .withEnv("SPRING_KAFKA_BOOTSTRAP_SERVERS", "kafka:19092")
-            .withEnv("APP_KAFKA_TOPIC", "message-send")
+        .withEnv("APP_MESSAGE_SEND_PARTITIONS", "1")
+        .withEnv("APP_MESSAGE_SEND_REPLICAS", "1")
+            .withEnv("APP_MESSAGE_SEND_TOPIC", "message-send")
             .withEnv("APP_GITHUB_URL", "http://wiremock:8080")
             .withEnv("APP_STACKOVERFLOW_URL", "http://wiremock:8080")
             .withEnv("GITHUB_TOKEN", "test-github-token")
