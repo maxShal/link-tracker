@@ -65,6 +65,7 @@ test:
     - docker build -t linktracker-scrapper:latest ./scrapper
     - docker images
     - ./mvnw verify
+  timeout: 20 minutes
 
 migration:
   stage: migration
