@@ -31,7 +31,9 @@ public class IntegrationTestBotAndScrapper {
             .withPassword("test")
             .withNetwork(NETWORK)
             .withNetworkAliases("postgres")
-            .waitingFor(Wait.forListeningPort());;
+            .waitingFor(Wait.forListeningPort());
+
+    ;
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
@@ -79,7 +81,6 @@ public class IntegrationTestBotAndScrapper {
             .withEnv("SPRING_DATASOURCE_USERNAME", "test")
             .withEnv("SPRING_DATASOURCE_PASSWORD", "test")
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8081).forStatusCode(200));
-
 
     @Test
     void scrapperSendUpdateAndBotSendTest() throws Exception {
