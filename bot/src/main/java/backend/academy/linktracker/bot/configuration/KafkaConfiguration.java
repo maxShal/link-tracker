@@ -21,7 +21,7 @@ import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 @Configuration
 @RequiredArgsConstructor
 public class KafkaConfiguration {
-    private final KafkaProperties properties;
+    private final KafkaProperties kafkaProperties;
 
     @Bean("defaultFactory")
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, LinkUpdate>> defaultFactory() {
@@ -36,7 +36,7 @@ public class KafkaConfiguration {
 
     private <M> ConsumerFactory<String, M> consumerFactory(
             Class<? extends Deserializer<M>> deserializerClass, Consumer<Map<String, Object>> propsModifier) {
-        var props = properties.buildConsumerProperties();
+        var props = kafkaProperties.buildConsumerProperties();
 
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializerClass);

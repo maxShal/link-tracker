@@ -31,7 +31,7 @@ spring:
 app:
   scheduler:
     page: 0
-    size: 50 #
+    size: 50
     check: 10000
     threads: 4
   repository-type: jdbc

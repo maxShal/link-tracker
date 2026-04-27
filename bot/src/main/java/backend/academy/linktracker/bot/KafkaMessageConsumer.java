@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KafkaMessageConsumer {
 
-    private final TelegramBotService service;
+    private final TelegramBotService telegramBotService;
 
     @KafkaListener(containerFactory = "defaultFactory", topics = "${app.kafka.topic}")
     public void consume(ConsumerRecord<String, LinkUpdate> record) {
-        service.sendUpdate(record.value());
+        telegramBotService.sendUpdate(record.value());
     }
 }

@@ -1,4 +1,3 @@
-/*
 package backend.academy.linktracker.e2e;
 
 import static org.awaitility.Awaitility.await;
@@ -11,15 +10,23 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-public class IntegrationTestBotAndScrapper extends BaseHttpIntegrationTest{
+public abstract class AbstractScrapperBotTest {
+    protected abstract GenericContainer<?> scrapper();
+
+    protected abstract GenericContainer<?> wiremock();
+
     @Test
     void scrapperSendUpdateAndBotSendTest() throws Exception {
         HttpClient httpClient = HttpClient.newHttpClient();
-        String scrapperBaseUrl = "http://" + scrapper.getHost() + ":" + scrapper.getMappedPort(8081);
-        String wiremockBaseUrl = "http://" + wiremock.getHost() + ":" + wiremock.getMappedPort(8080);
+
+        String scrapperBaseUrl =
+                "http://" + scrapper().getHost() + ":" + scrapper().getMappedPort(8081);
+        String wiremockBaseUrl =
+                "http://" + wiremock().getHost() + ":" + wiremock().getMappedPort(8080);
 
         String githubStub = """
             {
@@ -119,6 +126,7 @@ public class IntegrationTestBotAndScrapper extends BaseHttpIntegrationTest{
                             .GET()
                             .build(),
                     HttpResponse.BodyHandlers.ofString());
+
             assertEquals(200, request.statusCode());
             assertTrue(request.body().contains("/repos/owner/repo/issues"));
         });
@@ -132,9 +140,10 @@ public class IntegrationTestBotAndScrapper extends BaseHttpIntegrationTest{
                     HttpResponse.BodyHandlers.ofString());
 
             String body = request.body();
+
             assertEquals(200, request.statusCode());
             assertTrue(body.contains("sendMessage"));
+            assertTrue(body.contains("New issue from Kafka e2e"));
         });
     }
 }
-*/
