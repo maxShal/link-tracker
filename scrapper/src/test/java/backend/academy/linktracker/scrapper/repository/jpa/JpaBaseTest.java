@@ -19,7 +19,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 @Testcontainers
 public class JpaBaseTest {
     @Container
-    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:latest")
+    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:16-alpine")
             .withDatabaseName("newTest")
             .withPassword("newTest")
             .withUsername("newTest");
