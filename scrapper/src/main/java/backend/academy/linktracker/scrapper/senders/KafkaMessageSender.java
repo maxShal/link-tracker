@@ -2,10 +2,10 @@ package backend.academy.linktracker.scrapper.senders;
 
 import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
+import backend.academy.linktracker.scrapper.util.Utils;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import backend.academy.linktracker.scrapper.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -48,8 +48,8 @@ public class KafkaMessageSender implements ISendUpdate {
     }
 
     private String makeShoter(String body) {
-        if (body != null && body.length() > 200) {
-            return body.substring(0, 200);
+        if (body != null && body.length() > Utils.MAX_POST_LENGTH) {
+            return body.substring(0, Utils.MAX_POST_LENGTH);
         }
         return body;
     }
