@@ -18,7 +18,7 @@ public class KafkaMessageSender implements ISendUpdate {
 
     private final KafkaTemplate<String, LinkUpdateRequest> kafkaTemplate;
 
-    @Value("${app.kafka.topic}")
+    @Value("${app.message-send.topic}")
     private String topic;
 
     @Override
