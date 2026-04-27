@@ -5,6 +5,7 @@ import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import backend.academy.linktracker.scrapper.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -57,6 +58,6 @@ public class KafkaMessageSender implements ISendUpdate {
         if (body == null || body.isBlank()) {
             return "";
         }
-        return body.replaceAll("<[^>]*>", "");
+        return body.replaceAll(Utils.HTML_REGEX, "");
     }
 }
