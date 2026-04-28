@@ -25,10 +25,6 @@ build:
   stage: build
   script:
     - ./mvnw package -DskipTests=true -Djacoco.skip=true
-  artifacts:
-    paths:
-      - bot/target/*.jar
-      - scrapper/target/*.jar
 
 lint:
   stage: lint
@@ -64,7 +60,7 @@ test:
     - docker info || true
     - echo "$CI_JOB_TOKEN" | docker login gitlab.education.tbank.ru:443 -u gitlab-ci-token --password-stdin
   script:
-    #- ./mvnw package -DskipTests=true -Djacoco.skip=true
+    - ./mvnw package -DskipTests=true -Djacoco.skip=true
     - docker build -t linktracker-bot:latest ./bot
     - docker build -t linktracker-scrapper:latest ./scrapper
     #- docker images
