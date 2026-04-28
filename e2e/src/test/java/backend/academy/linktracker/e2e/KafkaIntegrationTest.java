@@ -3,15 +3,12 @@ package backend.academy.linktracker.e2e;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.kafka.KafkaContainer;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 public class KafkaIntegrationTest extends AbstractScrapperBotTest {
-    private static final Network NETWORK = Network.newNetwork();
 
     @Container
     static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("apache/kafka:3.9.1"))
@@ -19,30 +16,11 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
             .withNetworkAliases("kafka")
             .withListener("kafka:19092");
 
-    @Container
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:latest")
-            .withDatabaseName("test")
-            .withUsername("test")
-            .withPassword("test")
-            .withNetwork(NETWORK)
-            .withNetworkAliases("postgres")
-            .waitingFor(Wait.forListeningPort());
-
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
         registry.add("app.message-send.topic", () -> "message-send");
     }
-
-    @Container
-    static GenericContainer<?> wiremock = new GenericContainer<>("wiremock/wiremock:3.9.1")
-            .withExposedPorts(8080)
-            .withNetwork(NETWORK)
-            .withNetworkAliases("wiremock")
-            .waitingFor(Wait.forListeningPort());
 
     @Container
     static GenericContainer<?> bot = new GenericContainer<>("linktracker-bot:latest")
@@ -82,10 +60,5 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
     @Override
     protected GenericContainer<?> scrapper() {
         return scrapper;
-    }
-
-    @Override
-    protected GenericContainer<?> wiremock() {
-        return wiremock;
     }
 }

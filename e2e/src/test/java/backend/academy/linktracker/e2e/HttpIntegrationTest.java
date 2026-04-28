@@ -1,38 +1,10 @@
 package backend.academy.linktracker.e2e;
 
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.postgresql.PostgreSQLContainer;
 
 public class HttpIntegrationTest extends AbstractScrapperBotTest {
-    private static final Network NETWORK = Network.newNetwork();
-
-    @Container
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:latest")
-            .withDatabaseName("test")
-            .withUsername("test")
-            .withPassword("test")
-            .withNetwork(NETWORK)
-            .withNetworkAliases("postgres")
-            .waitingFor(Wait.forListeningPort());
-
-    @DynamicPropertySource
-    static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
-
-    @Container
-    static GenericContainer<?> wiremock = new GenericContainer<>("wiremock/wiremock:3.9.1")
-            .withExposedPorts(8080)
-            .withNetwork(NETWORK)
-            .withNetworkAliases("wiremock")
-            .waitingFor(Wait.forListeningPort());
 
     @Container
     static GenericContainer<?> bot = new GenericContainer<>("linktracker-bot:latest")
@@ -70,10 +42,5 @@ public class HttpIntegrationTest extends AbstractScrapperBotTest {
     @Override
     protected GenericContainer<?> scrapper() {
         return scrapper;
-    }
-
-    @Override
-    protected GenericContainer<?> wiremock() {
-        return wiremock;
     }
 }

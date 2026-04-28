@@ -10,14 +10,45 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 @Testcontainers
 public abstract class AbstractScrapperBotTest {
+    protected static final Network NETWORK = Network.newNetwork();
+
     protected abstract GenericContainer<?> scrapper();
 
-    protected abstract GenericContainer<?> wiremock();
+    // protected abstract GenericContainer<?> wiremock();
+
+    @Container
+    static GenericContainer<?> wiremock = new GenericContainer<>("wiremock/wiremock:3.9.1")
+            .withExposedPorts(8080)
+            .withNetwork(NETWORK)
+            .withNetworkAliases("wiremock")
+            .waitingFor(Wait.forListeningPort());
+
+    @Container
+    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine")
+            .withDatabaseName("test")
+            .withUsername("test")
+            .withPassword("test")
+            .withNetwork(NETWORK)
+            .withNetworkAliases("postgres")
+            .waitingFor(Wait.forListeningPort());
+
+    @DynamicPropertySource
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
 
     @Test
     void scrapperSendUpdateAndBotSendTest() throws Exception {
@@ -25,8 +56,7 @@ public abstract class AbstractScrapperBotTest {
 
         String scrapperBaseUrl =
                 "http://" + scrapper().getHost() + ":" + scrapper().getMappedPort(8081);
-        String wiremockBaseUrl =
-                "http://" + wiremock().getHost() + ":" + wiremock().getMappedPort(8080);
+        String wiremockBaseUrl = "http://" + wiremock.getHost() + ":" + wiremock.getMappedPort(8080);
 
         String githubStub = """
             {

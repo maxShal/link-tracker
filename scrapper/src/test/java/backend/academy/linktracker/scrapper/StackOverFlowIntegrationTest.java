@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 import backend.academy.linktracker.scrapper.model.request.AddLinkRequest;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
 import backend.academy.linktracker.scrapper.model.response.LinkResponse;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -61,7 +60,7 @@ public class StackOverFlowIntegrationTest extends AbstractIntegrationTest {
                     }
                     """)));
 
-        wireMock.stubFor(WireMock.get(urlPathEqualTo("/2.3/questions/123/comments"))
+        wireMock.stubFor(get(urlPathEqualTo("/2.3/questions/123/comments"))
                 .withQueryParam("site", equalTo("ru.stackoverflow"))
                 .withQueryParam("filter", equalTo("withbody"))
                 .willReturn(aResponse()
