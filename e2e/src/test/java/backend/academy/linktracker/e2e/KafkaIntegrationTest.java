@@ -27,6 +27,7 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
             .withExposedPorts(8080)
             .withNetwork(NETWORK)
             .withNetworkAliases("bot")
+            .dependsOn(kafka, wiremock)
             .withEnv("TELEGRAM_TOKEN", "test-token")
             .withEnv("APP_TELEGRAM_AUTO_START", "false")
             .withEnv("APP_TELEGRAM_URL", "http://wiremock:8080/bot")
