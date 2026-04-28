@@ -21,7 +21,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 @SpringBootTest(properties = "app.message-transport=http")
 public abstract class AbstractIntegrationTest {
     @Container
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine")
+    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:latest")
             .withDatabaseName("test")
             .withUsername("test")
             .withPassword("test");

@@ -98,7 +98,7 @@ test-e2e:
     - docker build -t linktracker-bot:latest ./bot
     - docker build -t linktracker-scrapper:latest ./scrapper
     #- docker images
-    - ./mvnw -pl e2e verify
+    - ./mvnw -pl e2e -am verify
 
 migration:
   stage: migration

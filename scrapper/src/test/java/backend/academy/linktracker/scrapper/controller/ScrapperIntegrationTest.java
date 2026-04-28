@@ -40,7 +40,7 @@ class ScrapperIntegrationTest {
     private IJpaLinksRepository jpaLinksRepository;
 
     @Container
-    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:16-alpine")
+    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:latest")
             .withDatabaseName("test")
             .withPassword("test")
             .withUsername("test");
