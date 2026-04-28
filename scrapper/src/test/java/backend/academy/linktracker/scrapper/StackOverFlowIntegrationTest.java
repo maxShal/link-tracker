@@ -1,45 +1,22 @@
 package backend.academy.linktracker.scrapper;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
-import backend.academy.linktracker.scrapper.client.BotClient;
 import backend.academy.linktracker.scrapper.model.request.AddLinkRequest;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
 import backend.academy.linktracker.scrapper.model.response.LinkResponse;
-import backend.academy.linktracker.scrapper.service.LinksService;
-import backend.academy.linktracker.scrapper.service.TgChatService;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.Instant;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 public class StackOverFlowIntegrationTest extends AbstractIntegrationTest {
 
     private static final String URL = "https://stackoverflow.com/questions/123/test-title";
-
-    @Autowired
-    private LinkUpdaterScheduler scheduler;
-
-    @Autowired
-    private LinksService linksService;
-
-    @Autowired
-    private TgChatService tgChatService;
-
-    @MockitoBean
-    private BotClient sender;
-
-    @BeforeEach
-    void setUpWireMock() {
-        WireMock.configureFor(wiremock.getHost(), wiremock.getMappedPort(8080));
-        WireMock.reset();
-    }
 
     @Test
     void shouldSendNewAnswer() throws InterruptedException {
@@ -49,8 +26,8 @@ public class StackOverFlowIntegrationTest extends AbstractIntegrationTest {
         LinkResponse linkResponse = linksService.addLink(chatId, new AddLinkRequest(URL, List.of()));
         linksService.updateLastUpdated(linkResponse.id(), Instant.parse("2020-01-01T00:00:00Z"));
 
-        WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/2.3/questions/123"))
-                .withQueryParam("site", WireMock.equalTo("ru.stackoverflow"))
+        wireMock.stubFor(get(urlPathEqualTo("/2.3/questions/123"))
+                .withQueryParam("site", equalTo("ru.stackoverflow"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody("""
@@ -64,9 +41,9 @@ public class StackOverFlowIntegrationTest extends AbstractIntegrationTest {
                 }
                 """)));
 
-        WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/2.3/questions/123/answers"))
-                .withQueryParam("site", WireMock.equalTo("ru.stackoverflow"))
-                .withQueryParam("filter", WireMock.equalTo("withbody"))
+        wireMock.stubFor(get(urlPathEqualTo("/2.3/questions/123/answers"))
+                .withQueryParam("site", equalTo("ru.stackoverflow"))
+                .withQueryParam("filter", equalTo("withbody"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody("""
@@ -84,9 +61,9 @@ public class StackOverFlowIntegrationTest extends AbstractIntegrationTest {
                     }
                     """)));
 
-        WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/2.3/questions/123/comments"))
-                .withQueryParam("site", WireMock.equalTo("ru.stackoverflow"))
-                .withQueryParam("filter", WireMock.equalTo("withbody"))
+        wireMock.stubFor(WireMock.get(urlPathEqualTo("/2.3/questions/123/comments"))
+                .withQueryParam("site", equalTo("ru.stackoverflow"))
+                .withQueryParam("filter", equalTo("withbody"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody("""
