@@ -13,19 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-import org.testcontainers.utility.DockerImageName;
 
-@Testcontainers
 @SpringBootTest(properties = "app.message-transport=http")
-public abstract class AbstractIntegrationTest {
-    @Container
-    static PostgreSQLContainer postgres = new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"))
-            .withDatabaseName("test")
-            .withUsername("test")
-            .withPassword("test");
+public abstract class AbstractIntegrationTest extends AbstractPostgresContainerTest {
 
     @RegisterExtension
     static WireMockExtension wireMock = WireMockExtension.newInstance()
@@ -34,9 +24,6 @@ public abstract class AbstractIntegrationTest {
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
 
         registry.add("app.github.url", wireMock::baseUrl);
         registry.add("app.stackoverflow.url", wireMock::baseUrl);

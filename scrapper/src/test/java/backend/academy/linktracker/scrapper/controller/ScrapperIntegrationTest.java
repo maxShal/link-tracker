@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import backend.academy.linktracker.scrapper.AbstractPostgresContainerTest;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaChatsLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaLinksRepository;
 import backend.academy.linktracker.scrapper.repository.jpa.intarfaces.IJpaTgChatRepository;
@@ -17,19 +18,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.postgresql.PostgreSQLContainer;
-import org.testcontainers.utility.DockerImageName;
 
 @AutoConfigureMockMvc
-@Testcontainers
 @SpringBootTest(properties = "app.message-transport=http")
-class ScrapperIntegrationTest {
+class ScrapperIntegrationTest extends AbstractPostgresContainerTest {
 
     @Autowired
     private IJpaChatsLinksRepository jpaChatsLinksRepository;
@@ -39,20 +33,6 @@ class ScrapperIntegrationTest {
 
     @Autowired
     private IJpaLinksRepository jpaLinksRepository;
-
-    @Container
-    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer(
-                    DockerImageName.parse("postgres:16-alpine"))
-            .withDatabaseName("test")
-            .withPassword("test")
-            .withUsername("test");
-
-    @DynamicPropertySource
-    static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-    }
 
     @Autowired
     private MockMvc mockMvc;

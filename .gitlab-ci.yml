@@ -67,7 +67,7 @@ test:
     #- docker build -t linktracker-bot:latest ./bot
     #- docker build -t linktracker-scrapper:latest ./scrapper
     #- docker images
-    - ./mvnw -pl bot,scrapper -am test -DfrokCount=1 -DreuseForks=true
+    - ./mvnw -pl bot,scrapper -am test -DforkCount=1 -DreuseForks=true
 
 
 test-e2e:
@@ -82,6 +82,8 @@ test-e2e:
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_TLS_VERIFY: 1
     DOCKER_CERT_PATH: "${DOCKER_TLS_CERTDIR}/client"
+    TESTCONTAINERS_HOST_OVERRIDE: docker
+    TESTCONTAINERS_RYUK_DISABLED: "true"
     #TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX: "${GITLAB_DOCKER_PROXY}/"
   tags:
     - dind
@@ -97,12 +99,11 @@ test-e2e:
     - docker info || true
     - echo "$CI_JOB_TOKEN" | docker login gitlab.education.tbank.ru:443 -u gitlab-ci-token --password-stdin
   script:
-    - ./mvnw package -DskipTests=true -Djacoco.skip=true
+    - ./mvnw -pl bot,scrapper -am package -DskipTests=true -Djacoco.skip=true
     - docker build -t linktracker-bot:latest ./bot
     - docker build -t linktracker-scrapper:latest ./scrapper
-    #- docker images
-    - ./mvnw -pl bot,scrapper -am clean install -DskipTests=true
-    - ./mvnw -pl e2e -am verify
+    #- ./mvnw -pl bot,scrapper -am clean install -DskipTests=true
+    - ./mvnw -pl e2e verify -Denforcer.skip=true
 
 migration:
   stage: migration
