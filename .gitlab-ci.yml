@@ -45,7 +45,7 @@ test:
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_TLS_VERIFY: 1
     DOCKER_CERT_PATH: "${DOCKER_TLS_CERTDIR}/client"
-    TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX: "${GITLAB_DOCKER_PROXY}/"
+    #TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX: "${GITLAB_DOCKER_PROXY}/"
   tags:
     - dind
   before_script:
@@ -98,7 +98,8 @@ test-e2e:
     - docker build -t linktracker-bot:latest ./bot
     - docker build -t linktracker-scrapper:latest ./scrapper
     #- docker images
-    - ./mvnw -pl e2e -am verify
+    - ./mvnw -pl bot,scrapper -am package -DskipTests=true
+    - ./mvnw -pl e2e verify
 
 migration:
   stage: migration

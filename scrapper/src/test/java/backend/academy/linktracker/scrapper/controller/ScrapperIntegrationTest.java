@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 @AutoConfigureMockMvc
 @Testcontainers
@@ -40,7 +41,7 @@ class ScrapperIntegrationTest {
     private IJpaLinksRepository jpaLinksRepository;
 
     @Container
-    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer("postgres:latest")
+    static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer(DockerImageName.parse("postgres:16-alpine"))
             .withDatabaseName("test")
             .withPassword("test")
             .withUsername("test");
