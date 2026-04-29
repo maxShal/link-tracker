@@ -34,7 +34,9 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
             .withEnv("SPRING_KAFKA_BOOTSTRAP_SERVERS", "kafka:19092")
             .withEnv("SPRING_KAFKA_CONSUMER_GROUP_ID", "bot-e2e-consumer")
             .withEnv("SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET", "earliest")
-            .withEnv("APP_MESSAGE_SEND_TOPIC", "message-send")
+            .withEnv("APP_KAFKA_TOPIC", "message-send")
+            .withEnv("APP_KAFKA_DLQ_TOPIC", "message-send-dlq")
+            .withEnv("APP_MESSAGE_TRANSPORT", "kafka")
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8080).forStatusCode(200));
 
     @Container
@@ -56,6 +58,8 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
             .withEnv("SPRING_DATASOURCE_URL", "jdbc:postgresql://postgres:5432/test")
             .withEnv("SPRING_DATASOURCE_USERNAME", "test")
             .withEnv("SPRING_DATASOURCE_PASSWORD", "test")
+            .withEnv("APP_MESSAGE_SEND_DLQ_TOPIC", "message-send-dlq")
+            .withEnv("APP_MESSAGE_TRANSPORT", "kafka")
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8081).forStatusCode(200));
 
     @Override

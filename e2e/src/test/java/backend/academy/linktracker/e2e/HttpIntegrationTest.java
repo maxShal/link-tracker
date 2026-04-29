@@ -14,6 +14,7 @@ public class HttpIntegrationTest extends AbstractScrapperBotTest {
             .withEnv("TELEGRAM_TOKEN", "test-token")
             .withEnv("APP_TELEGRAM_AUTO_START", "false")
             .withEnv("APP_TELEGRAM_URL", "http://wiremock:8080/bot")
+            .withEnv("APP_MESSAGE_TRANSPORT", "http")
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8080).forStatusCode(200));
 
     @Container
@@ -37,6 +38,7 @@ public class HttpIntegrationTest extends AbstractScrapperBotTest {
             .withEnv("SPRING_DATASOURCE_URL", "jdbc:postgresql://postgres:5432/test")
             .withEnv("SPRING_DATASOURCE_USERNAME", "test")
             .withEnv("SPRING_DATASOURCE_PASSWORD", "test")
+            .withEnv("APP_MESSAGE_TRANSPORT", "http")
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8081).forStatusCode(200));
 
     @Override
