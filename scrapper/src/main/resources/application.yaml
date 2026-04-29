@@ -53,6 +53,7 @@ app:
 
   message-send:
     topic: message-send
+    dlq-topic: message-send-dlq
     partitions: 3
     replicas: 3
 

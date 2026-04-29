@@ -5,7 +5,12 @@ spring:
   application:
     name: bot
   kafka:
-    bootstrap-servers: localhost:19092 #, localhost:29092
+    bootstrap-servers: localhost:19092, localhost:29092, localhost:39092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
     consumer:
       group-id: consumer-2
       properties:
@@ -34,6 +39,7 @@ app:
     chat-endpoint: /tg-chat/{id}
     link-endpoint: /links
     header: Tg-Chat-Id
+  message-transport: kafka #http
   messages:
     first: "Добро пожаловать! Используйте /help, чтобы посмотреть доступные команды."
     start: "Бот уже работает."
@@ -63,6 +69,9 @@ app:
 
   kafka:
     topic: message-send
+    dlq-topic: message-send-dlq
+    retry-attempts: 3
+    retry-backoff-ms: 1000
     fail-on-processing: false
 
 

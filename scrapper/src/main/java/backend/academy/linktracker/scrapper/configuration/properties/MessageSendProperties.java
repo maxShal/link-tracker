@@ -15,10 +15,12 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app.message-send")
 public class MessageSendProperties {
     String topic;
+    String dlqTopic;
     int partitions;
     short replicas;
 
     public KafkaAdmin.NewTopics toNewTopic() {
-        return new KafkaAdmin.NewTopics(new NewTopic(topic, partitions, replicas));
+        return new KafkaAdmin.NewTopics(
+                new NewTopic(topic, partitions, replicas), new NewTopic(dlqTopic, partitions, replicas));
     }
 }
