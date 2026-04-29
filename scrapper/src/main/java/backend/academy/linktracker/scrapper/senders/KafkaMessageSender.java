@@ -2,10 +2,6 @@ package backend.academy.linktracker.scrapper.senders;
 
 import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
-import backend.academy.linktracker.scrapper.util.Utils;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class KafkaMessageSender implements ISendUpdate {
 
     private final KafkaTemplate<String, LinkUpdateRequest> kafkaTemplate;
+    private final MassageForSendMaker massageForSendMaker;
 
     @Value("${app.message-send.topic}")
     private String topic;
@@ -25,39 +22,6 @@ public class KafkaMessageSender implements ISendUpdate {
     @Override
     public void send(LinkForSend linkForSend) {
 
-        String author = linkForSend.author();
-        String title = linkForSend.title();
-        String body = linkForSend.description();
-
-        String updateTime = OffsetDateTime.parse(linkForSend.createdAt())
-                .atZoneSameInstant(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-
-        String description = """
-                        %n\
-                        Автор: %s%n\
-                        Название: %s%n\
-                        Время создания: %s%n\
-                        Описание: %s%n\
-                        """.formatted(author, title, updateTime, replaceHtml(makeShoter(body)));
-
-        kafkaTemplate.send(
-                topic,
-                linkForSend.url(),
-                new LinkUpdateRequest(linkForSend.linkId(), linkForSend.url(), description, linkForSend.tgChatIds()));
-    }
-
-    private String makeShoter(String body) {
-        if (body != null && body.length() > Utils.MAX_POST_LENGTH) {
-            return body.substring(0, Utils.MAX_POST_LENGTH);
-        }
-        return body;
-    }
-
-    private String replaceHtml(String body) {
-        if (body == null || body.isBlank()) {
-            return "";
-        }
-        return body.replaceAll(Utils.HTML_REGEX, "");
+        kafkaTemplate.send(topic, linkForSend.url(), massageForSendMaker.LinkForSend(linkForSend));
     }
 }
