@@ -1,6 +1,5 @@
 package backend.academy.linktracker.scrapper;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -36,7 +35,7 @@ class HttpMessageSenderTest {
         LinkUpdateRequest request =
                 new LinkUpdateRequest(1L, "https://github.com/owner/repo", "description", List.of(1L));
 
-        when(massageForSendMaker.LinkForSend(linkForSend)).thenReturn(request);
+        when(massageForSendMaker.linkForSend(linkForSend)).thenReturn(request);
 
         httpMessageSender.send(linkForSend);
 

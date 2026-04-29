@@ -22,6 +22,6 @@ public class KafkaMessageSender implements ISendUpdate {
     @Override
     public void send(LinkForSend linkForSend) {
 
-        kafkaTemplate.send(topic, linkForSend.url(), massageForSendMaker.LinkForSend(linkForSend));
+        kafkaTemplate.send(topic, linkForSend.url(), massageForSendMaker.linkForSend(linkForSend));
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class MassageForSendMaker {
-    public LinkUpdateRequest LinkForSend(LinkForSend linkForSend) {
+    public LinkUpdateRequest linkForSend(LinkForSend linkForSend) {
         String author = linkForSend.author();
         String tittle = linkForSend.title();
         String body = linkForSend.description();

@@ -17,7 +17,7 @@ class MassageForSendMakerTest {
         LinkForSend linkForSend = new LinkForSend(
                 1L, "https://github.com/owner/repo", "title", "author", "2026-04-07T10:00:00Z", longText, List.of(1L));
 
-        LinkUpdateRequest request = maker.LinkForSend(linkForSend);
+        LinkUpdateRequest request = maker.linkForSend(linkForSend);
 
         assertTrue(request.description().contains("a".repeat(200)));
         assertFalse(request.description().contains("a".repeat(201)));

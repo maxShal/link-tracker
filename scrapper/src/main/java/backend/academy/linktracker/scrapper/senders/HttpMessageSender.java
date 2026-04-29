@@ -17,6 +17,6 @@ public class HttpMessageSender implements ISendUpdate {
 
     public void send(LinkForSend linkForSend) {
 
-        botClient.sendUpdate(massageForSendMaker.LinkForSend(linkForSend));
+        botClient.sendUpdate(massageForSendMaker.linkForSend(linkForSend));
     }
 }
