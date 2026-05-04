@@ -18,6 +18,18 @@ spring:
     hibernate:
       ddl-auto: none
 
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600
+      cache-null-values: false
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+
   kafka:
     bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
     producer:
@@ -26,7 +38,6 @@ spring:
         batch.size: 1024
         linger.ms: 10000
         spring.json.add.type.headers: false
-      #schema.registry.url: http://localhost:8083
 
 app:
   scheduler:
@@ -35,7 +46,7 @@ app:
     check: 10000
     threads: 4
   repository-type: jdbc
-  message-transport: kafka #http
+  message-transport: http #kafka
   stackoverflow:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
     key: ${STACKOVERFLOW_KEY} # Use env variable. DO NOT KEEP TOKEN HERE

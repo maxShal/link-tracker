@@ -25,10 +25,14 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      valkey:
+        condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres_db
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATA_REDIS_HOST: valkey
+      SPRING_DATA_REDIS_PORT: 6379
       APP_STACKOVERFLOW_URL: ${APP_STACKOVERFLOW_URL:-https://api.stackexchange.com}
       STACKOVERFLOW_KEY: ${STACKOVERFLOW_KEY} # Use env variable. DO NOT KEEP TOKEN HERE
       APP_GITHUB_URL: ${APP_GITHUB_URL:-https://api.github.com}
@@ -44,6 +48,11 @@ services:
       - APP_SCRAPPER_URL=${APP_SCRAPPER_URL:-http://scrapper:8081}
     depends_on:
       - scrapper
+
+  valkey:
+    image: valkey/valkey:latest
+    ports:
+      - "6379:6379"
 
 
 

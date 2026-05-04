@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +29,7 @@ public class LinksService {
 
     private final ITgChatRepository chatRepository;
 
+    @CacheEvict(value = "links", key = "#chatId")
     public LinkResponse addLink(Long chatId, AddLinkRequest addLinkRequest) {
 
         if (!chatRepository.existsChats(chatId)) {
@@ -42,6 +45,7 @@ public class LinksService {
         return new LinkResponse(saved.id(), saved.url(), saved.tags());
     }
 
+    @Cacheable(value = "links", key = "#chatId + ':' + #page + ':' + #size")
     public ListLinksResponse getAllLinks(long chatId, int page, int size) {
         if (!chatRepository.existsChats(chatId)) {
             throw new ChatNotFoundException("Чат" + chatId + " не найден");
@@ -52,6 +56,7 @@ public class LinksService {
         return new ListLinksResponse(links, links.size());
     }
 
+    @CacheEvict(value = "links", key = "#chatId")
     public LinkResponse deleteLink(Long chatId, RemoveLinkRequest removeLinkRequest) {
         if (!chatRepository.existsChats(chatId)) {
             throw new ChatNotFoundException("Чат" + chatId + " не найден");
