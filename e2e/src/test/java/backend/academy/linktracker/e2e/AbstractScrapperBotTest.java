@@ -10,8 +10,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -20,24 +18,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
 @Testcontainers
-public class IntegrationTestBotAndScrapper {
+public abstract class AbstractScrapperBotTest {
+    protected static final Network NETWORK = Network.newNetwork();
 
-    private static final Network NETWORK = Network.newNetwork();
-
-    @Container
-    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:latest")
-            .withDatabaseName("test")
-            .withUsername("test")
-            .withPassword("test")
-            .withNetwork(NETWORK)
-            .withNetworkAliases("postgres");
-
-    @DynamicPropertySource
-    static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
+    protected abstract GenericContainer<?> scrapper();
 
     @Container
     static GenericContainer<?> wiremock = new GenericContainer<>("wiremock/wiremock:3.9.1")
@@ -47,51 +31,43 @@ public class IntegrationTestBotAndScrapper {
             .waitingFor(Wait.forListeningPort());
 
     @Container
-    static GenericContainer<?> bot = new GenericContainer<>("linktracker-bot:latest")
-            .withExposedPorts(8080)
+    static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine")
+            .withDatabaseName("test")
+            .withUsername("test")
+            .withPassword("test")
             .withNetwork(NETWORK)
-            .withNetworkAliases("bot")
-            .withEnv("TELEGRAM_TOKEN", "test-token")
-            .withEnv("APP_TELEGRAM_AUTO_START", "false")
-            .withEnv("APP_TELEGRAM_URL", "http://wiremock:8080/bot")
-            .waitingFor(Wait.forHttp("/actuator/health").forPort(8080).forStatusCode(200));
-
-    @Container
-    static GenericContainer<?> scrapper = new GenericContainer<>("linktracker-scrapper:latest")
-            .withExposedPorts(8081)
-            .withNetwork(NETWORK)
-            .withNetworkAliases("scrapper")
-            .dependsOn(bot, wiremock)
-            .withEnv("APP_BOT_URL", "http://bot:8080")
-            .withEnv("APP_GITHUB_URL", "http://wiremock:8080")
-            .withEnv("APP_STACKOVERFLOW_URL", "http://wiremock:8080")
-            .withEnv("GITHUB_TOKEN", "test-github-token")
-            .withEnv("STACKOVERFLOW_KEY", "test-key")
-            .withEnv("SPRING_DATASOURCE_URL", "jdbc:postgresql://postgres:5432/test")
-            .withEnv("SPRING_DATASOURCE_USERNAME", "test")
-            .withEnv("SPRING_DATASOURCE_PASSWORD", "test")
-            .waitingFor(Wait.forHttp("/actuator/health").forPort(8081).forStatusCode(200));
+            .withNetworkAliases("postgres")
+            .waitingFor(Wait.forListeningPort());
 
     @Test
     void scrapperSendUpdateAndBotSendTest() throws Exception {
         HttpClient httpClient = HttpClient.newHttpClient();
-        String scrapperBaseUrl = "http://" + scrapper.getHost() + ":" + scrapper.getMappedPort(8081);
+
+        String scrapperBaseUrl =
+                "http://" + scrapper().getHost() + ":" + scrapper().getMappedPort(8081);
         String wiremockBaseUrl = "http://" + wiremock.getHost() + ":" + wiremock.getMappedPort(8080);
 
         String githubStub = """
             {
               "request": {
                 "method": "GET",
-                "urlPath": "/repos/owner/repo"
+                "urlPath": "/repos/owner/repo/issues"
               },
               "response": {
                 "status": 200,
                 "headers": {
                   "Content-Type": "application/json"
                 },
-                "jsonBody": {
-                  "pushed_at": "2026-04-20T10:00:00Z"
-                }
+                "jsonBody": [
+                  {
+                    "title": "New issue from Kafka e2e",
+                    "user": {
+                      "login": "octocat"
+                    },
+                    "created_at": "2026-05-20T10:00:00Z",
+                    "body": "Kafka notification body"
+                  }
+                ]
               }
             }
             """;
@@ -171,7 +147,7 @@ public class IntegrationTestBotAndScrapper {
                     HttpResponse.BodyHandlers.ofString());
 
             assertEquals(200, request.statusCode());
-            assertTrue(request.body().contains("/repos/owner/repo"));
+            assertTrue(request.body().contains("/repos/owner/repo/issues"));
         });
 
         await().atMost(Duration.ofSeconds(40)).untilAsserted(() -> {
@@ -186,6 +162,7 @@ public class IntegrationTestBotAndScrapper {
 
             assertEquals(200, request.statusCode());
             assertTrue(body.contains("sendMessage"));
+            assertTrue(body.contains("New issue from Kafka e2e"));
         });
     }
 }

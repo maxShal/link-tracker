@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  kafka-1:
+    image: apache/kafka:latest
+    #hostname: kafka
+    container_name: kafka-1
+    ports:
+      - "19092:19092"
+    networks:
+      - kafka
+    environment:
+      - KAFKA_NODE_ID=0
+      - KAFKA_PROCESS_ROLES=controller,broker
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=0@kafka-1:9093,1@kafka-2:9093,2@kafka-3:9093
+      - KAFKA_CLUSTER_ID=kraft-cluster-1
+      - KAFKA_LISTENERS=BROKER://kafka-1:9092,CONTROLLER://kafka-1:9093,DOCKER://0.0.0.0:19092
+      - KAFKA_ADVERTISED_LISTENERS=BROKER://kafka-1:9092,DOCKER://localhost:19092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT,DOCKER:PLAINTEXT
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_INTER_BROKER_LISTENER_NAME=BROKER
+      #- KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+
+  kafka-2:
+    image: apache/kafka:latest
+    ports:
+      - "29092:29092"
+    networks:
+      - kafka
+    environment:
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=controller,broker
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=0@kafka-1:9093,1@kafka-2:9093,2@kafka-3:9093
+      - KAFKA_CLUSTER_ID=kraft-cluster-1
+      - KAFKA_LISTENERS=BROKER://kafka-2:9092,CONTROLLER://kafka-2:9093,DOCKER://0.0.0.0:29092
+      - KAFKA_ADVERTISED_LISTENERS=BROKER://kafka-2:9092,DOCKER://localhost:29092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT,DOCKER:PLAINTEXT
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_INTER_BROKER_LISTENER_NAME=BROKER
+
+  kafka-3:
+    image: apache/kafka:latest
+    ports:
+      - "39092:39092"
+    networks:
+      - kafka
+    environment:
+      - KAFKA_NODE_ID=2
+      - KAFKA_PROCESS_ROLES=controller,broker
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=0@kafka-1:9093,1@kafka-2:9093,2@kafka-3:9093
+      - KAFKA_CLUSTER_ID=kraft-cluster-1
+      - KAFKA_LISTENERS=BROKER://kafka-3:9092,CONTROLLER://kafka-3:9093,DOCKER://0.0.0.0:39092
+      - KAFKA_ADVERTISED_LISTENERS=BROKER://kafka-3:9092,DOCKER://localhost:39092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT,DOCKER:PLAINTEXT
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_INTER_BROKER_LISTENER_NAME=BROKER
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    networks:
+      - kafka
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      - "8082:8080"
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    volumes:
+      - ./broker-config.yml:/etc/kafkaui/config.yml
+
+networks:
+  kafka:

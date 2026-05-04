@@ -45,7 +45,10 @@ test:
     DOCKER_TLS_CERTDIR: "/certs"
     DOCKER_TLS_VERIFY: 1
     DOCKER_CERT_PATH: "${DOCKER_TLS_CERTDIR}/client"
-    TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX: "${GITLAB_DOCKER_PROXY}/"
+    TESTCONTAINERS_HOST_OVERRIDE: docker
+    TESTCONTAINERS_RYUK_DISABLED: "true"
+
+    #TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX: "${GITLAB_DOCKER_PROXY}/"
   tags:
     - dind
   before_script:
@@ -60,7 +63,47 @@ test:
     - docker info || true
     - echo "$CI_JOB_TOKEN" | docker login gitlab.education.tbank.ru:443 -u gitlab-ci-token --password-stdin
   script:
-    - ./mvnw verify
+    #- ./mvnw package -DskipTests=true -Djacoco.skip=true
+    #- docker build -t linktracker-bot:latest ./bot
+    #- docker build -t linktracker-scrapper:latest ./scrapper
+    #- docker images
+    - ./mvnw -pl bot,scrapper -am test -DforkCount=1 -DreuseForks=true
+
+
+test-e2e:
+  stage: test
+  needs:
+    - build
+  services:
+    - name: docker:29.0.1-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_VERIFY: 1
+    DOCKER_CERT_PATH: "${DOCKER_TLS_CERTDIR}/client"
+    TESTCONTAINERS_HOST_OVERRIDE: docker
+    TESTCONTAINERS_RYUK_DISABLED: "true"
+    #TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX: "${GITLAB_DOCKER_PROXY}/"
+  tags:
+    - dind
+  before_script:
+    - apk add --no-cache docker-cli
+    - echo "DOCKER_HOST=$DOCKER_HOST"
+    - echo "DOCKER_TLS_CERTDIR=$DOCKER_TLS_CERTDIR"
+    - echo "DOCKER_TLS_VERIFY=$DOCKER_TLS_VERIFY"
+    - echo "DOCKER_CERT_PATH=$DOCKER_CERT_PATH"
+    - ls -la /certs || true
+    - ls -la /certs/client || true
+    - docker version || true
+    - docker info || true
+    - echo "$CI_JOB_TOKEN" | docker login gitlab.education.tbank.ru:443 -u gitlab-ci-token --password-stdin
+  script:
+    - ./mvnw -pl bot,scrapper -am package -DskipTests=true -Djacoco.skip=true
+    - docker build -t linktracker-bot:latest ./bot
+    - docker build -t linktracker-scrapper:latest ./scrapper
+    #- ./mvnw -pl bot,scrapper -am clean install -DskipTests=true
+    - ./mvnw -pl e2e verify -Denforcer.skip=true
 
 migration:
   stage: migration

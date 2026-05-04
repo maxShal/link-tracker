@@ -4,10 +4,30 @@ server:
 spring:
   application:
     name: bot
+  kafka:
+    bootstrap-servers: localhost:19092, localhost:29092, localhost:39092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: consumer-2
+      properties:
+        enable.auto.commit: false
+        auto.offset.reset: latest
+        isolation.level: read_committed
+        fetch.min.bytes: 1024
+        fetch.max.bytes: 1048576
+        fetch.max.wait.ms: 10000
+        max.poll.interval.ms: 10000
+        max.poll.records: 10
+
 config:
   import:
     optional:
       file: .env
+
 app:
   telegram:
     url: ${APP_TELEGRAM_URL:https://api.telegram.org/bot}
@@ -19,6 +39,7 @@ app:
     chat-endpoint: /tg-chat/{id}
     link-endpoint: /links
     header: Tg-Chat-Id
+  message-transport: kafka #http
   messages:
     first: "Добро пожаловать! Используйте /help, чтобы посмотреть доступные команды."
     start: "Бот уже работает."
@@ -46,7 +67,12 @@ app:
       Неизвестная команда.
       Воспользуйтесь /help
 
-
+  kafka:
+    topic: message-send
+    dlq-topic: message-send-dlq
+    retry-attempts: 3
+    retry-backoff-ms: 1000
+    fail-on-processing: false
 
 
 
