@@ -39,8 +39,6 @@ public class LinkUpdaterScheduler {
         }
     }
 
-
-
     private void linkProcess(List<LinkForUpdateCheck> links) throws InterruptedException {
         int chunkSize = calculateChunkSize(links.size(), properties.getThreads());
         List<List<LinkForUpdateCheck>> partitions = partition(links, chunkSize);
