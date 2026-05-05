@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,6 +40,9 @@ class ScrapperIntegrationTest extends AbstractPostgresContainerTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private CacheManager cacheManager;
+
+    @Autowired
     JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -47,6 +52,11 @@ class ScrapperIntegrationTest extends AbstractPostgresContainerTest {
         jdbcTemplate.update("DELETE FROM tags");
         jdbcTemplate.update("DELETE FROM links");
         jdbcTemplate.update("DELETE FROM chats");
+
+        Cache cache = cacheManager.getCache("links");
+        if (cache != null) {
+            cache.clear();
+        }
     }
 
     @Test
