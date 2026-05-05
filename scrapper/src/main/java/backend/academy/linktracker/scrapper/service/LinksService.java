@@ -44,7 +44,7 @@ public class LinksService {
         Link saved = linksRepository.saveLink(chatId, link);
         return new LinkResponse(saved.id(), saved.url(), saved.tags());
     }
-
+    //
     @Cacheable(value = "links", key = "#chatId + ':' + #page + ':' + #size")
     public ListLinksResponse getAllLinks(long chatId, int page, int size) {
         if (!chatRepository.existsChats(chatId)) {
