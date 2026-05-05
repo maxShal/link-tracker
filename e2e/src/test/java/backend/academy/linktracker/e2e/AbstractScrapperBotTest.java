@@ -29,6 +29,12 @@ public abstract class AbstractScrapperBotTest {
             .withNetwork(NETWORK)
             .withNetworkAliases("wiremock")
             .waitingFor(Wait.forListeningPort());
+    @Container
+    static GenericContainer<?> valkey = new GenericContainer<>("valkey/valkey:latest")
+        .withExposedPorts(6379)
+        .withNetwork(NETWORK)
+        .withNetworkAliases("valkey")
+        .waitingFor(Wait.forListeningPort());
 
     @Container
     static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine")
