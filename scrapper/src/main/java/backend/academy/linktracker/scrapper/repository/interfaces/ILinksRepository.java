@@ -17,6 +17,8 @@ public interface ILinksRepository {
 
     List<Link> findAllLinks(Long chatId, int page, int size);
 
+    List<Link> findAllLinks(Long chatId);
+
     Long findLinkIdByUrl(String url);
 
     Map<Long, List<Link>> findAllLinksGroupedByChatId(int page, int size);

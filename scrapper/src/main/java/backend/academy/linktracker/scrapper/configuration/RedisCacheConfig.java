@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.scrapper.configuration;
 
 import java.time.Duration;
@@ -19,3 +20,4 @@ public class RedisCacheConfig {
                         new GenericJackson2JsonRedisSerializer()));
     }
 }
+*/
