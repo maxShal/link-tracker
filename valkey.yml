@@ -1,0 +1,88 @@
+version: '3.9'
+
+services:
+  valkey-1:
+    image: valkey/valkey:latest
+    container_name: valkey-1
+    command: >
+      valkey-server
+      --port 6379
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --cluster-announce-hostname valkey-1
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+    ports:
+      - "6379:6379"
+      - "16379:16379"
+    healthcheck:
+      test: [ "CMD", "valkey-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  valkey-2:
+    image: valkey/valkey:latest
+    container_name: valkey-2
+    command: >
+      valkey-server
+      --port 6379
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --cluster-announce-hostname valkey-2
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+    ports:
+      - "6380:6379"
+      - "16380:16379"
+    healthcheck:
+      test: [ "CMD", "valkey-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  valkey-3:
+    image: valkey/valkey:latest
+    container_name: valkey-3
+    command: >
+      valkey-server
+      --port 6379
+      --cluster-enabled yes
+      --cluster-config-file nodes.conf
+      --cluster-node-timeout 5000
+      --appendonly yes
+      --cluster-announce-hostname valkey-3
+      --cluster-announce-port 6379
+      --cluster-announce-bus-port 16379
+    ports:
+      - "6381:6379"
+      - "16381:16379"
+    healthcheck:
+      test: [ "CMD", "valkey-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  valkey-cluster-init:
+    image: valkey/valkey:latest
+    container_name: valkey-cluster-init
+    depends_on:
+      valkey-1:
+        condition: service_healthy
+      valkey-2:
+        condition: service_healthy
+      valkey-3:
+        condition: service_healthy
+    command: >
+      sh -c "
+      valkey-cli --cluster create
+      valkey-1:6379
+      valkey-2:6379
+      valkey-3:6379
+      --cluster-replicas 0
+      --cluster-yes
+      "

@@ -1,26 +1,23 @@
 package backend.academy.linktracker.scrapper.service.cache;
 
-import backend.academy.linktracker.scrapper.exception.errors.ChatNotFoundException;
-import backend.academy.linktracker.scrapper.model.response.LinkResponse;
 import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
-import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
-import backend.academy.linktracker.scrapper.repository.interfaces.ITgChatRepository;
+import backend.academy.linktracker.scrapper.service.LinksService;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Duration;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClientSideCachingService {
 
     private final ValkeyTrackingService valkeyTrackingService;
 
-    private final ILinksRepository linksRepository;
-
-    private final ITgChatRepository chatRepository;
+    private final LinksService linksService;
 
     private final Cache<Long, ListLinksResponse> cache = Caffeine.newBuilder()
             .maximumSize(10_000)
@@ -28,24 +25,24 @@ public class ClientSideCachingService {
             .build();
 
     public ListLinksResponse getAllLinks(long chatId, int page, int size) {
-        ListLinksResponse allLinksList = cache.get(chatId, id -> {
-            valkeyTrackingService.track(id);
 
-            if (!chatRepository.existsChats(id)) {
-                throw new ChatNotFoundException("Chat: " + id + "not found");
-            }
+        var cached = cache.getIfPresent(chatId);
+        if (cached != null) {
+            log.atInfo().addKeyValue("Cash", cached).log("Send from cash");
+            return paginate(cached, page, size);
+        }
 
-            var links = linksRepository.findAllLinks(id).stream()
-                    .map(link -> new LinkResponse(link.id(), link.url(), link.tags()))
-                    .toList();
+        log.atInfo().addKeyValue("Cash", chatId).log("Cash: " + chatId + " is empty");
 
-            return new ListLinksResponse(links, links.size());
-        });
+        var allLinksList = linksService.getAllLinks(chatId);
+        cache.put(chatId, allLinksList);
+        log.atInfo().addKeyValue("Cash", chatId).log("Cash put in " + chatId);
 
         return paginate(allLinksList, page, size);
     }
 
     public void evict(long chatId) {
+        log.atInfo().addKeyValue("Valkey", "Cash").log("evict " + chatId);
         cache.invalidate(chatId);
     }
 

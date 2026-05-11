@@ -18,12 +18,6 @@ spring:
     hibernate:
       ddl-auto: none
 
-
-  cache:
-    type: none
-    ##redis:
-      ##time-to-live: 10m
-      ##cache-null-values: false
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
@@ -67,5 +61,8 @@ app:
     dlq-topic: message-send-dlq
     partitions: 3
     replicas: 3
+
+  valkey:
+    channel: ${APP_VALKEY_CHANEL:links:invalidate}
 
 

@@ -30,7 +30,6 @@ public class LinksService {
 
     private final ValkeyTrackingService valkeyTrackingService;
 
-    // @CacheEvict(value = "links", key = "#chatId")
     public LinkResponse addLink(Long chatId, AddLinkRequest addLinkRequest) {
 
         if (!chatRepository.existsChats(chatId)) {
@@ -47,7 +46,6 @@ public class LinksService {
         return new LinkResponse(saved.id(), saved.url(), saved.tags());
     }
 
-    // @Cacheable(value = "links", key = "#chatId + ':' + #page + ':' + #size")
     public ListLinksResponse getAllLinks(long chatId, int page, int size) {
         if (!chatRepository.existsChats(chatId)) {
             throw new ChatNotFoundException("Чат" + chatId + " не найден");
@@ -58,7 +56,16 @@ public class LinksService {
         return new ListLinksResponse(links, links.size());
     }
 
-    // @CacheEvict(value = "links", key = "#chatId")
+    public ListLinksResponse getAllLinks(long chatId) {
+        if (!chatRepository.existsChats(chatId)) {
+            throw new ChatNotFoundException("Чат" + chatId + " не найден");
+        }
+        var links = linksRepository.findAllLinks(chatId).stream()
+                .map(link -> new LinkResponse(link.id(), link.url(), link.tags()))
+                .toList();
+        return new ListLinksResponse(links, links.size());
+    }
+
     public LinkResponse deleteLink(Long chatId, RemoveLinkRequest removeLinkRequest) {
         if (!chatRepository.existsChats(chatId)) {
             throw new ChatNotFoundException("Чат" + chatId + " не найден");

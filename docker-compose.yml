@@ -31,6 +31,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres_db
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      APP_VALKEY_CLUSTER_ENABLED: true
+      APP_VALKEY_NODES: valkey-1:6379,valkey-2:6379,valkey-3:6379
       SPRING_DATA_REDIS_HOST: valkey
       SPRING_DATA_REDIS_PORT: 6379
       APP_STACKOVERFLOW_URL: ${APP_STACKOVERFLOW_URL:-https://api.stackexchange.com}
@@ -51,6 +53,7 @@ services:
 
   valkey:
     image: valkey/valkey:latest
+    container_name: valkey
     ports:
       - "6379:6379"
     healthcheck:
@@ -58,6 +61,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
 
 
 

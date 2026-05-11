@@ -5,6 +5,7 @@ import backend.academy.linktracker.scrapper.model.request.RemoveLinkRequest;
 import backend.academy.linktracker.scrapper.model.response.LinkResponse;
 import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
 import backend.academy.linktracker.scrapper.service.LinksService;
+import backend.academy.linktracker.scrapper.service.cache.ClientSideCachingService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -25,12 +26,14 @@ public class LinksController {
 
     private final LinksService linksService;
 
+    private final ClientSideCachingService clientSideCachingService;
+
     @GetMapping
     public ResponseEntity<@NotNull ListLinksResponse> getAllLinks(
             @RequestHeader("Tg-Chat-Id") Long chatId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        ListLinksResponse linksResponse = linksService.getAllLinks(chatId, page, size);
+        ListLinksResponse linksResponse = clientSideCachingService.getAllLinks(chatId, page, size);
         return ResponseEntity.ok(linksResponse);
     }
 
