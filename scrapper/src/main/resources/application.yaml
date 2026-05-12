@@ -63,6 +63,6 @@ app:
     replicas: 3
 
   valkey:
-    channel: ${APP_VALKEY_CHANEL:links:invalidate}
+    channel: ${APP_VALKEY_CHANNEL:links:invalidate}
 
 
