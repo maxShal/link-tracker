@@ -33,6 +33,39 @@ spring:
         linger.ms: 10000
         spring.json.add.type.headers: false
 
+resilience4j.retry:
+  instances:
+    githubRetry:
+      maxAttempts: 3
+      waitDuration: 500
+      exponential-backoff-multiplier: 2
+      enable-exponential-backoff: true
+      retryExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - org.springframework.web.client.ResourceAccessException
+      ignoreExceptions:
+        - org.springframework.web.client.HttpClientErrorException
+
+resilience4j.circuitbreaker:
+  instances:
+    stackOverFlowBreaker:
+      slidingWindowType: COUNT_BASED
+      minimumNumberOfCalls: 20
+      slidingWindowSize: 20
+      failureRateThreshold: 50
+      waitDurationInOpenState: 5s
+      permittedNumberOfCallsInHalfOpenState: 2
+
+
+resilience4j.ratelimiter:
+  instances:
+    getLinks:
+      limitForPeriod: 5
+      timeout-duration: 0s
+      limitRefreshPeriod: 5s
+
+
+
 app:
   scheduler:
     page: 0

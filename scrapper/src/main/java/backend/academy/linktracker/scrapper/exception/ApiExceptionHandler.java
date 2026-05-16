@@ -7,6 +7,7 @@ import backend.academy.linktracker.scrapper.exception.errors.LinkAlreadyExistExc
 import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
 import backend.academy.linktracker.scrapper.exception.errors.StackOverFlowMatchException;
 import backend.academy.linktracker.scrapper.exception.errors.TagNotFoundException;
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -117,5 +118,10 @@ public class ApiExceptionHandler {
                 exception.getMessage(),
                 List.of());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ResponseEntity<String> handleRateLimit(RequestNotPermitted exception) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Слишком много запросов");
     }
 }

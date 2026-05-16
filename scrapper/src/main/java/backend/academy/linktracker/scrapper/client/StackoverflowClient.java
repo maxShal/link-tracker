@@ -2,6 +2,7 @@ package backend.academy.linktracker.scrapper.client;
 
 import backend.academy.linktracker.scrapper.configuration.properties.StackoverflowProperties;
 import backend.academy.linktracker.scrapper.model.stackoverflow.StackoverflowRepositoryResponse;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.net.URI;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ public class StackoverflowClient {
     private final StackoverflowProperties stackoverflowProperties;
     private final RestClient stackoverflowRestClient;
 
+    @CircuitBreaker(name = "stackOverFlowBreaker")
     public StackoverflowRepositoryResponse.StackoverflowQuestionResponse getQuestion(Long questionId) {
         return stackoverflowRestClient
                 .get()
