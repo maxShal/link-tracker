@@ -39,7 +39,7 @@ app:
     chat-endpoint: /tg-chat/{id}
     link-endpoint: /links
     header: Tg-Chat-Id
-  message-transport: kafka #http
+  message-transport: http #kafka
   messages:
     first: "Добро пожаловать! Используйте /help, чтобы посмотреть доступные команды."
     start: "Бот уже работает."

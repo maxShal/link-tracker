@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ import org.springframework.util.backoff.FixedBackOff;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(ConsumerKafkaProperties.class)
+@ConditionalOnProperty(name = "app.message-transport", havingValue = "kafka")
 public class KafkaConfiguration {
     private final KafkaProperties kafkaProperties;
 

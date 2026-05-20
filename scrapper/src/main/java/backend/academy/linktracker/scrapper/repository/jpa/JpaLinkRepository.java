@@ -108,6 +108,14 @@ public class JpaLinkRepository implements ILinksRepository {
     }
 
     @Override
+    @Transactional
+    public List<Link> findAllLinks(Long chatId) {
+        return jpaChatsLinksRepository.findByChatsEntityId(chatId).stream()
+                .map(relation -> mapToModel(relation.getLinksEntity()))
+                .toList();
+    }
+
+    @Override
     public Long findLinkIdByUrl(String url) {
 
         return jpaLinksRepository.findIdByUrl(url).orElseThrow(() -> new LinkNotFoundException("Links not found!"));

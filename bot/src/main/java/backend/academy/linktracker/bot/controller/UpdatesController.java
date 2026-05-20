@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@ConditionalOnProperty(name = "app.message-transport", havingValue = "http", matchIfMissing = true)
+@ConditionalOnProperty(name = "app.message-transport", havingValue = "http" /*, matchIfMissing = true*/)
 public class UpdatesController {
 
     private final TelegramBotService telegramBotService;

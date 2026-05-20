@@ -139,6 +139,26 @@ public class JdbcLinkRepository implements ILinksRepository {
     }
 
     @Override
+    @Transactional
+    public List<Link> findAllLinks(Long chatId) {
+        List<LinksRow> linksRows = jdbcTemplate.query("""
+        SELECT l.id, l.url, l.last_updated_at
+        FROM links l
+        JOIN link_chat lc on lc.link_id = l.id
+        WHERE lc.chat_id = ?
+        ORDER BY l.id
+    """, rowMapper, chatId);
+
+        return linksRows.stream()
+                .map(row -> new Link(
+                        row.id(),
+                        row.url(),
+                        tagsRepository.findAllTagsByLinkId(row.id()),
+                        row.lastUpdatedAt() != null ? row.lastUpdatedAt().toInstant() : null))
+                .toList();
+    }
+
+    @Override
     public Long findLinkIdByUrl(String url) {
         return jdbcTemplate.queryForObject("""
         SELECT l.id

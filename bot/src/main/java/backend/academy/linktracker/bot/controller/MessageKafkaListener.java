@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@ConditionalOnProperty(name = "app.message-transport", havingValue = "kafka", matchIfMissing = true)
+@ConditionalOnProperty(name = "app.message-transport", havingValue = "kafka")
 public class MessageKafkaListener {
     private final TelegramBotService telegramBotService;
     private final Validator validator;

@@ -11,6 +11,7 @@ import backend.academy.linktracker.scrapper.model.response.LinkResponse;
 import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITgChatRepository;
+import backend.academy.linktracker.scrapper.service.cache.ValkeyTrackingService;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public class LinksService {
 
     private final ITgChatRepository chatRepository;
 
+    private final ValkeyTrackingService valkeyTrackingService;
+
     public LinkResponse addLink(Long chatId, AddLinkRequest addLinkRequest) {
 
         if (!chatRepository.existsChats(chatId)) {
@@ -39,6 +42,7 @@ public class LinksService {
         Link link = new Link(null, addLinkRequest.link(), addLinkRequest.tags(), Instant.now());
 
         Link saved = linksRepository.saveLink(chatId, link);
+        valkeyTrackingService.invalidate(chatId);
         return new LinkResponse(saved.id(), saved.url(), saved.tags());
     }
 
@@ -52,6 +56,16 @@ public class LinksService {
         return new ListLinksResponse(links, links.size());
     }
 
+    public ListLinksResponse getAllLinks(long chatId) {
+        if (!chatRepository.existsChats(chatId)) {
+            throw new ChatNotFoundException("Чат" + chatId + " не найден");
+        }
+        var links = linksRepository.findAllLinks(chatId).stream()
+                .map(link -> new LinkResponse(link.id(), link.url(), link.tags()))
+                .toList();
+        return new ListLinksResponse(links, links.size());
+    }
+
     public LinkResponse deleteLink(Long chatId, RemoveLinkRequest removeLinkRequest) {
         if (!chatRepository.existsChats(chatId)) {
             throw new ChatNotFoundException("Чат" + chatId + " не найден");
@@ -60,6 +74,8 @@ public class LinksService {
         if (removed == null) {
             throw new LinkNotFoundException("Ссылка" + removeLinkRequest.link() + "не найдена");
         }
+
+        valkeyTrackingService.invalidate(chatId);
 
         return new LinkResponse(removed.id(), removed.url(), removed.tags());
     }

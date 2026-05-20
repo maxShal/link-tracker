@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface IJpaChatsLinksRepository extends JpaRepository<ChatsLinksEntity, LinkChatId> {
     List<ChatsLinksEntity> findByChatsEntityId(Long chatId, Pageable pageable);
 
+    List<ChatsLinksEntity> findByChatsEntityId(Long chatId);
+
     Optional<ChatsLinksEntity> findByChatsEntityIdAndLinksEntityUrl(Long chatsEntityId, String url);
 
     void deleteById(LinkChatId id);

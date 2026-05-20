@@ -19,10 +19,13 @@ public class HttpIntegrationTest extends AbstractScrapperBotTest {
 
     @Container
     static GenericContainer<?> scrapper = new GenericContainer<>("linktracker-scrapper:latest")
+            .withLogConsumer(outputFrame -> System.out.print(outputFrame.getUtf8String()))
             .withExposedPorts(8081)
             .withNetwork(NETWORK)
             .withNetworkAliases("scrapper")
-            .dependsOn(postgres, bot, wiremock)
+            .dependsOn(postgres, bot, wiremock, valkey)
+            .withEnv("SPRING_DATA_REDIS_HOST", "valkey")
+            .withEnv("SPRING_DATA_REDIS_PORT", "6379")
             .withEnv("APP_BOT_URL", "http://bot:8080")
             .withEnv("SPRING_APPLICATION_JSON", """
             {
