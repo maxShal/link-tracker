@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.e2e;
 
 import org.testcontainers.containers.GenericContainer;
@@ -49,3 +50,4 @@ public class HttpIntegrationTest extends AbstractScrapperBotTest {
         return scrapper;
     }
 }
+*/

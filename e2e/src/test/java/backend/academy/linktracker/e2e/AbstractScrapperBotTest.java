@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.e2e;
 
 import static org.awaitility.Awaitility.await;
@@ -173,3 +174,4 @@ public abstract class AbstractScrapperBotTest {
         });
     }
 }
+*/

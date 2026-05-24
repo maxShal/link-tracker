@@ -1,4 +1,4 @@
-package backend.academy.linktracker.scrapper.configuration.properties;
+package backend.academy.linktracker.ai.configuration.properties;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +12,8 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Setter
 @Validated
-@ConfigurationProperties(prefix = "app.message-send")
-public class MessageSendProperties {
+@ConfigurationProperties(prefix = "app.kafka-producer")
+public class KafkaProducerProperties {
     String topic;
     String dlqTopic;
     int partitions;
@@ -21,6 +21,6 @@ public class MessageSendProperties {
 
     public KafkaAdmin.NewTopics toNewTopic() {
         return new KafkaAdmin.NewTopics(
-                new NewTopic(topic, partitions, replicas)/*, new NewTopic(dlqTopic, partitions, replicas)*/);
+            new NewTopic(topic, partitions, replicas)/*, new NewTopic(dlqTopic, partitions, replicas)*/);
     }
 }

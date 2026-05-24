@@ -1,6 +1,63 @@
 server:
-  port: 8082
+  port: 8083
 
 spring:
   application:
     name: ai-agent
+  kafka:
+    bootstrap-servers: localhost:19092, localhost:29092, localhost:39092
+    properties:
+      spring.json.add.type.headers: false
+    consumer:
+      group-id: ai-2
+      auto.offset.reset: latest
+      enable.auto.commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        isolation.level: read_committed
+        #spring.json.trusted.packages: "*"
+        fetch.min.bytes: 1024
+        fetch.max.bytes: 1048576
+        fetch.max.wait.ms: 10000
+        max.poll.interval.ms: 10000
+        max.poll.records: 10
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+      properties:
+        acks: 1
+        batch.size: 1024
+        linger.ms: 10000
+        spring.json.add.type.headers: false
+
+app:
+  kafka-producer:
+    topic: link.processed-updates
+    partitions: 3
+    replicas: 3
+    #dlq-topic: message-send-dlq
+    retry-attempts: 3
+    retry-backoff-ms: 1000
+    fail-on-processing: false
+
+
+  kafka-consumer:
+    topic: link.raw-updates
+    #dlq-topic: message-send-dlq
+    partitions: 3
+    replicas: 3
+
+  ai-agent:
+    filtering:
+      stop-words:
+        - spam
+        - ads
+        - promo
+      excluded-authors:
+        - bot-user
+      min-length: 1
+    summarization:
+      threshold: 500

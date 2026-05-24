@@ -35,7 +35,7 @@ public class KafkaConfiguration {
 
     private final ConsumerKafkaProperties consumerKafkaProperties;
 
-    @Bean
+/*    @Bean
     public DefaultErrorHandler kafkaErrorHandler(KafkaTemplate<Object, Object> kafkaTemplate) {
         var recover = new DeadLetterPublishingRecoverer(
                 kafkaTemplate,
@@ -54,14 +54,14 @@ public class KafkaConfiguration {
 
         errorHandler.setLogLevel(KafkaException.Level.WARN);
         return errorHandler;
-    }
+    }*/
 
     @Bean("defaultFactory")
     public ConcurrentKafkaListenerContainerFactory<String, LinkUpdate> kafkaListenerContainerFactory(
-            ConsumerFactory<String, LinkUpdate> consumerFactory, DefaultErrorHandler errorHandler) {
+            ConsumerFactory<String, LinkUpdate> consumerFactory/*, DefaultErrorHandler errorHandler*/) {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, LinkUpdate>();
         factory.setConsumerFactory(consumerFactory);
-        factory.setCommonErrorHandler(errorHandler);
+        //factory.setCommonErrorHandler(errorHandler);
         return factory;
     }
 
