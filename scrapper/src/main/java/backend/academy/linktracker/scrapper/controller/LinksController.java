@@ -6,6 +6,7 @@ import backend.academy.linktracker.scrapper.model.response.LinkResponse;
 import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
 import backend.academy.linktracker.scrapper.service.LinksService;
 import backend.academy.linktracker.scrapper.service.cache.ClientSideCachingService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,7 @@ public class LinksController {
 
     private final ClientSideCachingService clientSideCachingService;
 
+    @RateLimiter(name = "getLinks")
     @GetMapping
     public ResponseEntity<@NotNull ListLinksResponse> getAllLinks(
             @RequestHeader("Tg-Chat-Id") Long chatId,
