@@ -24,22 +24,22 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
 
     @Container
     static GenericContainer<?> aiAgent = new GenericContainer<>("linktracker-ai-agent:latest")
-        .withExposedPorts(8083)
-        .withNetwork(NETWORK)
-        .withNetworkAliases("ai-agent")
-        .dependsOn(kafka)
-        .withEnv("SPRING_KAFKA_BOOTSTRAP_SERVERS", "kafka:19092")
-        .withEnv("SPRING_KAFKA_CONSUMER_GROUP_ID", "ai-agent-e2e-consumer")
-        .withEnv("SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET", "earliest")
-        .withEnv("APP_KAFKA_CONSUMER_TOPIC", "link.raw-updates")
-        .withEnv("APP_KAFKA_CONSUMER_PARTITIONS", "1")
-        .withEnv("APP_KAFKA_CONSUMER_REPLICAS", "1")
-        .withEnv("APP_KAFKA_PRODUCER_TOPIC", "link.processed-updates")
-        .withEnv("APP_KAFKA_PRODUCER_PARTITIONS", "1")
-        .withEnv("APP_KAFKA_PRODUCER_REPLICAS", "1")
-        .withEnv("AI_AGENT_SUMMARIZATION_THRESHOLD", "500")
-        .withLogConsumer(outputFrame -> System.out.print("[AI] " + outputFrame.getUtf8String()))
-        .waitingFor(Wait.forHttp("/actuator/health").forPort(8083).forStatusCode(200));
+            .withExposedPorts(8083)
+            .withNetwork(NETWORK)
+            .withNetworkAliases("ai-agent")
+            .dependsOn(kafka)
+            .withEnv("SPRING_KAFKA_BOOTSTRAP_SERVERS", "kafka:19092")
+            .withEnv("SPRING_KAFKA_CONSUMER_GROUP_ID", "ai-agent-e2e-consumer")
+            .withEnv("SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET", "earliest")
+            .withEnv("APP_KAFKA_CONSUMER_TOPIC", "link.raw-updates")
+            .withEnv("APP_KAFKA_CONSUMER_PARTITIONS", "1")
+            .withEnv("APP_KAFKA_CONSUMER_REPLICAS", "1")
+            .withEnv("APP_KAFKA_PRODUCER_TOPIC", "link.processed-updates")
+            .withEnv("APP_KAFKA_PRODUCER_PARTITIONS", "1")
+            .withEnv("APP_KAFKA_PRODUCER_REPLICAS", "1")
+            .withEnv("AI_AGENT_SUMMARIZATION_THRESHOLD", "500")
+            .withLogConsumer(outputFrame -> System.out.print("[AI] " + outputFrame.getUtf8String()))
+            .waitingFor(Wait.forHttp("/actuator/health").forPort(8083).forStatusCode(200));
 
     @Container
     static GenericContainer<?> bot = new GenericContainer<>("linktracker-bot:latest")
@@ -54,7 +54,7 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
             .withEnv("SPRING_KAFKA_CONSUMER_GROUP_ID", "bot-e2e-consumer")
             .withEnv("SPRING_KAFKA_CONSUMER_AUTO_OFFSET_RESET", "earliest")
             .withEnv("APP_KAFKA_TOPIC", "link.processed-updates")
-            //.withEnv("APP_KAFKA_DLQ_TOPIC", "message-send-dlq")
+            // .withEnv("APP_KAFKA_DLQ_TOPIC", "message-send-dlq")
             .withEnv("APP_MESSAGE_TRANSPORT", "kafka")
             .withLogConsumer(outputFrame -> System.out.print("[BOT] " + outputFrame.getUtf8String()))
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8080).forStatusCode(200));
@@ -80,11 +80,10 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
             .withEnv("SPRING_DATASOURCE_URL", "jdbc:postgresql://postgres:5432/test")
             .withEnv("SPRING_DATASOURCE_USERNAME", "test")
             .withEnv("SPRING_DATASOURCE_PASSWORD", "test")
-            //.withEnv("APP_MESSAGE_SEND_DLQ_TOPIC", "message-send-dlq")
+            // .withEnv("APP_MESSAGE_SEND_DLQ_TOPIC", "message-send-dlq")
             .withLogConsumer(outputFrame -> System.out.print("[SCRAPPER] " + outputFrame.getUtf8String()))
             .withEnv("APP_MESSAGE_TRANSPORT", "kafka")
             .waitingFor(Wait.forHttp("/actuator/health").forPort(8081).forStatusCode(200));
-
 
     @Override
     protected GenericContainer<?> scrapper() {

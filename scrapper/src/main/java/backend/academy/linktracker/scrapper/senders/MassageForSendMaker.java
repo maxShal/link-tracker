@@ -19,7 +19,6 @@ public class MassageForSendMaker {
                 .atZoneSameInstant(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
-
         String description = """
                         Название: %s%n\
                         Время создания: %s%n\

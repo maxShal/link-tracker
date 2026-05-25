@@ -157,7 +157,7 @@ public abstract class AbstractScrapperBotTest {
             assertTrue(request.body().contains("/repos/owner/repo/issues"));
         });
 
-/*        await().atMost(Duration.ofSeconds(40)).untilAsserted(() -> {
+        /*        await().atMost(Duration.ofSeconds(40)).untilAsserted(() -> {
             var request = httpClient.send(
                     HttpRequest.newBuilder()
                             .uri(URI.create(wiremockBaseUrl + "/__admin/requests"))

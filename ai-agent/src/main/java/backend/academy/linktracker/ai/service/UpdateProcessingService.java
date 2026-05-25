@@ -25,7 +25,7 @@ public class UpdateProcessingService {
                            %n\
                            Автор: %s%n\
                            %s%n\
-                           """.formatted(rawLinkUpdate.author(),description);
+                           """.formatted(rawLinkUpdate.author(), description);
 
         return Optional.of(new FilteredLinkUpdate(
                 rawLinkUpdate.id(), rawLinkUpdate.url(), fullDescription, rawLinkUpdate.tgChatIds(), "HIGH"));
