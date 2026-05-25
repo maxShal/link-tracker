@@ -33,7 +33,7 @@ class HttpMessageSenderTest {
         LinkForSend linkForSend = new LinkForSend(
                 1L, "https://github.com/owner/repo", "title", "author", "2026-04-07T10:00:00Z", "body", List.of(1L));
         LinkUpdateRequest request =
-                new LinkUpdateRequest(1L, "https://github.com/owner/repo", "description", "author",List.of(1L));
+                new LinkUpdateRequest(1L, "https://github.com/owner/repo", "description", "author", List.of(1L));
 
         when(massageForSendMaker.linkForSend(linkForSend)).thenReturn(request);
 

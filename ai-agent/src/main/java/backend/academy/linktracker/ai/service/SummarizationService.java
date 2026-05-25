@@ -9,19 +9,14 @@ import org.springframework.stereotype.Service;
 public class SummarizationService {
     private final SummarizationProperties summarizationProperties;
 
-    public String summarization(String text)
-    {
-        if (text.isEmpty())
-        {
+    public String summarization(String text) {
+        if (text.isEmpty()) {
             return null;
         }
 
-        if(text.length()<=summarizationProperties.threshold())
-        {
+        if (text.length() <= summarizationProperties.threshold()) {
             return text;
         }
-        return text.substring(0, summarizationProperties.threshold())+"...";
-
-
+        return text.substring(0, summarizationProperties.threshold()) + "...";
     }
 }

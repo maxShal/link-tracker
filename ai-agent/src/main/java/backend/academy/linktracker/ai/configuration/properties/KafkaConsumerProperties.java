@@ -7,11 +7,9 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "app.kafka-consumer")
 public record KafkaConsumerProperties(
-    @NotBlank String topic,
-    int partitions,
-    short replicas,
-    //@NotBlank String dlqTopic,
-    long retryAttempts,
-    long retryBackoffMs
-) {
-}
+        @NotBlank String topic,
+        int partitions,
+        short replicas,
+        // @NotBlank String dlqTopic,
+        long retryAttempts,
+        long retryBackoffMs) {}

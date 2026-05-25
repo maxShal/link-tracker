@@ -21,6 +21,6 @@ public class MessageSendProperties {
 
     public KafkaAdmin.NewTopics toNewTopic() {
         return new KafkaAdmin.NewTopics(
-                new NewTopic(topic, partitions, replicas)/*, new NewTopic(dlqTopic, partitions, replicas)*/);
+                new NewTopic(topic, partitions, replicas) /*, new NewTopic(dlqTopic, partitions, replicas)*/);
     }
 }

@@ -21,19 +21,14 @@ public class RawUpdateListener {
 
     @KafkaListener(topics = "${app.kafka-consumer.topic}", containerFactory = "defaultFactory")
     public void listen(RawLinkUpdate update) {
-        try{
-            log.atInfo()
-                .addKeyValue("id", update.id())
-                .log("Получил raw update: {}", update);
+        try {
+            log.atInfo().addKeyValue("id", update.id()).log("Получил raw update: {}", update);
 
-            processingService.process(update)
-                .ifPresent(processed -> {
-                    kafkaTemplate.send(kafkaProducerProperties.getTopic(), processed);
-                    log.atInfo()
-                        .addKeyValue("id", update.id())
-                        .log("Отправил update: {}", processed);
-                });
-        }catch(Exception e){
+            processingService.process(update).ifPresent(processed -> {
+                kafkaTemplate.send(kafkaProducerProperties.getTopic(), processed);
+                log.atInfo().addKeyValue("id", update.id()).log("Отправил update: {}", processed);
+            });
+        } catch (Exception e) {
             log.error("Ошибка обработки raw update: {}", update, e);
             throw e;
         }
