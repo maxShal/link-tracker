@@ -52,6 +52,15 @@ services:
     depends_on:
       - scrapper
 
+  ai-agent:
+    image: linktracker-ai-agent:latest
+    build: ./ai-agent
+    container_name: ai-agent
+    ports:
+      - "8083:8083"
+    depends_on:
+      - scrapper
+
   valkey:
     image: valkey/valkey:latest
     container_name: valkey

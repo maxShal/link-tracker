@@ -19,13 +19,12 @@ public class MassageForSendMaker {
                 .atZoneSameInstant(ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
+
         String description = """
-                        %n\
-                        Автор: %s%n\
                         Название: %s%n\
                         Время создания: %s%n\
                         Описание: %s%n\
-                        """.formatted(author, tittle, updateTime, replaceHtml(makeShorter(body)));
+                        """.formatted(tittle, updateTime, replaceHtml(makeShorter(body)));
         return new LinkUpdateRequest(
                 linkForSend.linkId(), linkForSend.url(), description, author, linkForSend.tgChatIds());
     }

@@ -21,7 +21,13 @@ public class UpdateProcessingService {
 
         String description = summarizationService.summarization(rawLinkUpdate.description());
 
+        String fullDescription = """
+                           %n\
+                           Автор: %s%n\
+                           %s%n\
+                           """.formatted(rawLinkUpdate.author(),description);
+
         return Optional.of(new FilteredLinkUpdate(
-                rawLinkUpdate.id(), rawLinkUpdate.url(), description, rawLinkUpdate.tgChatIds(), "HIGH"));
+                rawLinkUpdate.id(), rawLinkUpdate.url(), fullDescription, rawLinkUpdate.tgChatIds(), "HIGH"));
     }
 }
