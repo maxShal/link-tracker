@@ -102,7 +102,7 @@ test-e2e:
     - ./mvnw -pl bot,scrapper -am package -DskipTests=true -Djacoco.skip=true
     - docker build -t linktracker-bot:latest ./bot
     - docker build -t linktracker-scrapper:latest ./scrapper
-    - docker build -t linktracker-ai-agent:latest ./scrapper
+    - docker build -t linktracker-ai-agent:latest ./ai-agent
     #- ./mvnw -pl bot,scrapper -am clean install -DskipTests=true
     - ./mvnw -pl e2e verify -Denforcer.skip=true
 
