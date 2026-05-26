@@ -157,7 +157,7 @@ public abstract class AbstractScrapperBotTest {
             assertTrue(request.body().contains("/repos/owner/repo/issues"));
         });
 
-        /*        await().atMost(Duration.ofSeconds(40)).untilAsserted(() -> {
+                await().atMost(Duration.ofSeconds(40)).untilAsserted(() -> {
             var request = httpClient.send(
                     HttpRequest.newBuilder()
                             .uri(URI.create(wiremockBaseUrl + "/__admin/requests"))
@@ -170,7 +170,7 @@ public abstract class AbstractScrapperBotTest {
             assertEquals(200, request.statusCode());
             assertTrue(body.contains("sendMessage"));
             System.out.println(body);
-            //assertTrue(body.contains("New issue from Kafka e2e"));
-        });*/
+            assertTrue(body.contains("New issue from Kafka e2e"));
+        });
     }
 }
