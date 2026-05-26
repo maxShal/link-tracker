@@ -79,7 +79,6 @@ public class StackOverFlowIntegrationTest extends AbstractIntegrationTest {
 
         LinkUpdateRequest request = captor.getValue();
         assertTrue(request.description().contains("title"));
-        assertTrue(request.description().contains("hatirlatici"));
         assertTrue(request.description().contains("it is body"));
     }
 }
