@@ -82,11 +82,11 @@ public class GroupService {
     }
 
     private Priority maxPriority(List<FilteredLinkUpdate> updates) {
-        if (updates.stream().anyMatch(update -> "HIGH".equals(update.priority()))) {
+        if (updates.stream().anyMatch(update -> Priority.HIGH == update.priority())) {
             return Priority.HIGH;
         }
 
-        if (updates.stream().anyMatch(update -> "MEDIUM".equals(update.priority()))) {
+        if (updates.stream().anyMatch(update -> Priority.MEDIUM == update.priority())) {
             return Priority.MEDIUM;
         }
 
