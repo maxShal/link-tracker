@@ -1,6 +1,7 @@
 package backend.academy.linktracker.ai.service;
 
 import backend.academy.linktracker.ai.model.FilteredLinkUpdate;
+import backend.academy.linktracker.ai.model.Priority;
 import backend.academy.linktracker.ai.model.RawLinkUpdate;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -20,19 +21,21 @@ public class UpdateProcessingService {
             return Optional.empty();
         }
 
-        String description = summarizationService.summarization(rawLinkUpdate.description());
+        String description =rawLinkUpdate.description();
+        Priority priority = prioritizationService.getPriority(description);
+        String sumDescription = summarizationService.summarization(description);
 
         String fullDescription = """
                            %n\
                            Автор: %s%n\
                            %s%n\
-                           """.formatted(rawLinkUpdate.author(), description);
+                           """.formatted(rawLinkUpdate.author(), sumDescription);
 
         return Optional.of(new FilteredLinkUpdate(
                 rawLinkUpdate.id(),
                 rawLinkUpdate.url(),
                 fullDescription,
                 rawLinkUpdate.tgChatIds(),
-                prioritizationService.getPriority(description)));
+                priority));
     }
 }
