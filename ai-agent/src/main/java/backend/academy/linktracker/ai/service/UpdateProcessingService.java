@@ -29,6 +29,10 @@ public class UpdateProcessingService {
                            """.formatted(rawLinkUpdate.author(), description);
 
         return Optional.of(new FilteredLinkUpdate(
-                rawLinkUpdate.id(), rawLinkUpdate.url(), fullDescription, rawLinkUpdate.tgChatIds(), prioritizationService.getPriority(description)));
+                rawLinkUpdate.id(),
+                rawLinkUpdate.url(),
+                fullDescription,
+                rawLinkUpdate.tgChatIds(),
+                prioritizationService.getPriority(description)));
     }
 }

@@ -10,22 +10,20 @@ import org.springframework.stereotype.Service;
 public class PrioritizationService {
     private final PrioritizationProperties prioritizationProperties;
 
-    public Priority getPriority(String text)
-    {
-        String lowText =  text.toLowerCase();
+    public Priority getPriority(String text) {
+        String lowText = text.toLowerCase();
 
         boolean hasHigh = prioritizationProperties.highKeywords().stream()
-            .map(String::toLowerCase)
-            .anyMatch(lowText::contains);
+                .map(String::toLowerCase)
+                .anyMatch(lowText::contains);
 
-        if(hasHigh) return Priority.HIGH;
+        if (hasHigh) return Priority.HIGH;
 
         boolean hasLow = prioritizationProperties.lowKeywords().stream()
-            .map(String::toLowerCase)
-            .anyMatch(lowText::contains);
-        if(hasLow) return Priority.LOW;
+                .map(String::toLowerCase)
+                .anyMatch(lowText::contains);
+        if (hasLow) return Priority.LOW;
 
         return Priority.MEDIUM;
-
     }
 }
