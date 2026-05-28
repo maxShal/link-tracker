@@ -21,7 +21,7 @@ public class UpdateProcessingService {
             return Optional.empty();
         }
 
-        String description =rawLinkUpdate.description();
+        String description = rawLinkUpdate.description();
         Priority priority = prioritizationService.getPriority(description);
         String sumDescription = summarizationService.summarization(description);
 
@@ -32,10 +32,6 @@ public class UpdateProcessingService {
                            """.formatted(rawLinkUpdate.author(), sumDescription);
 
         return Optional.of(new FilteredLinkUpdate(
-                rawLinkUpdate.id(),
-                rawLinkUpdate.url(),
-                fullDescription,
-                rawLinkUpdate.tgChatIds(),
-                priority));
+                rawLinkUpdate.id(), rawLinkUpdate.url(), fullDescription, rawLinkUpdate.tgChatIds(), priority));
     }
 }
