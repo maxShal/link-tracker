@@ -12,6 +12,7 @@ public class UpdateProcessingService {
 
     private final FilteringService filteringService;
     private final SummarizationService summarizationService;
+    private final PrioritizationService prioritizationService;
 
     public Optional<FilteredLinkUpdate> process(RawLinkUpdate rawLinkUpdate) {
 
@@ -28,6 +29,6 @@ public class UpdateProcessingService {
                            """.formatted(rawLinkUpdate.author(), description);
 
         return Optional.of(new FilteredLinkUpdate(
-                rawLinkUpdate.id(), rawLinkUpdate.url(), fullDescription, rawLinkUpdate.tgChatIds(), "HIGH"));
+                rawLinkUpdate.id(), rawLinkUpdate.url(), fullDescription, rawLinkUpdate.tgChatIds(), prioritizationService.getPriority(description)));
     }
 }

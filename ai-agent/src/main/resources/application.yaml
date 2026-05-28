@@ -61,3 +61,17 @@ app:
       min-length: 1
     summarization:
       threshold: 500
+
+    prioritization:
+      high-keywords:
+        - critical
+        - urgent
+        - breaking
+        - security
+      low-keywords:
+        - minor
+        - typo
+        - chore
+        - docs
+    grouping:
+      window-ms: 30000
