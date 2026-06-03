@@ -99,9 +99,10 @@ test-e2e:
     - docker info || true
     - echo "$CI_JOB_TOKEN" | docker login gitlab.education.tbank.ru:443 -u gitlab-ci-token --password-stdin
   script:
-    - ./mvnw -pl bot,scrapper -am package -DskipTests=true -Djacoco.skip=true
+    - ./mvnw -pl bot,scrapper,ai-agent -am package -DskipTests=true -Djacoco.skip=true
     - docker build -t linktracker-bot:latest ./bot
     - docker build -t linktracker-scrapper:latest ./scrapper
+    - docker build -t linktracker-ai-agent:latest ./ai-agent
     #- ./mvnw -pl bot,scrapper -am clean install -DskipTests=true
     - ./mvnw -pl e2e verify -Denforcer.skip=true
 

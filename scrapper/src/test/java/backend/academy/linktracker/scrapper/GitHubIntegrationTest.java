@@ -34,7 +34,7 @@ class GitHubIntegrationTest extends AbstractIntegrationTest {
                                   {
                                     "title": "New issue",
                                     "body": "Issue description",
-                                    "created_at": "2026-04-07T10:00:00Z",
+                                    "created_at": "2026-12-07T10:00:00Z",
                                     "user": { "login": "octocat" }
                                   }
                                 ]
@@ -48,7 +48,6 @@ class GitHubIntegrationTest extends AbstractIntegrationTest {
 
         LinkUpdateRequest request = captor.getValue();
         assertTrue(request.description().contains("New issue"));
-        assertTrue(request.description().contains("octocat"));
         assertTrue(request.description().contains("Issue description"));
     }
 }

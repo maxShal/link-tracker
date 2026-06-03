@@ -9,4 +9,6 @@ public record LinkUpdateRequest(
         @NotNull Long id,
         @NotBlank String url,
         @NotBlank String description,
+        String author,
+
         @NotEmpty List<@NotNull Long> tgChatIds) {}

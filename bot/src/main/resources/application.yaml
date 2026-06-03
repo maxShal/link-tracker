@@ -39,7 +39,7 @@ app:
     chat-endpoint: /tg-chat/{id}
     link-endpoint: /links
     header: Tg-Chat-Id
-  message-transport: http #kafka
+  message-transport: kafka #http
   messages:
     first: "Добро пожаловать! Используйте /help, чтобы посмотреть доступные команды."
     start: "Бот уже работает."
@@ -68,8 +68,8 @@ app:
       Воспользуйтесь /help
 
   kafka:
-    topic: message-send
-    dlq-topic: message-send-dlq
+    topic: link.processed-updates
+    #dlq-topic: message-send-dlq
     retry-attempts: 3
     retry-backoff-ms: 1000
     fail-on-processing: false

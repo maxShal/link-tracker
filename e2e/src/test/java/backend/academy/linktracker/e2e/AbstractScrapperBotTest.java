@@ -71,7 +71,7 @@ public abstract class AbstractScrapperBotTest {
                     "user": {
                       "login": "octocat"
                     },
-                    "created_at": "2026-05-20T10:00:00Z",
+                    "created_at": "2026-12-20T10:00:00Z",
                     "body": "Kafka notification body"
                   }
                 ]
@@ -169,6 +169,7 @@ public abstract class AbstractScrapperBotTest {
 
             assertEquals(200, request.statusCode());
             assertTrue(body.contains("sendMessage"));
+            System.out.println(body);
             assertTrue(body.contains("New issue from Kafka e2e"));
         });
     }

@@ -22,6 +22,5 @@ class MassageForSendMakerTest {
         assertTrue(request.description().contains("a".repeat(200)));
         assertFalse(request.description().contains("a".repeat(201)));
         assertTrue(request.description().contains("title"));
-        assertTrue(request.description().contains("author"));
     }
 }

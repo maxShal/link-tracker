@@ -73,7 +73,7 @@ app:
     check: 10000
     threads: 4
   repository-type: jdbc
-  message-transport: http #kafka
+  message-transport: kafka #http
   stackoverflow:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
     key: ${STACKOVERFLOW_KEY} # Use env variable. DO NOT KEEP TOKEN HERE
@@ -90,8 +90,8 @@ app:
     update-endpoint: /updates
 
   message-send:
-    topic: message-send
-    dlq-topic: message-send-dlq
+    topic: link.raw-updates
+    #dlq-topic: message-send-dlq
     partitions: 3
     replicas: 3
 

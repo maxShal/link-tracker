@@ -20,13 +20,12 @@ public class MassageForSendMaker {
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
         String description = """
-                        %n\
-                        Автор: %s%n\
                         Название: %s%n\
                         Время создания: %s%n\
                         Описание: %s%n\
-                        """.formatted(author, tittle, updateTime, replaceHtml(makeShorter(body)));
-        return new LinkUpdateRequest(linkForSend.linkId(), linkForSend.url(), description, linkForSend.tgChatIds());
+                        """.formatted(tittle, updateTime, replaceHtml(makeShorter(body)));
+        return new LinkUpdateRequest(
+                linkForSend.linkId(), linkForSend.url(), description, author, linkForSend.tgChatIds());
     }
 
     private String makeShorter(String body) {

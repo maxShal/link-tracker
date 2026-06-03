@@ -1,30 +1,20 @@
 package backend.academy.linktracker.bot.configuration;
 
 import backend.academy.linktracker.bot.configuration.properties.ConsumerKafkaProperties;
-import backend.academy.linktracker.bot.exception.LinkUpdateException;
 import backend.academy.linktracker.bot.model.dto.LinkUpdate;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.ConversionException;
-import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
-import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.serializer.DeserializationException;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
-import org.springframework.messaging.converter.MessageConversionException;
-import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration
 @RequiredArgsConstructor
@@ -35,7 +25,7 @@ public class KafkaConfiguration {
 
     private final ConsumerKafkaProperties consumerKafkaProperties;
 
-    @Bean
+    /*    @Bean
     public DefaultErrorHandler kafkaErrorHandler(KafkaTemplate<Object, Object> kafkaTemplate) {
         var recover = new DeadLetterPublishingRecoverer(
                 kafkaTemplate,
@@ -54,14 +44,14 @@ public class KafkaConfiguration {
 
         errorHandler.setLogLevel(KafkaException.Level.WARN);
         return errorHandler;
-    }
+    }*/
 
     @Bean("defaultFactory")
     public ConcurrentKafkaListenerContainerFactory<String, LinkUpdate> kafkaListenerContainerFactory(
-            ConsumerFactory<String, LinkUpdate> consumerFactory, DefaultErrorHandler errorHandler) {
+            ConsumerFactory<String, LinkUpdate> consumerFactory /*, DefaultErrorHandler errorHandler*/) {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, LinkUpdate>();
         factory.setConsumerFactory(consumerFactory);
-        factory.setCommonErrorHandler(errorHandler);
+        // factory.setCommonErrorHandler(errorHandler);
         return factory;
     }
 
