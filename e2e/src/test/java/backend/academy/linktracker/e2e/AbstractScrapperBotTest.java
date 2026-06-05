@@ -152,7 +152,6 @@ public abstract class AbstractScrapperBotTest {
                             .GET()
                             .build(),
                     HttpResponse.BodyHandlers.ofString());
-
             assertEquals(200, request.statusCode());
             assertTrue(request.body().contains("/repos/owner/repo/issues"));
         });
@@ -168,7 +167,7 @@ public abstract class AbstractScrapperBotTest {
             String body = request.body();
 
             assertEquals(200, request.statusCode());
-            assertTrue(body.contains("sendMessage"));
+            assertTrue(body.contains("Kafka notification body"));
             System.out.println(body);
             assertTrue(body.contains("New issue from Kafka e2e"));
         });

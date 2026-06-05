@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app.kafka-producer")
 public class KafkaProducerProperties {
     String topic;
-    String dlqTopic;
+    // String dlqTopic;
     int partitions;
     short replicas;
 
