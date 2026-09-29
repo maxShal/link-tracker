@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+/*import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;*/
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,8 +28,8 @@ public class JpaBaseTest extends AbstractPostgresContainerTest {
     @Autowired
     protected JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    CacheManager cacheManager;
+/*    @Autowired
+    CacheManager cacheManager;*/
 
     @BeforeEach
     void clearDatabase() {
@@ -43,9 +43,9 @@ public class JpaBaseTest extends AbstractPostgresContainerTest {
             RESTART IDENTITY CASCADE
         """);
 
-        Cache cache = cacheManager.getCache("links");
+/*        Cache cache = cacheManager.getCache("links");
         if (cache != null) {
             cache.clear();
-        }
+        }*/
     }
 }

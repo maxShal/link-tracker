@@ -18,10 +18,10 @@ spring:
     hibernate:
       ddl-auto: none
 
-  data:
-    redis:
-      host: ${SPRING_DATA_REDIS_HOST:localhost}
-      port: ${SPRING_DATA_REDIS_PORT:6379}
+  ##data:
+   ## redis:
+    ##  host: ${SPRING_DATA_REDIS_HOST:localhost}
+   ##   port: ${SPRING_DATA_REDIS_PORT:6379}
 
 
   kafka:
@@ -73,7 +73,7 @@ app:
     check: 10000
     threads: 4
   repository-type: jdbc
-  message-transport: kafka #http
+  message-transport: http #kafka
   stackoverflow:
     url: ${APP_STACKOVERFLOW_URL:https://api.stackexchange.com}
     key: ${STACKOVERFLOW_KEY} # Use env variable. DO NOT KEEP TOKEN HERE
@@ -95,7 +95,7 @@ app:
     partitions: 3
     replicas: 3
 
-  valkey:
-    channel: ${APP_VALKEY_CHANNEL:links:invalidate}
+  ##valkey:
+    ##channel: ${APP_VALKEY_CHANNEL:links:invalidate}
 
 

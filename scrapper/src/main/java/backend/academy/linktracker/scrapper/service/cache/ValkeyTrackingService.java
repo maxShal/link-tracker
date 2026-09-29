@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.scrapper.service.cache;
 
 import backend.academy.linktracker.scrapper.configuration.properties.ValkeyProperties;
@@ -17,3 +18,4 @@ public class ValkeyTrackingService {
         stringRedisTemplate.convertAndSend(valkeyProperties.getChannel(), String.valueOf(chatId));
     }
 }
+*/

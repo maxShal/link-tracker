@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.scrapper.service.cache;
 
 import lombok.RequiredArgsConstructor;
@@ -20,3 +21,4 @@ public class CacheInvalidationListener implements MessageListener {
         clientSideCachingService.evict(chatId);
     }
 }
+*/

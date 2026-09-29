@@ -1,8 +1,0 @@
-spring:
-  data:
-    redis:
-      cluster:
-        nodes:
-          - valkey-1:6379
-          - valkey-2:6379
-          - valkey-3:6379

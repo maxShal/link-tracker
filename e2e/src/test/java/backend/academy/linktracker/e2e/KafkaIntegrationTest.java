@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.e2e;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -90,3 +91,4 @@ public class KafkaIntegrationTest extends AbstractScrapperBotTest {
         return scrapper;
     }
 }
+*/

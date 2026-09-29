@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.scrapper.configuration.properties;
 
 import lombok.Getter;
@@ -14,3 +15,4 @@ import org.springframework.validation.annotation.Validated;
 public class ValkeyProperties {
     String channel;
 }
+*/

@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import backend.academy.linktracker.scrapper.service.LinksService;
+/*
 import backend.academy.linktracker.scrapper.service.cache.ClientSideCachingService;
+*/
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.boot.liquibase.autoconfigure.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.cache.CacheManager;
+/*import org.springframework.cache.CacheManager;*/
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -42,15 +44,17 @@ class LinksControllerRetryTest {
     @MockitoBean
     private LinksService linksService;
 
-    @MockitoBean
-    private CacheManager cacheManager;
+/*    @MockitoBean
+    private CacheManager cacheManager;*/
 
+
+/*
     @MockitoBean
-    private ClientSideCachingService clientSideCachingService;
+    private ClientSideCachingService clientSideCachingService;*/
 
     @Test
     void shouldReturn429WhenRateLimitExceeded() throws Exception {
-        when(clientSideCachingService.getAllLinks(anyLong(), anyInt(), anyInt()))
+        when(linksService.getAllLinks(anyLong(), anyInt(), anyInt()))
                 .thenReturn(null);
 
         for (int i = 0; i < 5; i++) {

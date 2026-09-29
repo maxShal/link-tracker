@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.scrapper.service.cache;
 
 import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
@@ -60,3 +61,4 @@ public class ClientSideCachingService {
         return new ListLinksResponse(allLinks.subList(from, to), allLinks.size());
     }
 }
+*/

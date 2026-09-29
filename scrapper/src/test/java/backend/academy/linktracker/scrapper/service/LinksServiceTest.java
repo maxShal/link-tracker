@@ -15,7 +15,9 @@ import backend.academy.linktracker.scrapper.model.response.LinkResponse;
 import backend.academy.linktracker.scrapper.model.response.ListLinksResponse;
 import backend.academy.linktracker.scrapper.repository.interfaces.ILinksRepository;
 import backend.academy.linktracker.scrapper.repository.interfaces.ITgChatRepository;
+/*
 import backend.academy.linktracker.scrapper.service.cache.ValkeyTrackingService;
+*/
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -38,8 +40,8 @@ class LinksServiceTest {
     @Mock
     private ITgChatRepository chatRepository;
 
-    @Mock
-    private ValkeyTrackingService valkeyTrackingService;
+/*    @Mock
+    private ValkeyTrackingService valkeyTrackingService;*/
 
     @InjectMocks
     private LinksService linksService;

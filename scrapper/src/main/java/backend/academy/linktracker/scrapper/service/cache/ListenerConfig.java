@@ -1,3 +1,4 @@
+/*
 package backend.academy.linktracker.scrapper.service.cache;
 
 import backend.academy.linktracker.scrapper.configuration.properties.ValkeyProperties;
@@ -24,3 +25,4 @@ public class ListenerConfig {
         return container;
     }
 }
+*/

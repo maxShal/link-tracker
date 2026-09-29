@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableScheduling
-@EnableCaching
+/*@EnableCaching*/
 public class ScrapperApplication {
 
     static void main(String[] args) {

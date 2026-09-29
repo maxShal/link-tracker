@@ -7,8 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+/*import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;*/
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,9 +24,9 @@ public class JdbcBaseTest extends AbstractPostgresContainerTest {
 
     @Autowired
     protected ILinksRepository linksRepository;
-
+/*
     @Autowired
-    CacheManager cacheManager;
+    CacheManager cacheManager;*/
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -39,9 +39,9 @@ public class JdbcBaseTest extends AbstractPostgresContainerTest {
         jdbcTemplate.update("DELETE FROM links");
         jdbcTemplate.update("DELETE FROM chats");
 
-        Cache cache = cacheManager.getCache("links");
+/*        Cache cache = cacheManager.getCache("links");
         if (cache != null) {
             cache.clear();
-        }
+        }*/
     }
 }

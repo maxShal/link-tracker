@@ -4,6 +4,7 @@ import backend.academy.linktracker.scrapper.model.request.LinkUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,10 @@ import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnProperty(
+    name = "app.message-transport",
+    havingValue = "kafka"
+)
 public class KafkaConfiguration {
 
     private final KafkaProperties kafkaProperties;
