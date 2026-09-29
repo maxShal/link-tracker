@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LinkTracker — мои ссылки</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/" aria-label="LinkTracker, главная"><span class="logo">↗</span> LinkTracker</a><span class="badge">Веб-кабинет</span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">ВСЁ ВАЖНОЕ В ОДНОМ МЕСТЕ</p><h1>Ваши ссылки.<br><span>Под контролем.</span></h1><p>Управляйте подписками GitHub и Stack Overflow.<br>Обновления по-прежнему приходят в Telegram.</p></section>
+    <section class="panel" aria-labelledby="chat-title">
+      <div class="section-heading"><div><h2 id="chat-title">Выберите свой чат</h2><p>Откройте те же подписки, что и в Telegram.</p></div><span class="step">01 / ПОДКЛЮЧЕНИЕ</span></div>
+      <form id="chat-form" class="inline-form"><div class="field grow"><label for="chat-id">Telegram Chat ID</label><input id="chat-id" name="chat" type="text" placeholder="Например, 123456789" required pattern="-?[0-9]+" autocomplete="off" aria-describedby="chat-help"></div><button type="submit">Открыть ссылки <span aria-hidden="true">→</span></button><button id="disconnect" type="button" class="secondary" hidden>Сменить чат</button></form>
+      <p id="chat-help" class="hint">Это выбор чата для локальной работы, не вход с проверкой личности. Сначала отправьте боту /start.</p>
+    </section>
+    <p id="status" class="status" role="status" aria-live="polite">Введите Chat ID, чтобы загрузить подписки.</p>
+    <section id="workspace" hidden>
+      <div class="workspace-grid">
+        <section class="panel add-panel" aria-labelledby="add-title"><p class="eyebrow">НОВАЯ ПОДПИСКА</p><h2 id="add-title">Не пропустите важное</h2><p>Добавьте репозиторий или вопрос, за которым хотите следить.</p><form id="add-form"><div class="field"><label for="link-url">Ссылка</label><input id="link-url" type="url" required placeholder="https://github.com/owner/repo"></div><div class="field"><label for="link-tags">Теги <span class="optional">необязательно</span></label><input id="link-tags" type="text" placeholder="работа, java, интересное"><small>Несколько тегов — через запятую.</small></div><button type="submit" class="full">+ Добавить ссылку</button></form><div class="note"><strong>Уведомления — в Telegram</strong><p>GitHub: новые issues и pull requests. История событий на сайте появится на следующем этапе.</p></div></section>
+        <section class="panel links-panel" aria-labelledby="links-title"><div class="section-heading"><div><h2 id="links-title">Мои ссылки</h2><p id="page-info"></p></div><button id="refresh" type="button" class="secondary">↻ Обновить</button></div><div id="links"></div><nav class="pagination" aria-label="Страницы ссылок"><button id="previous" type="button" class="secondary">← Назад</button><span id="page-number"></span><button id="next" type="button" class="secondary">Далее →</button></nav></section>
+      </div>
+    </section>
+  </main>
+  <footer>LinkTracker <span>Меньше проверок вручную. Больше времени на главное.</span></footer>
+  <dialog id="delete-dialog"><h2>Убрать ссылку из отслеживания?</h2><p id="delete-url"></p><p>Для этого чата уведомления по ссылке больше не будут приходить.</p><div class="dialog-actions"><button id="cancel-delete" class="secondary" type="button">Отмена</button><button id="confirm-delete" class="danger" type="button">Удалить подписку</button></div></dialog>
+</body>
+</html>
