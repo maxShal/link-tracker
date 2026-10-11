@@ -3,6 +3,7 @@
 *.war
 *.ear
 .env
+/k8s/secrets.local.yaml
 
 **/pgdata/
 ### Maven ###
