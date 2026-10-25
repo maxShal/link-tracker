@@ -23,6 +23,15 @@ spring:
     ##  host: ${SPRING_DATA_REDIS_HOST:localhost}
    ##   port: ${SPRING_DATA_REDIS_PORT:6379}
 
+logging:
+  structured:
+    format:
+      console: logstash
+    json:
+      rename:
+        "[@timestamp]": timestamp
+      add:
+        "[service.name]": ${spring.application.name}
 
   kafka:
     bootstrap-servers: localhost:19092,localhost:29092,localhost:39092
