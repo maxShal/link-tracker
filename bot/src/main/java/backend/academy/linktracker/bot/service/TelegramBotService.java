@@ -7,13 +7,13 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import lombok.AllArgsConstructor;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class TelegramBotService {
 
     private final TelegramBot telegramBot;
@@ -21,6 +21,20 @@ public class TelegramBotService {
     private final UpdateHandler updateHandler;
 
     private final CommandsInit commandsInit;
+    private final Counter notificationsSent;
+
+    public TelegramBotService(
+            TelegramBot telegramBot,
+            UpdateHandler updateHandler,
+            CommandsInit commandsInit,
+            MeterRegistry registry) {
+        this.telegramBot = telegramBot;
+        this.updateHandler = updateHandler;
+        this.commandsInit = commandsInit;
+        this.notificationsSent = Counter.builder("linktracker.notifications.sent")
+                .description("Successfully sent link update notifications to Telegram chats")
+                .register(registry);
+    }
 
     public void start() {
         infoLog("event", "bot_start", "Bot start");
@@ -76,7 +90,11 @@ public class TelegramBotService {
     public void sendUpdate(LinkUpdate update) {
         for (Long chatId : update.tgChatIds()) {
             String desc = update.description();
-            telegramBot.execute(new SendMessage(chatId, "Обновление по ссылке: " + update.url() + desc));
+            var response = telegramBot.execute(
+                    new SendMessage(chatId, "Обновление по ссылке: " + update.url() + desc));
+            if (response.isOk()) {
+                notificationsSent.increment();
+            }
         }
     }
 }

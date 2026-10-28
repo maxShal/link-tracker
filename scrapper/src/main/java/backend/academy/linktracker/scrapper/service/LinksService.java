@@ -3,6 +3,7 @@ package backend.academy.linktracker.scrapper.service;
 import backend.academy.linktracker.scrapper.exception.errors.ChatNotFoundException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkAlreadyExistException;
 import backend.academy.linktracker.scrapper.exception.errors.LinkNotFoundException;
+import backend.academy.linktracker.scrapper.metrics.LinkTrackerMetrics;
 import backend.academy.linktracker.scrapper.model.Link;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.model.request.AddLinkRequest;
@@ -27,6 +28,7 @@ public class LinksService {
     private final ILinksRepository linksRepository;
 
     private final ITgChatRepository chatRepository;
+    private final LinkTrackerMetrics metrics;
 
    // private final ValkeyTrackingService valkeyTrackingService;
 
@@ -42,6 +44,7 @@ public class LinksService {
         Link link = new Link(null, addLinkRequest.link(), addLinkRequest.tags(), Instant.now());
 
         Link saved = linksRepository.saveLink(chatId, link);
+        metrics.linkAdded();
         //valkeyTrackingService.invalidate(chatId);
         return new LinkResponse(saved.id(), saved.url(), saved.tags());
     }
@@ -74,6 +77,7 @@ public class LinksService {
         if (removed == null) {
             throw new LinkNotFoundException("Ссылка" + removeLinkRequest.link() + "не найдена");
         }
+        metrics.linkDeleted();
 
         //valkeyTrackingService.invalidate(chatId);
 

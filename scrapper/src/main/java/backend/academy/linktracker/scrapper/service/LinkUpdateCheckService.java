@@ -3,6 +3,7 @@ package backend.academy.linktracker.scrapper.service;
 import backend.academy.linktracker.scrapper.model.LinkForSend;
 import backend.academy.linktracker.scrapper.model.LinkForUpdateCheck;
 import backend.academy.linktracker.scrapper.model.response.LinkUpdateResponse;
+import backend.academy.linktracker.scrapper.metrics.LinkTrackerMetrics;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -19,6 +20,7 @@ public class LinkUpdateCheckService {
 
     private final LinksService linksService;
     private final MetadataService linkMetadataService;
+    private final LinkTrackerMetrics metrics;
 
     @Transactional
     public LinkForSend processLinkCheck(LinkForUpdateCheck link) {
@@ -43,6 +45,7 @@ public class LinkUpdateCheckService {
 
         if (link.lastUpdatedAt() == null || actualLastUpdated.isAfter(link.lastUpdatedAt())) {
             linksService.updateLastUpdated(link.id(), actualLastUpdated);
+            metrics.linkUpdateDetected();
             LinkForSend linkForSend = new LinkForSend(
                     link.id(),
                     link.url(),

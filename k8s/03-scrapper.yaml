@@ -25,6 +25,10 @@ spec:
     metadata:
       labels:
         app: scrapper
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/path: "/actuator/prometheus"
     spec:
       initContainers:
         - name: wait-for-postgres
@@ -57,7 +61,7 @@ spec:
             tcpSocket:
               port: http
             periodSeconds: 5
-            failureThreshold: 60
+            failureThreshold: 180
           readinessProbe:
             tcpSocket:
               port: http
